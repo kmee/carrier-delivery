@@ -27,8 +27,7 @@ import logging
 from openerp.osv import orm, fields
 from openerp.tools.translate import _
 
-from pysigep_web.pysigepweb import ambiente
-# from .postlogistics.web_service import PostlogisticsWebService
+from pysigep_web.pysigepweb.ambiente import FabricaAmbiente
 
 _logger = logging.getLogger(__name__)
 
@@ -38,8 +37,8 @@ class SigepWebConfigSettings(orm.TransientModel):
     _inherit = 'res.config.settings'
 
     def _get_selection(self, cursor, user_id, context=None):
-        return ((ambiente.AmbienteProducao, u'Produçao'),
-                (ambiente.AmbienteHomologacao, u'Homologação'))
+        return ((FabricaAmbiente.AMBIENTE_PRODUCAO, u'Produçao'),
+                (FabricaAmbiente.AMBIENTE_HOMOLOGACAO, u'Homologação'))
 
     _columns = {
         'company_id': fields.many2one('res.company', 'Company', required=True),
@@ -59,7 +58,10 @@ class SigepWebConfigSettings(orm.TransientModel):
             'company_id', 'sigepweb_post_card_number',
             string='Post Card Number', type='char'),
 
-        'environment': fields.selection(_get_selection, 'Environment'),
+        'environment': fields.selection(
+            ((FabricaAmbiente.AMBIENTE_PRODUCAO, u'Produçao'),
+             (FabricaAmbiente.AMBIENTE_HOMOLOGACAO, u'Homologação')),
+            string='Environment'),
 
         'logo': fields.related(
             'company_id', 'pysigepweb_logo',
@@ -88,6 +90,7 @@ class SigepWebConfigSettings(orm.TransientModel):
 
     _defaults = {
         'company_id': _default_company,
+        'environment': FabricaAmbiente.AMBIENTE_HOMOLOGACAO,
     }
 
     def create(self, cr, uid, values, context=None):
