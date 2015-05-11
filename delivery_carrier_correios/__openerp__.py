@@ -31,17 +31,10 @@
     'depends': ['base_delivery_carrier_label'],
     'description': """
     Carrier Delivery Correios Sigepweb WebService
-    ===============================
-    Description
-    -----------
     """,
     'website': 'http://www.kmee.com.br/',
     'data': [
-         # 'view/res_partner_data.xml',
-         #  'view/delivery_data.xml',
-         #  'view/delivery_view.xml',
-         'view/res_config_view.xml',
-         # 'security/ir.model.access.csv',
+        'view/res_config_view.xml',
     ],
     'tests': [],
     'installable': True,
