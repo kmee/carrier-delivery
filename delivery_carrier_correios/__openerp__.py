@@ -22,35 +22,33 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{'name': 'Carrier Delivery Correios SigepWeb WebService',
- 'version': '1.1',
- 'author': "KMEE",
- 'maintainer': 'KMEE',
- 'category': 'version',
- 'complexity': 'normal',
- 'depends': ['base_delivery_carrier_label'],
- 'description': """
-Carrier Delivery Correios Sigepweb WebService
-===============================
-
-Description
------------
-""",
-
- 'website': 'http://www.kmee.com.br/',
- 'data': [
-     # 'view/res_partner_data.xml',
-     # 'view/delivery_data.xml',
-     # 'view/delivery_view.xml',
-     'view/res_config_view.xml',
-     # 'security/ir.model.access.csv',
- ],
- 'tests': [],
- 'installable': True,
- 'auto_install': False,
- 'license': 'AGPL-3',
- 'application': True,
- 'external_dependencies': {
-     'python': ['suds'],
- }
+{
+    'name': 'Carrier Delivery Correios SigepWeb WebService',
+    'version': '1.1',
+    'author': "KMEE",
+    'category': 'version',
+    'complexity': 'normal',
+    'depends': ['base_delivery_carrier_label'],
+    'description': """
+    Carrier Delivery Correios Sigepweb WebService
+    ===============================
+    Description
+    -----------
+    """,
+    'website': 'http://www.kmee.com.br/',
+    'data': [
+         # 'view/res_partner_data.xml',
+         #  'view/delivery_data.xml',
+         #  'view/delivery_view.xml',
+         'view/res_config_view.xml',
+         # 'security/ir.model.access.csv',
+    ],
+    'tests': [],
+    'installable': True,
+    'auto_install': False,
+    'license': 'AGPL-3',
+    'application': True,
+    'external_dependencies': {
+        'python': ['suds'],
+    }
 }
