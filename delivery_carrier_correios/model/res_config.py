@@ -28,6 +28,10 @@ from openerp.osv import orm, fields
 from openerp.tools.translate import _
 
 from pysigep_web.pysigepweb.ambiente import FabricaAmbiente
+from pysigep_web.pysigepweb.usuario import Usuario
+from pysigep_web.pysigepweb.webservice_atende_cliente import \
+    WebserviceAtendeCliente
+
 
 _logger = logging.getLogger(__name__)
 
@@ -45,22 +49,24 @@ class SigepWebConfigSettings(orm.TransientModel):
         # 'wsdl_url': fields.related(
         #     'company_id', 'postlogistics_wsdl_url',
         #     string='WSDL URL', type='char'),
-        'username': fields.related(
-            'company_id', 'pysigepweb_username',
-            string='Username', type='char'),
-        'password': fields.related(
-            'company_id', 'pysigepweb_password',
-            string='Password', type='char'),
+        'username': fields.related('company_id', 'pysigepweb_username',
+                                   string='Username', type='char'),
+        'password': fields.related('company_id', 'pysigepweb_password',
+                                   string='Password', type='char'),
+        'admin_code': fields.related(
+            'company_id', 'sigepweb_admin_code',
+            string='Contract Number', type='char'),
         'contract_number': fields.related(
             'company_id', 'sigepweb_contract_number',
             string='Contract Number', type='char'),
         'post_card_number': fields.related(
             'company_id', 'sigepweb_post_card_number',
             string='Post Card Number', type='char'),
+        'post_card_status': fields.char('Post Card Status'),
 
         'environment': fields.selection(
-            ((FabricaAmbiente.AMBIENTE_PRODUCAO, u'Produçao'),
-             (FabricaAmbiente.AMBIENTE_HOMOLOGACAO, u'Homologação')),
+            ((WebserviceAtendeCliente.AMBIENTE_PRODUCAO, u'Produçao'),
+             (WebserviceAtendeCliente.AMBIENTE_HOMOLOGACAO, u'Homologação')),
             string='Environment'),
 
         'logo': fields.related(
@@ -110,15 +116,21 @@ class SigepWebConfigSettings(orm.TransientModel):
         values = {'currency_id': False}
         if not company_id:
             return {'value': values}
-        company = self.pool.get('res.company'
-                                ).browse(cr, uid, company_id, context=context)
+        company = self.pool.get('res.company').browse(
+            cr, uid, company_id, context=context)
+
         values = {
             'username': company.sigepweb_username,
             'password': company.sigepweb_password,
             'contract_number': company.sigepweb_contract_number,
-            'post_card_number': company.postlogistics_office,
+            'post_card_number': company.sigepweb_office,
+            'sigepweb_admin_code': company.sigepweb_admin_code,
             'logo': company.sigepweb_logo,
             'office': company.sigepweb_office,
-
         }
         return {'value': values}
+
+
+
+
+

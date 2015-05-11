@@ -32,71 +32,33 @@
                         <group>
                             <field name="username"/>
                             <field name="password"/>
+                            <field name="admin_code"/>
                         </group>
                         <group>
                             <field name="contract_number"/>
                             <field name="post_card_number"/>
+                            <field name="post_card_status"/>
                         </group>
                     </group>
-                    <!--<separator string="Licenses"/>-->
-                    <!--<group>-->
-                    <!--<div>-->
-                    <!--<div>-->
-                    <!--<field name="license_ids" class="oe_inline">-->
-                    <!--<tree editable="bottom">-->
-                    <!--<field name="name"/>-->
-                    <!--<field name="number"/>-->
-                    <!--<field name="sequence" invisible="True"/>-->
-                    <!--</tree>-->
-                    <!--</field>-->
-                    <!--</div>-->
-                    <!--</div>-->
-                    <!--</group>-->
                     <separator string="Sender Informations"/>
                     <group>
-                        <div>
-                            <div>
+                        <group>
+                            <group>
                                 <label for="logo"/>
-                                <field name="logo" widget="image"/>
-                            </div>
-                            <div>
+                                <field name="logo" nolabel="1" widget="image"/>
+                            </group>
+                            <group>
                                 <label for="office"/>
-                                <field name="office" class="oe_inline"/>
-                            </div>
-                        </div>
+                                <field name="office" nolabel="1"
+                                       class="oe_inline"/>
+                            </group>
+                        </group>
                     </group>
                     <separator string="Default configs"/>
                     <group>
                         <field name="environment"/>
-                        <!--<div>-->
-                        <!--<div>-->
-                        <!--<label for="default_label_layout"/>-->
-                        <!--<field name="default_label_layout" class="oe_inline"/>-->
-                        <!--</div>-->
-                        <!--<div>-->
-                        <!--<label for="default_output_format"/>-->
-                        <!--<field name="default_output_format" class="oe_inline"/>-->
-                        <!--</div>-->
-                        <!--<div>-->
-                        <!--<label for="default_resolution"/>-->
-                        <!--<field name="default_resolution" class="oe_inline"/>-->
-                        <!--</div>-->
-                        <!--</div>-->
                     </group>
-                    <group>
-                        <div>
-                            <div>
-                                <button string="Update SigepWeb Services"
-                                        type="object"
-                                        name="update_sigepweb_options"
-                                        class="oe_highlight"/>
-                                <button string="Assign SigepWeb Licenses to service groups"
-                                        type="object
-                " name="assign_licenses_to_service_groups"
-                                        class="oe_highlight"/>
-                            </div>
-                        </div>
-                    </group>
+
                 </form>
             </field>
         </record>
