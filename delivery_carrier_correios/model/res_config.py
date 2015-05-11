@@ -92,11 +92,13 @@ class CorreioSigepWebConfigSettings(orm.TransientModel):
         #     string='Default label layout', type='many2one',
         #     relation='delivery.carrier.template.option',
         #     domain=[('pysigepweb_type', '=', 'label_layout')]),
+
         # 'default_output_format': fields.related(
         #     'company_id', 'pysigepweb_default_output_format',
         #     string='Default output format', type='many2one',
         #     relation='delivery.carrier.template.option',
         #     domain=[('pysigepweb_type', '=', 'output_format')]),
+
         # 'default_resolution': fields.related(
         #     'company_id', 'pysigepweb_default_resolution',
         #     string='Default resolution', type='many2one',

@@ -46,6 +46,7 @@ class ResCompany(orm.Model):
         'sigepweb_password': fields.char('Password'),
         'sigepweb_contract_number': fields.char('Contract Number'),
         'sigepweb_post_card_number': fields.char('Post Card Number'),
+        'sigepweb_enviroment': fields.select(),
         # 'sigepweb_license_ids': fields.one2many(
         #     'sigepweb.license',
         #     'company_id',
