@@ -35,6 +35,7 @@
     'website': 'http://www.kmee.com.br/',
     'data': [
         'view/res_config_view.xml',
+        'view/delivery_view.xml',
     ],
     'tests': [],
     'installable': True,

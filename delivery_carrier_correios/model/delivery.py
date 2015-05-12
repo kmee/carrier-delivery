@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-#    Brazillian Carrier Correios Sigep WEB
+# Brazillian Carrier Correios Sigep WEB
 #    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
 #    @author Luis Felipe Mileo <mileo@kmee.com.br>
 #    @author: Michell Stuttgart <michell.stuttgartx@kmee.com.br>
@@ -22,11 +22,29 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from openerp.osv import orm, fields
 
-from . import company
-from . import res_config
-from . import contract
-from . import directorship
-from . import post_card
-from . import post_service
-from . import delivery
+
+class DeliveryCarrier(orm.Model):
+    """ Add service group """
+    _inherit = 'delivery.carrier'
+
+    _columns = {
+
+        'sigepweb_contract_ids': fields.many2one('sigepweb.contract',
+                                                 'Contract'),
+        'sigepweb_post_card_ids': fields.related(
+            'sigepweb_contract_ids', 'post_card_ids', type='many2one',
+            relation='sigepweb.post.card', string='Post Cards'),
+
+        'sigepweb_post_service_ids': fields.related(
+            'sigepweb_post_card_ids', 'post_service_ids', type='many2one',
+            relation='sigepweb.post.service', string='Post Services'),
+    }
+
+    def _get_carrier_type_selection(self, cr, uid, context=None):
+        """ Add postlogistics carrier type """
+        res = super(DeliveryCarrier, self)._get_carrier_type_selection(
+            cr, uid, context=context)
+        res.append(('sigepweb', 'Correios SigepWeb'))
+        return res
