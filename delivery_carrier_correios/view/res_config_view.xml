@@ -32,12 +32,12 @@
                         <group>
                             <field name="username"/>
                             <field name="password"/>
-                            <field name="admin_code"/>
+                            <!--<field name="admin_code"/>-->
                         </group>
                         <group>
                             <field name="contract_number"/>
                             <field name="post_card_number"/>
-                            <field name="post_card_status"/>
+                            <!--<field name="post_card_status"/>-->
                         </group>
                     </group>
                     <separator string="Sender Informations"/>
