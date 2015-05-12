@@ -23,9 +23,20 @@
 #
 ##############################################################################
 
-from . import company
-from . import res_config
-from . import contract
-from . import directorship
-from . import post_card
-from . import post_service
+from openerp.osv import orm, fields
+
+
+class Contract(orm.Model):
+
+    _name = 'sigepweb.contract'
+
+    _columns = {
+        'number': fields.char('Number'),
+        'post_card_ids': fields.one2many('sigepweb.post.card',
+                                         'contract_id',
+                                         'Post Cards'),
+        'directorship_id': fields.many2one('sigepweb.directorship',
+                                           'Directorship')
+    }
+
+

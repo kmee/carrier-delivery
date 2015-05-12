@@ -122,9 +122,9 @@ class SigepWebConfigSettings(orm.TransientModel):
         values = {
             'username': company.sigepweb_username,
             'password': company.sigepweb_password,
-            'contract_number': company.sigepweb_contract_number,
-            'post_card_number': company.sigepweb_office,
-            'sigepweb_admin_code': company.sigepweb_admin_code,
+            # 'contract_number': company.contract_number,
+            # 'post_card_number': company.sigepweb_office,
+            # 'sigepweb_admin_code': company.sigepweb_admin_code,
             'logo': company.sigepweb_logo,
             'office': company.sigepweb_office,
         }

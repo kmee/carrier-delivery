@@ -23,9 +23,20 @@
 #
 ##############################################################################
 
-from . import company
-from . import res_config
-from . import contract
-from . import directorship
-from . import post_card
-from . import post_service
+from openerp.osv import orm, fields
+
+
+class Directorship(orm.Model):
+
+    _name = 'sigepweb.directorship'
+
+    _columns = {
+        'code': fields.char('Code'),
+        'acronym': fields.char('Acronym'),
+        'details': fields.char('Details'),
+        'contract_ids': fields.one2many('sigepweb.contract',
+                                        'directorship_id',
+                                        'Contract'),
+    }
+
+
