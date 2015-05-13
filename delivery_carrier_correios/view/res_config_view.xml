@@ -19,10 +19,10 @@
                     <group groups="base.group_multi_company">
                         <div>
                             <div>
-                                <label for="company_id"
+                                <label for="sigepweb_company_id"
                                        string="Select Company"/>
-                                <field name="company_id" widget="selection"
-                                       on_change="onchange_company_id(company_id, context)"
+                                <field name="sigepweb_company_id" widget="selection"
+                                       on_change="onchange_company_id(sigepweb_company_id, context)"
                                        class="oe_inline"/>
                             </div>
                         </div>

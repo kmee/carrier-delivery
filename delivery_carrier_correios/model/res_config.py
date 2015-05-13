@@ -40,16 +40,16 @@ class SigepWebConfigSettings(orm.TransientModel):
     _inherit = 'res.config.settings'
 
     _columns = {
-        'company_id': fields.many2one('res.company', 'Company', required=True),
-        'username': fields.related('company_id', 'sigepweb_username',
+        'sigepweb_company_id': fields.many2one('res.company', 'Company', required=True),
+        'username': fields.related('sigepweb_company_id', 'sigepweb_username',
                                    string='Username', type='char'),
-        'password': fields.related('company_id', 'sigepweb_password',
+        'password': fields.related('sigepweb_company_id', 'sigepweb_password',
                                    string='Password', type='char'),
         'contract_number': fields.related(
-            'company_id', 'sigepweb_main_contract_number',
+            'sigepweb_company_id', 'sigepweb_main_contract_number',
             string='Contract Number', type='char'),
         'post_card_number': fields.related(
-            'company_id', 'sigepweb_main_post_card_number',
+            'sigepweb_company_id', 'sigepweb_main_post_card_number',
             string='Post Card Number', type='char'),
 
         'environment': fields.selection(
@@ -58,7 +58,7 @@ class SigepWebConfigSettings(orm.TransientModel):
             string='Environment'),
 
         'logo': fields.related(
-            'company_id', 'sigepweb_logo',
+            'sigepweb_company_id', 'sigepweb_logo',
             string='Company Logo on Post labels', type='binary',
             help="Optional company logo to show on label.\n"
                  "If using an image / logo, please note the following:\n"
@@ -73,7 +73,7 @@ class SigepWebConfigSettings(orm.TransientModel):
                  " the ZPL2 format."
         ),
         'office': fields.related(
-            'company_id', 'sigepweb_office',
+            'sigepweb_company_id', 'sigepweb_office',
             string='Domicile Post office', type='char',
             help="Post office which will receive the shipped goods"),
     }
@@ -83,7 +83,7 @@ class SigepWebConfigSettings(orm.TransientModel):
         return user.company_id.id
 
     _defaults = {
-        'company_id': _default_company,
+        'sigepweb_company_id': _default_company,
         'environment': FabricaAmbiente.AMBIENTE_HOMOLOGACAO,
     }
 
@@ -99,15 +99,15 @@ class SigepWebConfigSettings(orm.TransientModel):
         self.write(cr, uid, [rec_id], vals, context)
         return rec_id
 
-    def onchange_company_id(self, cr, uid, ids, company_id, context=None):
+    def onchange_company_id(self, cr, uid, ids, sigepweb_company_id, context=None):
         # update related fields
         values = {'currency_id': False}
 
-        if not company_id:
+        if not sigepweb_company_id:
             return {'value': values}
 
         company = self.pool.get('res.company').browse(
-            cr, uid, company_id, context=context)
+            cr, uid, sigepweb_company_id, context=context)
 
         values = {
             'username': company.sigepweb_username,
@@ -125,10 +125,11 @@ class SigepWebConfigSettings(orm.TransientModel):
 
         for config in self.browse(cr, uid, ids, context=context):
 
-            username = config.company_id.sigepweb_username
-            password = config.company_id.sigepweb_password
-            contract_number = config.company_id.sigepweb_main_contract_number
-            post_card_number = config.company_id.sigepweb_main_post_card_number
+            username = config.sigepweb_company_id.sigepweb_username
+            password = config.sigepweb_company_id.sigepweb_password
+            contract_number = config.sigepweb_company_id.sigepweb_main_contract_number
+            post_card_number = \
+                config.sigepweb_company_id.sigepweb_main_post_card_number
 
             try:
                 print u'[INFO] Iniciando Serviço de Atendimento ao  Cliente'
@@ -141,6 +142,8 @@ class SigepWebConfigSettings(orm.TransientModel):
                 print cliente.nome
                 print cliente.login
 
+                self._update_contract(cr, uid, cliente.contratos, context=context)
+
             except ErroConexaoComServidor as e:
                 print e.message
                 return
@@ -149,18 +152,23 @@ class SigepWebConfigSettings(orm.TransientModel):
 
         res = []
 
-        for serv in services:
+        for serv in services.values():
+
+            pool = self.pool.get('sigepweb.post.service')
+            post_service_id = pool.search(cr, uid, [('code', '=', serv.codigo)])
 
             vals = {
                 'code': serv.codigo,
                 'details': serv.nome,
             }
 
-            pool = self.pool.get('sigepweb.post.service')
-            post_service_id = pool.search([('code', '=', serv.codigo)])
-
             if not post_service_id:
-                post_service_id = pool.create(cr, uid, vals, context=context)
+                # post_service_id = pool.create(cr, uid, vals, context=context)
+                post_service_id = (0, 0, vals)
+            else:
+                # post_service_id = post_service_id[0]
+                # pool.write(cr, uid, post_service_id, vals, context=context)
+                post_service_id = (1, post_service_id[0], vals)
 
             res.append(post_service_id)
 
@@ -170,19 +178,70 @@ class SigepWebConfigSettings(orm.TransientModel):
 
         res = []
 
-        for card in cards:
+        for card in cards.values():
+
+            post_service_ids = self._update_post_services(cr, uid, card.servicos_postagem, context=context)
 
             vals = {
                 'number': card.numero,
                 'admin_code': card.codigo_admin,
+                'post_service_ids': post_service_ids,
             }
 
             pool = self.pool.get('sigepweb.post.card')
-            post_card_id = pool.search([('number', '=', card.number)])
+            post_card_id = pool.search(cr, uid, [('number', '=', card.numero)])
 
             if not post_card_id:
-                post_card_id = pool.create(cr, uid, vals, context=context)
+                # post_card_id = pool.create(cr, uid, vals, context=context)
+                post_card_id = (0, 0, vals)
+            else:
+                # post_card_id = post_card_id[0]
+                # pool.write(cr, uid, post_card_id, vals, context=context)
+                post_card_id = (1, post_card_id[0], vals)
 
             res.append(post_card_id)
+
+        return res
+
+    def _update_contract(self, cr, uid, contracts, context=None):
+
+        res = []
+
+        for contract in contracts.values():
+
+            pool = self.pool.get('sigepweb.directorship')
+            directorship_id = pool.search(cr, uid, [('code', '=', contract.diretoria.codigo)])
+
+            vals = {
+                'code': contract.diretoria.codigo,
+                'acronym': contract.diretoria.sigla,
+                'details': contract.diretoria.descricao,
+            }
+
+            if not directorship_id:
+                directorship_id = pool.create(cr, uid, vals, context=context)
+            else:
+                directorship_id = directorship_id[0]
+                pool.write(cr, uid, directorship_id, vals, context=context)
+
+            pool = self.pool.get('sigepweb.contract')
+            contract_id = pool.search(cr, uid, [('number', '=', contract.id_contrato)])
+
+            post_card_ids = self._update_post_card(cr, uid, contract.cartoes_postagem, context=context)
+
+            vals = {
+                'number': contract.id_contrato,
+                'post_card_ids': post_card_ids,
+                'directorship_id': directorship_id,
+            }
+
+            if not contract_id:
+                contract_id = pool.create(cr, uid, vals, context=context)
+            else:
+                # pegamos o primeiro id porque o contract e sempre unico
+                contract_id = contract_id[0]
+                pool.write(cr, uid, contract_id, vals, context=context)
+
+            res.append(contract_id)
 
         return res
