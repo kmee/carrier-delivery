@@ -55,4 +55,4 @@ docs/_build/
 *~
 *.swp
 
-delivery_carrier_correios/model/main.py
+#delivery_carrier_correios/model/main.py
