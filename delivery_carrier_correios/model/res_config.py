@@ -30,8 +30,7 @@ from openerp.tools.translate import _
 from pysigep_web.pysigepweb.ambiente import FabricaAmbiente
 from pysigep_web.pysigepweb.webservice_atende_cliente import \
     WebserviceAtendeCliente
-from pysigep_web.pysigepweb.usuario import Usuario
-
+from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor
 
 _logger = logging.getLogger(__name__)
 
@@ -126,12 +125,64 @@ class SigepWebConfigSettings(orm.TransientModel):
 
         for config in self.browse(cr, uid, ids, context=context):
 
-            username = config.company_id.sigepweb_username,
-            password = config.company_id.sigepweb_password,
-            password = config.company_id.sigepweb_password,
-            contract_number = config.company_id.sigepweb_main_contract_number,
-            post_card_number = config.company_id.sigepweb_main_post_card_number,
+            username = config.company_id.sigepweb_username
+            password = config.company_id.sigepweb_password
+            contract_number = config.company_id.sigepweb_main_contract_number
+            post_card_number = config.company_id.sigepweb_main_post_card_number
 
-            usr = Usuario('sigep', 'n5f9t8', '34028316000103', '08082650',
-                  '9912208555', '0057018901')
+            try:
+                print u'[INFO] Iniciando Serviço de Atendimento ao  Cliente'
+                sv = WebserviceAtendeCliente(config.environment)
 
+                print 'Cosultando dados do cliente'
+                cliente = sv.busca_cliente(contract_number, post_card_number,
+                                           username, password)
+
+                print cliente.nome
+                print cliente.login
+
+            except ErroConexaoComServidor as e:
+                print e.message
+                return
+
+    def _update_post_services(self, cr, uid, services, context=None):
+
+        res = []
+
+        for serv in services:
+
+            vals = {
+                'code': serv.codigo,
+                'details': serv.nome,
+            }
+
+            pool = self.pool.get('sigepweb.post.service')
+            post_service_id = pool.search([('code', '=', serv.codigo)])
+
+            if not post_service_id:
+                post_service_id = pool.create(cr, uid, vals, context=context)
+
+            res.append(post_service_id)
+
+        return res
+
+    def _update_post_card(self, cr, uid, cards, context=None):
+
+        res = []
+
+        for card in cards:
+
+            vals = {
+                'number': card.numero,
+                'admin_code': card.codigo_admin,
+            }
+
+            pool = self.pool.get('sigepweb.post.card')
+            post_card_id = pool.search([('number', '=', card.number)])
+
+            if not post_card_id:
+                post_card_id = pool.create(cr, uid, vals, context=context)
+
+            res.append(post_card_id)
+
+        return res
