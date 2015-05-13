@@ -4,7 +4,6 @@ from pysigep_web.pysigepweb.webservice_calcula_preco_prazo import \
     WebserviceCalculaPrecoPrazo
 from pysigep_web.pysigepweb.webservice_rastreamento import WebserviceRastreamento
 from pysigep_web.pysigepweb.tag_nacional import TagNacionalPAC41068
-from pysigep_web.pysigepweb.usuario import Usuario
 from pysigep_web.pysigepweb.tag_plp import TagPLP
 from pysigep_web.pysigepweb.tag_remetente import TagRemetente
 from pysigep_web.pysigepweb.tag_dimensao_objeto import *
@@ -14,41 +13,43 @@ from pysigep_web.pysigepweb.diretoria import Diretoria
 from pysigep_web.pysigepweb.endereco import Endereco
 from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor
 
+LOGIN = 'sigep'
+SENHA = 'n5f9t8'
+CNPJ = '34028316000103'
+CONTRATO = '9912208555'
+CARTAO_POSTAGEM = '0057018901'
+
 
 def main():
 
-    usr = Usuario('sigep', 'n5f9t8', '34028316000103', '9912208555',
-                  '0057018901')
-
-    # l = [ServicoPostagem(ServicoPostagem.SERVICO_CARTA_COMERCIAL_A_FATURAR),
-    #      ServicoPostagem(ServicoPostagem.SERVICO_PAC_41068)]
-
     try:
         print u'[INFO] Iniciando Serviço de Atendimento ao  Cliente'
-        sv = WebserviceAtendeCliente(
-            WebserviceAtendeCliente.AMBIENTE_HOMOLOGACAO, usr)
+        sv = WebserviceAtendeCliente(WebserviceAtendeCliente.AMBIENTE_HOMOLOGACAO)
     except ErroConexaoComServidor as e:
         print e.message
         return
 
     print
     print 'Cosultando dados do cliente'
-    busca_cliente = sv.busca_cliente()
+    cliente = sv.busca_cliente(CONTRATO, CARTAO_POSTAGEM, LOGIN, SENHA)
 
     # cartao de postagem
-    cartao_postagem = busca_cliente.contratos[0].cartoes_postagem[0]
+    cartao_postagem = cliente.get_cartao_postagem(CONTRATO, CARTAO_POSTAGEM)
+
+    print 'admin', cartao_postagem.codigo_admin
 
     print
     print u'[INFO] Verificando disponibilidade dos serviços:'
     print '[INFO] Resultado da consulta para os cep %s (origem) e %s (' \
           'destino):' % ('70002-900', '74000100')
     print '[INFO] Status da consulta:'
+
     lista_servicos = \
-        busca_cliente.contratos[0].cartoes_postagem[0].servicos_postagem
+        cliente.get_lista_servico_postagem(CONTRATO, CARTAO_POSTAGEM)
+
     res = sv.verifica_disponibilidade_servicos(lista_servicos,
                                                cartao_postagem.codigo_admin,
-                                               '70002900',
-                                               '74000100')
+                                               '70002900', '74000100', cliente)
 
     for serv, status in res.items():
         print serv, ' ', status
@@ -66,25 +67,22 @@ def main():
 
     print
     print u'[INFO] Verificando status do cartão de postagem'
-    print sv.consulta_status_cartao_postagem(cartao_postagem.numero)
+    print sv.consulta_status_cartao_postagem(cartao_postagem.numero, cliente)
 
     print
-    # sv_postagem = ServicoPostagem(ServicoPostagem.SERVICO_PAC_41068)
-    sv_postagem = busca_cliente.contratos[0].cartoes_postagem[
-        0].servicos_postagem[0]
+    sv_postagem = cartao_postagem.servicos_postagem['40215']
 
     qtd_etiquetas = 3
     print '[INFO] Solicitando %d etiquetas...' % qtd_etiquetas
     etiquetas = sv.solicita_etiquetas(sv_postagem.servico_postagem_id,
-                                      qtd_etiquetas=qtd_etiquetas)
-
-    for i in range(len(etiquetas)):
-        print etiquetas[i].valor
+                                      qtd_etiquetas, cliente)
 
     print
     print '[INFO] Solicitando digito verificador para etiquetas...'
-    print sv.gera_digito_verificador_etiquetas(
-        etiquetas, online=True)
+    print sv.gera_digito_verificador_etiquetas(etiquetas, cliente, online=True)
+
+    for etq in etiquetas:
+        print etq.com_digito_verificador()
 
     remetente_endereco = Endereco(logradouro='Avenida Central', numero=2370,
                                   bairro='Centro', cep=70002900,
@@ -99,8 +97,10 @@ def main():
     # Montando xml do plp
     print
     print '[INFO] Montando xml'
-    obj_tag_plp = TagPLP(usr.num_cartao_postagem)
-    obj_remetente = TagRemetente(usr.nome, usr.num_contrato, usr.codigo_admin,
+    obj_tag_plp = TagPLP(cartao_postagem.numero)
+    obj_remetente = TagRemetente(cliente.nome,
+                                 cliente.contratos[CONTRATO].id_contrato,
+                                 cartao_postagem.codigo_admin,
                                  remetente_endereco,
                                  Diretoria(Diretoria.DIRETORIA_DR_PARANA),
                                  telefone=6112345008, email='cli@mail.com.br')
@@ -137,7 +137,8 @@ def main():
     print
     print u'[INFO] Fechando pré-lista de postagem para varios serviços'
     print
-    plp = sv.fecha_plp_varios_servicos(obj_correios_log, long(123), etiquetas)
+    plp = sv.fecha_plp_varios_servicos(obj_correios_log, long(123), etiquetas,
+                                       cartao_postagem.numero, cliente)
     print
     print u'[INFO] Pré-lista de postagem fechada'
     print u'[INFO] Novo PLP id: ', plp.id_plp_cliente
@@ -146,12 +147,11 @@ def main():
     print
 
     print '[INFO] Conectanco com webservice de calculo de prazo e preco'
-    calc_preco_prazo = WebserviceCalculaPrecoPrazo(usr)
+    calc_preco_prazo = WebserviceCalculaPrecoPrazo()
 
-    retorno = calc_preco_prazo.calcula_preco_prazo(busca_cliente.contratos[0].cartoes_postagem[
-        0].servicos_postagem, '70002900','74000100', obj_postal.peso,
-                                                   obj_dimensao_objeto, True,
-                                                   99.00, True)
+    retorno = calc_preco_prazo.calcula_preco_prazo(
+        lista_servicos, cartao_postagem.codigo_admin, '70002900', '74000100',
+        obj_postal.peso, obj_dimensao_objeto, True, 99.00, True, cliente)
 
     print '[INFO] Retorno do metodo calculo de prazo e preco'
     for ret in retorno:
@@ -178,33 +178,37 @@ def main():
             Etiqueta('DM149692327BR'),
             Etiqueta('DG799572796BR')]
 
-    usr.nome = 'ECT'
-    usr.senha = 'SRO'
-    rastreamento = WebserviceRastreamento(usr)
+    cliente.login = 'ECT'
+    cliente.senha = 'SRO'
+    rastreamento = WebserviceRastreamento()
     rastreamento.path = '/tmp/'
 
     resp_rastr = rastreamento.rastrea_objetos(
         WebserviceRastreamento.TIPO_LISTA_ETIQUETAS,
-        WebserviceRastreamento.RETORNAR_ULTIMO_EVENTO, etqs)
+        WebserviceRastreamento.RETORNAR_ULTIMO_EVENTO, etqs, cliente)
 
     print
-    print 'Detalhes da etiqueta: ', resp_rastr.objetos['SS123456789BR'].numero
     print
 
-    for evento in resp_rastr.objetos['SS123456789BR'].eventos:
-        print 'Tipo evento: ', evento.tipo
-        print 'Status evento: ', evento.status
-        print 'Data evento: ', evento.data
-        print 'Hora evento: ', evento.hora
-        print 'Descricao evento: ', evento.descricao
-        print 'Recebedor evento: ', evento.recebedor
-        print 'Documento evento: ', evento.documento
-        print 'comentario evento: ', evento.comentario
-        print 'Local evento: ', evento.local
-        print 'Codigo evento: ', evento.codigo
-        print 'Cidade evento: ', evento.cidade
-        print 'UF evento: ', evento.uf
-        print 'STO: ', evento.sto
+    for objetos in resp_rastr.objetos.values():
+
+        print 'Detalhes da etiqueta: ', objetos.numero
+
+        for evento in objetos.eventos:
+            print 'Tipo evento: ', evento.tipo
+            print 'Status evento: ', evento.status
+            print 'Data evento: ', evento.data
+            print 'Hora evento: ', evento.hora
+            print 'Descricao evento: ', evento.descricao
+            print 'Recebedor evento: ', evento.recebedor
+            print 'Documento evento: ', evento.documento
+            print 'comentario evento: ', evento.comentario
+            print 'Local evento: ', evento.local
+            print 'Codigo evento: ', evento.codigo
+            print 'Cidade evento: ', evento.cidade
+            print 'UF evento: ', evento.uf
+            print 'STO: ', evento.sto
+            print
 
 if __name__ == '__main__':
     main()
