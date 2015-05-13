@@ -40,25 +40,33 @@
                             <!--<field name="post_card_status"/>-->
                         </group>
                     </group>
-                    <separator string="Sender Informations"/>
-                    <group>
-                        <group>
-                            <group>
-                                <label for="logo"/>
-                                <field name="logo" nolabel="1" widget="image"/>
-                            </group>
-                            <group>
-                                <label for="office"/>
-                                <field name="office" nolabel="1"
-                                       class="oe_inline"/>
-                            </group>
-                        </group>
-                    </group>
+                    <!--<separator string="Sender Informations"/>-->
+                    <!--<group>-->
+                        <!--<group>-->
+                            <!--<group>-->
+                                <!--<label for="logo"/>-->
+                                <!--<field name="logo" nolabel="1" widget="image"/>-->
+                            <!--</group>-->
+                            <!--<group>-->
+                                <!--<label for="office"/>-->
+                                <!--<field name="office" nolabel="1"-->
+                                       <!--class="oe_inline"/>-->
+                            <!--</group>-->
+                        <!--</group>-->
+                    <!--</group>-->
                     <separator string="Default configs"/>
                     <group>
-                        <field name="environment"/>
-                    </group>
+                        <group>
+                            <field name="environment"/>
+                        </group>
+                        <group>
+                            <button string="Update SigepWeb Services"
+                                type="object"
+                                name="update_sigepweb_webservice_options"
+                                class="oe_highlight"/>
+                        </group>
 
+                    </group>
                 </form>
             </field>
         </record>
