@@ -39,5 +39,7 @@ class PostCard(orm.Model):
         'contract_id': fields.many2one('sigepweb.contract', 'Contract'),
     }
 
+    _rec_name = 'number'
+
 
 

@@ -36,6 +36,7 @@ class PostService(orm.Model):
         'post_card_id': fields.many2one('sigepweb.post.card', 'Post Card'),
     }
 
+    _rec_name = 'details'
 
 
 

@@ -41,4 +41,6 @@ class Contract(orm.Model):
                                        'sigepweb_contract_ids', 'Carrier Delivery'),
     }
 
+    _rec_name = 'number'
+
 
