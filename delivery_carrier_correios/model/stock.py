@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-#    Brazillian Carrier Correios Sigep WEB
 #    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
-#    @author Luis Felipe Mileo <mileo@kmee.com.br>
-#    @author: Michell Stuttgart <michell.stuttgartx@kmee.com.br>
+#    @author: Rodolfo Bertozo <rodolfo.bertozo@kmee.com.br
 #
-#    Sponsored by Europestar www.europestar.com.br
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -22,28 +19,18 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{
-    'name': 'Carrier Delivery Correios SigepWeb WebService',
-    'version': '1.1',
-    'author': "KMEE",
-    'category': 'version',
-    'complexity': 'normal',
-    'depends': ['base_delivery_carrier_label', 'report_webkit', 'base_headers_webkit'],
-    'description': """
-    Carrier Delivery Correios Sigepweb WebService
-    """,
-    'website': 'http://www.kmee.com.br/',
-    'data': [
-        'view/res_config_view.xml',
-        'view/delivery_view.xml',
-	    'report/stock_report.xml',
-    ],
-    'tests': [],
-    'installable': True,
-    'auto_install': False,
-    'license': 'AGPL-3',
-    'application': True,
-    'external_dependencies': {
-        'python': ['suds'],
-    }
-}
+
+from openerp.osv import orm, fields
+from openerp.tools.translate import _
+
+
+class StockPicking(orm.Model):
+	_inherit = 'stock.picking.out'
+
+	def action_generate_carrier_label(self, cr, uid, ids, context=None):
+		result = {}
+		result = {
+			'type': 'ir.actions.report.xml',
+			'report_name': 'shipping.label.webkit'
+		}
+		return result
