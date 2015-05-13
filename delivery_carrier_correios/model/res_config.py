@@ -28,7 +28,6 @@ from openerp.osv import orm, fields
 from openerp.tools.translate import _
 
 from pysigep_web.pysigepweb.ambiente import FabricaAmbiente
-from pysigep_web.pysigepweb.usuario import Usuario
 from pysigep_web.pysigepweb.webservice_atende_cliente import \
     WebserviceAtendeCliente
 
@@ -40,29 +39,18 @@ class SigepWebConfigSettings(orm.TransientModel):
     _name = 'sigepweb.config.settings'
     _inherit = 'res.config.settings'
 
-    def _get_selection(self, cursor, user_id, context=None):
-        return ((FabricaAmbiente.AMBIENTE_PRODUCAO, u'Produçao'),
-                (FabricaAmbiente.AMBIENTE_HOMOLOGACAO, u'Homologação'))
-
     _columns = {
         'company_id': fields.many2one('res.company', 'Company', required=True),
-        # 'wsdl_url': fields.related(
-        #     'company_id', 'postlogistics_wsdl_url',
-        #     string='WSDL URL', type='char'),
-        'username': fields.related('company_id', 'pysigepweb_username',
+        'username': fields.related('company_id', 'sigepweb_username',
                                    string='Username', type='char'),
-        'password': fields.related('company_id', 'pysigepweb_password',
+        'password': fields.related('company_id', 'sigepweb_password',
                                    string='Password', type='char'),
-        'admin_code': fields.related(
-            'company_id', 'sigepweb_admin_code',
-            string='Contract Number', type='char'),
         'contract_number': fields.related(
-            'company_id', 'sigepweb_contract_number',
+            'company_id', 'sigepweb_main_contract_number',
             string='Contract Number', type='char'),
         'post_card_number': fields.related(
-            'company_id', 'sigepweb_post_card_number',
+            'company_id', 'sigepweb_main_post_card_number',
             string='Post Card Number', type='char'),
-        'post_card_status': fields.char('Post Card Status'),
 
         'environment': fields.selection(
             ((WebserviceAtendeCliente.AMBIENTE_PRODUCAO, u'Produçao'),
@@ -70,7 +58,7 @@ class SigepWebConfigSettings(orm.TransientModel):
             string='Environment'),
 
         'logo': fields.related(
-            'company_id', 'pysigepweb_logo',
+            'company_id', 'sigepweb_logo',
             string='Company Logo on Post labels', type='binary',
             help="Optional company logo to show on label.\n"
                  "If using an image / logo, please note the following:\n"
@@ -85,7 +73,7 @@ class SigepWebConfigSettings(orm.TransientModel):
                  " the ZPL2 format."
         ),
         'office': fields.related(
-            'company_id', 'pysigepweb_office',
+            'company_id', 'sigepweb_office',
             string='Domicile Post office', type='char',
             help="Post office which will receive the shipped goods"),
     }
@@ -114,23 +102,20 @@ class SigepWebConfigSettings(orm.TransientModel):
     def onchange_company_id(self, cr, uid, ids, company_id, context=None):
         # update related fields
         values = {'currency_id': False}
+
         if not company_id:
             return {'value': values}
+
         company = self.pool.get('res.company').browse(
             cr, uid, company_id, context=context)
 
         values = {
             'username': company.sigepweb_username,
             'password': company.sigepweb_password,
-            # 'contract_number': company.contract_number,
-            # 'post_card_number': company.sigepweb_office,
-            # 'sigepweb_admin_code': company.sigepweb_admin_code,
+            'contract_number': company.sigepweb_main_contract_number,
+            'post_card_number': company.sigepweb_main_post_card_number,
             'logo': company.sigepweb_logo,
             'office': company.sigepweb_office,
+
         }
         return {'value': values}
-
-
-
-
-
