@@ -36,7 +36,9 @@ class Contract(orm.Model):
                                          'contract_id',
                                          'Post Cards'),
         'directorship_id': fields.many2one('sigepweb.directorship',
-                                           'Directorship')
+                                           'Directorship'),
+        'delivery_id': fields.one2many('delivery.carrier',
+                                       'sigepweb_contract_ids', 'Carrier Delivery'),
     }
 
 
