@@ -11,17 +11,54 @@ class WebserviceAtendeCliente(WebserviceInterface):
     AMBIENTE_PRODUCAO = FabricaAmbiente.AMBIENTE_PRODUCAO
     AMBIENTE_HOMOLOGACAO = FabricaAmbiente.AMBIENTE_HOMOLOGACAO
 
-    def __init__(self, nome_ambiente, obj_usuario):
-        self.obj_usuario = obj_usuario
+    def __init__(self, nome_ambiente):
+        # self.cliente = cliente
         amb = FabricaAmbiente.get_ambiente(nome_ambiente)
         super(WebserviceAtendeCliente, self).__init__(amb.url)
 
-    @staticmethod
-    def _formata_cep(cep):
-        return cep.replace('-', '')
+    def busca_cliente(self, num_contrato, num_cartao_postagem, login, senha):
+
+        try:
+            res = self._service.buscaCliente(num_contrato,
+                                             num_cartao_postagem,
+                                             login, senha)
+
+            cliente = Cliente(res.nome, login, senha,
+                              self._convert_to_python_string(res.cnpj),
+                              res.descricaoStatusCliente)
+
+            for contrato in res.contratos:
+
+                ct = Contrato(
+                    self._convert_to_python_string(contrato.codigoDiretoria),
+                    self._convert_to_python_string(contrato.contratoPK.numero))
+
+                for cartao_postagem in contrato.cartoesPostagem:
+
+                    cp = CartaoPostagem(
+                        cartao_postagem.statusCartaoPostagem,
+                        self._convert_to_python_string(
+                            cartao_postagem.codigoAdministrativo),
+                        self._convert_to_python_string(cartao_postagem.numero))
+
+                    for servico in cartao_postagem.servicos:
+                        cp.add_servico_postagem(
+                            self._convert_to_python_string(servico.codigo),
+                            self._convert_to_python_string(servico.descricao),
+                            self._convert_to_python_string(servico.id))
+
+                    ct.cartoes_postagem[cp.numero] = cp
+
+                cliente.contratos[ct.id_contrato] = ct
+
+            return cliente
+
+        except WebFault as e:
+            raise ErroConexaoComServidor(e.message)
 
     def verifica_disponibilidade_servicos(self, lista_servico_postagem,
-                                          cep_origem, cep_destino):
+                                          codigo_admin, cep_origem,
+                                          cep_destino, cliente):
 
         cep_origem_form = self._formata_cep(cep_origem)
         cep_destino_form = self._formata_cep(cep_destino)
@@ -37,12 +74,12 @@ class WebserviceAtendeCliente(WebserviceInterface):
             raise ErroTamanhoParamentroIncorreto(msg)
 
         res = {}
-        for sp in lista_servico_postagem:
+
+        for sp in lista_servico_postagem.values():
             try:
                 status = self._service.verificaDisponibilidadeServico(
-                    self.obj_usuario.codigo_admin, sp.codigo, cep_origem_form,
-                    cep_destino_form, self.obj_usuario.nome,
-                    self.obj_usuario.senha)
+                    codigo_admin, sp.codigo, cep_origem_form,
+                    cep_destino_form, cliente.login, cliente.senha)
 
                 res[sp.nome] = status
             except WebFault as e:
@@ -50,50 +87,11 @@ class WebserviceAtendeCliente(WebserviceInterface):
 
         return res
 
-    def busca_cliente(self):
-
-        try:
-            result = self._service.buscaCliente(
-                self.obj_usuario.num_contrato,
-                self.obj_usuario.num_cartao_postagem,
-                self.obj_usuario.nome,
-                self.obj_usuario.senha)
-
-            rbc = RespostaBuscaCliente(result.nome,
-                                       result.cnpj,
-                                       result.descricaoStatusCliente)
-
-            for contrato in result.contratos:
-
-                ct = Contrato(contrato.codigoDiretoria,
-                              contrato.contratoPK.numero)
-
-                for cartao_postagem in contrato.cartoesPostagem:
-
-                    cp = CartaoPostagem(cartao_postagem.statusCartaoPostagem,
-                                        cartao_postagem.codigoAdministrativo,
-                                        cartao_postagem.numero)
-
-                    for servico in cartao_postagem.servicos:
-                        cp.add_servico_postagem(servico.codigo,
-                                                servico.descricao,
-                                                servico.id)
-
-                    ct.cartoes_postagem.append(cp)
-
-                rbc.contratos.append(ct)
-
-            return rbc
-
-        except WebFault as e:
-            raise ErroConexaoComServidor(e.message)
-
     def consulta_cep(self, cep):
 
         if len(cep) != 8:
             msg = 'CEP fornecido com numero incorreto de digitos. Valor ' \
-                  'correto' \
-                  ' deve ser 8.'
+                  'correto deve ser 8.'
             raise ErroTamanhoParamentroIncorreto(msg)
 
         try:
@@ -102,19 +100,19 @@ class WebserviceAtendeCliente(WebserviceInterface):
         except WebFault as e:
             raise ErroConexaoComServidor(e.message)
 
-    def consulta_status_cartao_postagem(self, num_cartao):
+    def consulta_status_cartao_postagem(self, num_cartao, cliente):
         try:
             return self._service.getStatusCartaoPostagem(
-                num_cartao, self.obj_usuario.nome, self.obj_usuario.senha)
+                num_cartao, cliente.login, cliente.senha)
         except WebFault as e:
             raise ErroConexaoComServidor(e.message)
 
-    def solicita_etiquetas(self, servico_id, qtd_etiquetas=1,
+    def solicita_etiquetas(self, servico_id, qtd_etiquetas, cliente,
                            tipo_destinatario='C'):
         try:
             faixa_etiquetas = self._service.solicitaEtiquetas(
-                tipo_destinatario, self.obj_usuario.cnpj, servico_id,
-                qtd_etiquetas, self.obj_usuario.nome, self.obj_usuario.senha)
+                tipo_destinatario, cliente.cnpj, servico_id, qtd_etiquetas,
+                cliente.login, cliente.senha)
         except WebFault as e:
             raise ErroConexaoComServidor(e.message)
 
@@ -133,18 +131,20 @@ class WebserviceAtendeCliente(WebserviceInterface):
 
         return etiquetas
 
-    def gera_digito_verificador_etiquetas(self, lista_etiquetas,
+    def gera_digito_verificador_etiquetas(self, lista_etiquetas, cliente,
                                           online=True):
 
         if online:
-            res = self._gerador_online(lista_etiquetas)
+            digitos = self._gerador_online(lista_etiquetas, cliente)
         else:
-            res = self._gerador_offline(lista_etiquetas)
+            digitos = self._gerador_offline(lista_etiquetas)
 
-        for index, digito in enumerate(res):
+        for index, digito in enumerate(digitos):
             lista_etiquetas[index].digito_verificador = digito
 
-    def _gerador_online(self, lista_etiquetas):
+        return digitos
+
+    def _gerador_online(self, lista_etiquetas, cliente):
         etiquetas_sem_digito = []
 
         for etq in lista_etiquetas:
@@ -152,8 +152,7 @@ class WebserviceAtendeCliente(WebserviceInterface):
 
         try:
             dig_verif_list = self._service.geraDigitoVerificadorEtiquetas(
-                etiquetas_sem_digito, self.obj_usuario.nome,
-                self.obj_usuario.senha)
+                etiquetas_sem_digito, cliente.login, cliente.senha)
         except WebFault as exc:
             raise ErroConexaoComServidor(exc.message)
 
@@ -188,7 +187,8 @@ class WebserviceAtendeCliente(WebserviceInterface):
         return dig_verif_list
 
     def fecha_plp_varios_servicos(self, obj_correios_log, id_plp_cliente,
-                                  lista_obj_etiquetas):
+                                  lista_obj_etiquetas, num_cartao_postagem,
+                                  cliente):
 
         etiquetas_sem_digito = []
 
@@ -205,11 +205,18 @@ class WebserviceAtendeCliente(WebserviceInterface):
         if xml:
             try:
                 id_plp_cliente = self._service.fechaPlpVariosServicos(
-                    xml, id_plp_cliente, self.obj_usuario.num_cartao_postagem,
-                    etiquetas_sem_digito, self.obj_usuario.nome,
-                    self.obj_usuario.senha)
+                    xml, id_plp_cliente, num_cartao_postagem,
+                    etiquetas_sem_digito, cliente.login, cliente.senha)
 
                 return ResposaFechaPLPVariosServicos(xml, id_plp_cliente)
 
             except WebFault as exc:
                 raise ErroConexaoComServidor(exc.message)
+
+    @staticmethod
+    def _formata_cep(cep):
+        return cep.replace('-', '')
+
+    @staticmethod
+    def _convert_to_python_string(text):
+        return str(text).replace(' ', '')
