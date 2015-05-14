@@ -158,8 +158,9 @@ class SigepWebConfigSettings(orm.TransientModel):
             post_service_id = pool.search(cr, uid, [('code', '=', serv.codigo)])
 
             vals = {
+                'name': serv.nome,
                 'code': serv.codigo,
-                'details': serv.nome,
+                'details': serv.descricao,
             }
 
             if not post_service_id:

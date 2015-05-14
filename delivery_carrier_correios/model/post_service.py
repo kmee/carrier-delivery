@@ -31,12 +31,12 @@ class PostService(orm.Model):
     _name = 'sigepweb.post.service'
 
     _columns = {
-        'code': fields.char('Name'),
+        'name': fields.char('Name'),
+        'code': fields.char('Code'),
         'details': fields.char('Details'),
         'post_card_id': fields.many2one('sigepweb.post.card', 'Post Card'),
     }
 
-    _rec_name = 'details'
 
 
 
