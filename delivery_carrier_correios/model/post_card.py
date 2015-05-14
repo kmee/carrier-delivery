@@ -37,6 +37,10 @@ class PostCard(orm.Model):
                                             'post_card_id',
                                             'Details'),
         'contract_id': fields.many2one('sigepweb.contract', 'Contract'),
+        'delivery_id': fields.one2many('delivery.carrier',
+                                       'sigepweb_post_card_ids',
+                                       'Carrier Delivery'),
+
     }
 
     _rec_name = 'number'

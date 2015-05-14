@@ -30,17 +30,14 @@ class DeliveryCarrier(orm.Model):
     _inherit = 'delivery.carrier'
 
     _columns = {
-
         'sigepweb_contract_ids': fields.many2one('sigepweb.contract',
                                                  'Contract'),
-        'sigepweb_post_card_ids': fields.related(
-            'sigepweb_contract_ids', 'post_card_ids', type='many2one',
-            relation='sigepweb.post.card', string='Post Cards',
+        'sigepweb_post_card_ids': fields.many2one(
+            'sigepweb.post.card', string='Post Cards',
             domain="[('contract_id', '=', sigepweb_contract_ids)]"),
 
-        'sigepweb_post_service_ids': fields.related(
-            'sigepweb_post_card_ids', 'post_service_ids', type='many2one',
-            relation='sigepweb.post.service', string='Post Services',
+        'sigepweb_post_service_ids': fields.many2one(
+            'sigepweb.post.service', string='Post Services',
             domain="[('post_card_id', '=', sigepweb_post_card_ids)]"),
     }
 

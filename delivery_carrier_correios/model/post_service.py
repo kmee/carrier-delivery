@@ -35,6 +35,8 @@ class PostService(orm.Model):
         'code': fields.char('Code'),
         'details': fields.char('Details'),
         'post_card_id': fields.many2one('sigepweb.post.card', 'Post Card'),
+        'delivery_id': fields.one2many(
+            'delivery.carrier', 'sigepweb_post_service_ids', 'Carrier Delivery'),
     }
 
 
