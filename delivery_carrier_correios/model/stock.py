@@ -24,8 +24,12 @@ from openerp.osv import orm, fields
 from openerp.tools.translate import _
 
 
-class StockPicking(orm.Model):
+class StockPickingOut(orm.Model):
 	_inherit = 'stock.picking.out'
+
+	_columns = {
+		"x_barcode_id": fields.many2one('tr.barcode', 'BarCode')
+	}
 
 	def action_generate_carrier_label(self, cr, uid, ids, context=None):
 		result = {}
@@ -34,3 +38,11 @@ class StockPicking(orm.Model):
 			'report_name': 'shipping.label.webkit'
 		}
 		return result
+
+
+class StockPicking(orm.Model):
+	_inherit = 'stock.picking'
+
+	_columns = {
+		"x_barcode_id": fields.many2one('tr.barcode', 'BarCode')
+	}

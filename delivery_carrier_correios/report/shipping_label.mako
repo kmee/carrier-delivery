@@ -229,10 +229,11 @@ td.main_col1 {
             <tbody>
             <tr>
                 <th>
-                    <p>
-                        ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||</p>
-
-                    <p style="text-align: left;">PD850769610BR</p>
+                    %if label.x_barcode_id.image:
+                        <img src='data:image/png;base64,${label.x_barcode_id.image}'/>
+                    %else:
+                        &nbsp;
+                    %endif
                 </th>
             </tr>
             <tr>
@@ -281,30 +282,19 @@ td.main_col1 {
                     </table>
                 </td>
             </tr>
+
             <tr>
                 <td>
-                    <table align="center" style="border-style:none;">
+                    <table align="left" style="border-style:none; white-space: nowrap;">
                         <tbody>
                         <tr>
-                            <td>|||||||||||||||||||||||||||</td>
-                            <td>|||||||||||||||||||||||||||</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <table align="left" style="border-style:none;">
-                        <tbody>
-                        <tr>
-                            <td><span
-                                    style="font-size:8px;">Remetente: ${company.street}
+                            <td><span style="font-size:8px;">
+                                Remetente: ${company.street}
                                 - ${company.number} - ${company.district}
                                 - ${company.street2 or ''}
                                 - ${company.zip}
                                 - ${company.l10n_br_city_id.name}
-                                (${company.partner_id.l10n_br_city_id.state_id.code}</span>
+                                (${company.partner_id.l10n_br_city_id.state_id.code})</span>
                             </td>
                         </tr>
                         </tbody>
