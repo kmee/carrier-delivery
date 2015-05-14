@@ -37,6 +37,4 @@ class ResCompany(orm.Model):
         'contract_id': fields.one2many('pysigepweb.contract',
                                        'rescompany_id',
                                        'Contract'),
-        'sigepweb_logo': fields.binary('Company logo for PostLogistics'),
-        'sigepweb_office': fields.char('Post office'),
     }

@@ -56,26 +56,6 @@ class SigepWebConfigSettings(orm.TransientModel):
             ((WebserviceAtendeCliente.AMBIENTE_PRODUCAO, u'Produçao'),
              (WebserviceAtendeCliente.AMBIENTE_HOMOLOGACAO, u'Homologação')),
             string='Environment'),
-
-        'logo': fields.related(
-            'sigepweb_company_id', 'sigepweb_logo',
-            string='Company Logo on Post labels', type='binary',
-            help="Optional company logo to show on label.\n"
-                 "If using an image / logo, please note the following:\n"
-                 "– Image width: 47 mm\n"
-                 "– Image height: 25 mm\n"
-                 "– File size: max. 30 kb\n"
-                 "– File format: GIF or PNG\n"
-                 "– Colour table: indexed colours, max. 200 colours\n"
-                 "– The logo will be printed rotated counter-clockwise by 90°"
-                 "\n"
-                 "We recommend using a black and white logo for printing in "
-                 " the ZPL2 format."
-        ),
-        'office': fields.related(
-            'sigepweb_company_id', 'sigepweb_office',
-            string='Domicile Post office', type='char',
-            help="Post office which will receive the shipped goods"),
     }
 
     def _default_company(self, cr, uid, context=None):
@@ -114,9 +94,6 @@ class SigepWebConfigSettings(orm.TransientModel):
             'password': company.sigepweb_password,
             'contract_number': company.sigepweb_main_contract_number,
             'post_card_number': company.sigepweb_main_post_card_number,
-            'logo': company.sigepweb_logo,
-            'office': company.sigepweb_office,
-
         }
         return {'value': values}
 

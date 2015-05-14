@@ -32,28 +32,12 @@
                         <group>
                             <field name="username"/>
                             <field name="password"/>
-                            <!--<field name="admin_code"/>-->
                         </group>
                         <group>
                             <field name="contract_number"/>
                             <field name="post_card_number"/>
-                            <!--<field name="post_card_status"/>-->
                         </group>
                     </group>
-                    <!--<separator string="Sender Informations"/>-->
-                    <!--<group>-->
-                        <!--<group>-->
-                            <!--<group>-->
-                                <!--<label for="logo"/>-->
-                                <!--<field name="logo" nolabel="1" widget="image"/>-->
-                            <!--</group>-->
-                            <!--<group>-->
-                                <!--<label for="office"/>-->
-                                <!--<field name="office" nolabel="1"-->
-                                       <!--class="oe_inline"/>-->
-                            <!--</group>-->
-                        <!--</group>-->
-                    <!--</group>-->
                     <separator string="Default configs"/>
                     <group>
                         <group>
