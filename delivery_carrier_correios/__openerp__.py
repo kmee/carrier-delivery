@@ -28,7 +28,10 @@
     'author': "KMEE",
     'category': 'version',
     'complexity': 'normal',
-    'depends': ['base_delivery_carrier_label'],
+    'depends': [
+        'base_delivery_carrier_label',
+        'tr_barcode_on_picking',
+    ],
     'description': """
     Carrier Delivery Correios Sigepweb WebService
     """,
