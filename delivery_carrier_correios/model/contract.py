@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-#    Brazillian Carrier Correios Sigep WEB
+# Brazillian Carrier Correios Sigep WEB
 #    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
 #    @author Luis Felipe Mileo <mileo@kmee.com.br>
 #    @author: Michell Stuttgart <michell.stuttgartx@kmee.com.br>
@@ -27,7 +27,6 @@ from openerp.osv import orm, fields
 
 
 class Contract(orm.Model):
-
     _name = 'sigepweb.contract'
 
     _columns = {
@@ -38,7 +37,8 @@ class Contract(orm.Model):
         'directorship_id': fields.many2one('sigepweb.directorship',
                                            'Directorship'),
         'delivery_id': fields.one2many('delivery.carrier',
-                                       'sigepweb_contract_ids', 'Carrier Delivery'),
+                                       'sigepweb_contract_ids',
+                                       'Carrier Delivery'),
     }
 
     _rec_name = 'number'
