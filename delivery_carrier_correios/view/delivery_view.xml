@@ -13,8 +13,7 @@
             <field name="arch" type="xml">
                 <field name="type" position="after">
                     <field name="sigepweb_contract_ids"
-                           attrs="{'invisible': [('type', '!=', 'sigepweb')], 'required': [('type', '=', 'sigepweb')]}"
-                            on_change="onchange_sigepweb_contract_ids(sigepweb_contract_ids)"/>/>
+                           attrs="{'invisible': [('type', '!=', 'sigepweb')], 'required': [('type', '=', 'sigepweb')]}"/>
                     <field name="sigepweb_post_card_ids"
                            attrs="{'invisible': [('type', '!=', 'sigepweb')]}"/>
                     <field name="sigepweb_post_service_ids"

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-# Brazillian Carrier Correios Sigep WEB
+#    Brazillian Carrier Correios Sigep WEB
 #    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
 #    @author Luis Felipe Mileo <mileo@kmee.com.br>
 #    @author: Michell Stuttgart <michell.stuttgartx@kmee.com.br>
@@ -48,25 +48,45 @@ class DeliveryCarrier(orm.Model):
         res.append(('sigepweb', 'Correios SigepWeb'))
         return res
 
-    def onchange_sigepweb_contract_ids(self, cr, uid, ids,
-                                       sigepweb_contract_ids, context=None):
-        res = {'value': {}}
-
-        if not sigepweb_contract_ids:
-            return res
-
-        contract = self.pool.get('sigepweb.contract').browse(
-            cr, uid, sigepweb_contract_ids, context=context)
-
-        print contract.post_card_ids
-
-        values = {
-            # 'sigepweb_post_card_ids': [],
-        }
-
-        res['value'].update(values)
-
-        return res
+    # def onchange_sigepweb_contract_ids(self, cr, uid, ids,
+    #                                    sigepweb_contract_ids, context=None):
+    #     res = {'value': {}}
+    #
+    #     # if not sigepweb_contract_ids:
+    #     #     return res
+    #     #
+    #     # contract = self.pool.get('sigepweb.contract').browse(
+    #     #     cr, uid, sigepweb_contract_ids, context=context)
+    #     #
+    #     # print contract.post_card_ids
+    #     #
+    #     # values = {
+    #     #     'sigepweb_post_card_ids': [x.id for x in contract.post_card_ids]
+    #     # }
+    #     #
+    #     # res['value'].update(values)
+    #
+    #     return res
+    #
+    # def onchange_sigepweb_post_card_ids(self, cr, uid, ids,
+    #                                    sigepweb_post_card_ids, context=None):
+    #     res = {'value': {}}
+    #
+    #     # if not sigepweb_post_card_ids:
+    #     #     return res
+    #     #
+    #     # post_card = self.pool.get('sigepweb.post.card').browse(
+    #     #     cr, uid, sigepweb_post_card_ids, context=context)
+    #     #
+    #     # print post_card.post_service_ids
+    #     #
+    #     # values = {
+    #     #     'sigepweb_post_service_ids': [x.id for x in post_card.post_service_ids]
+    #     # }
+    #     #
+    #     # res['value'].update(values)
+    #
+    #     return res
 
     def onchange_sigepweb_post_service_ids(self, cr, uid, ids,
                                            sigepweb_post_service_ids,
@@ -87,3 +107,43 @@ class DeliveryCarrier(orm.Model):
         res['value'].update(values)
 
         return res
+
+    def _check_post_card(self, cr, uid, ids):
+
+        for delivery in self.browse(cr, uid, ids):
+
+            record_post_card = delivery.sigepweb_contract_ids.post_card_ids
+
+            a = delivery.sigepweb_post_card_ids
+            if a.id not in [c.id for c in record_post_card]:
+                return False
+
+        return True
+
+    def _check_service_card(self, cr, uid, ids):
+
+        for delivery in self.browse(cr, uid, ids):
+
+            record_post_service = \
+                delivery.sigepweb_post_card_ids.post_service_ids
+
+            a = delivery.sigepweb_post_service_ids
+
+            if a.id not in [s.id for s in record_post_service]:
+                return False
+
+        return True
+
+    _constraints = [
+        (_check_post_card,
+         u'O numero de Cartão de Postagem fornecido não '
+         u'esta presente no Contrato selecionado.',
+         ['sigepweb_post_card_ids'])
+    ]
+
+    _constraints = [
+        (_check_service_card,
+         u'O numero de Servico de Postagem fornecido não '
+         u'esta presente no Cartão de Postagem selecionado.',
+         ['sigepweb_post_service_ids'])
+    ]
