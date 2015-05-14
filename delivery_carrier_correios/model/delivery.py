@@ -35,11 +35,13 @@ class DeliveryCarrier(orm.Model):
                                                  'Contract'),
         'sigepweb_post_card_ids': fields.related(
             'sigepweb_contract_ids', 'post_card_ids', type='many2one',
-            relation='sigepweb.post.card', string='Post Cards'),
+            relation='sigepweb.post.card', string='Post Cards',
+            domain="[('contract_id', '=', sigepweb_contract_ids)]"),
 
         'sigepweb_post_service_ids': fields.related(
             'sigepweb_post_card_ids', 'post_service_ids', type='many2one',
-            relation='sigepweb.post.service', string='Post Services'),
+            relation='sigepweb.post.service', string='Post Services',
+            domain="[('post_card_id', '=', sigepweb_post_card_ids)]"),
     }
 
     def _get_carrier_type_selection(self, cr, uid, context=None):
