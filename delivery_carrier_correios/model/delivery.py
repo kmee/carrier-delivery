@@ -51,6 +51,26 @@ class DeliveryCarrier(orm.Model):
         res.append(('sigepweb', 'Correios SigepWeb'))
         return res
 
+    def onchange_sigepweb_contract_ids(self, cr, uid, ids,
+                                       sigepweb_contract_ids, context=None):
+        res = {'value': {}}
+
+        if not sigepweb_contract_ids:
+            return res
+
+        contract = self.pool.get('sigepweb.contract').browse(
+            cr, uid, sigepweb_contract_ids, context=context)
+
+        print contract.post_card_ids
+
+        values = {
+            # 'sigepweb_post_card_ids': [],
+        }
+
+        res['value'].update(values)
+
+        return res
+
     def onchange_sigepweb_post_service_ids(self, cr, uid, ids,
                                            sigepweb_post_service_ids,
                                            context=None):
