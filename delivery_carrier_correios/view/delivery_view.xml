@@ -17,7 +17,8 @@
                     <field name="sigepweb_post_card_ids"
                            attrs="{'invisible': [('type', '!=', 'sigepweb')]}"/>
                     <field name="sigepweb_post_service_ids"
-                           attrs="{'invisible': [('type', '!=', 'sigepweb')]}"/>
+                           attrs="{'invisible': [('type', '!=', 'sigepweb')]}"
+                           on_change="onchange_sigepweb_post_service_ids(sigepweb_post_service_ids)"/>
                 </field>
                 <field name="available_option_ids" position="attributes">
                     <attribute name="context">{'default_carrier_id': active_id,
