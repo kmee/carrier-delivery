@@ -22,9 +22,9 @@ class WebserviceAtendeCliente(WebserviceInterface):
                                              num_cartao_postagem,
                                              login, senha)
 
-            cliente = Cliente(res.nome, login, senha,
+            cliente = Cliente(str(res.nome), login, senha,
                               self._convert_to_python_string(res.cnpj),
-                              res.descricaoStatusCliente)
+                              str(res.descricaoStatusCliente))
 
             for contrato in res.contratos:
 
@@ -43,7 +43,7 @@ class WebserviceAtendeCliente(WebserviceInterface):
                     for servico in cartao_postagem.servicos:
                         cp.add_servico_postagem(
                             self._convert_to_python_string(servico.codigo),
-                            servico.descricao,
+                            str(servico.descricao),
                             self._convert_to_python_string(servico.id))
 
                     ct.cartoes_postagem[cp.numero] = cp

@@ -38,8 +38,8 @@
                             <field name="post_card_number"/>
                         </group>
                     </group>
-                    <separator string="Default configs"/>
-                    <group>
+
+                    <group string="Default configs">
                         <group>
                             <field name="environment"/>
                         </group>
@@ -49,7 +49,12 @@
                                 name="update_sigepweb_webservice_options"
                                 class="oe_highlight"/>
                         </group>
+                    </group>
 
+                    <group string="Contratos">
+                        <field name="contract_ids" nolabel="1"/>
+                        <field name="post_card_ids" nolabel="1"/>
+                        <field name="post_service_ids" nolabel="1"/>
                     </group>
                 </form>
             </field>
