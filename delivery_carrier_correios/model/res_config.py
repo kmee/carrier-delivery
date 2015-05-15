@@ -50,10 +50,12 @@ class SigepWebConfigSettings(orm.TransientModel):
                                        type='one2many',
                                        relation='sigepweb.contract'),
 
-        'username': fields.related('sigepweb_company_id', 'sigepweb_username',
-                                   string=u'Login', type='char', required=True),
-        'password': fields.related('sigepweb_company_id', 'sigepweb_password',
-                                   string=u'Senha', type='char', required=True),
+        'username': fields.related(
+            'sigepweb_company_id', 'sigepweb_username',
+            string=u'Login', type='char', required=True),
+        'password': fields.related(
+            'sigepweb_company_id', 'sigepweb_password',
+            string=u'Senha', type='char', required=True),
         'contract_number': fields.related(
             'sigepweb_company_id', 'sigepweb_main_contract_number',
             string=u'Número do Contrato', type='char', required=True),
