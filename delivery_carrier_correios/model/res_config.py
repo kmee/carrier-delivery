@@ -146,7 +146,7 @@ class SigepWebConfigSettings(orm.TransientModel):
                 print e.message
                 return
 
-    def _update_post_services(self, cr, uid, services, context=None):
+    def _update_post_services(self, cr, uid, services):
 
         res = []
 
@@ -171,14 +171,14 @@ class SigepWebConfigSettings(orm.TransientModel):
 
         return res
 
-    def _update_post_card(self, cr, uid, cards, context=None):
+    def _update_post_card(self, cr, uid, cards):
 
         res = []
 
         for card in cards.values():
 
             post_service_ids = self._update_post_services(
-                cr, uid, card.servicos_postagem, context=context)
+                cr, uid, card.servicos_postagem)
 
             vals = {
                 'number': card.numero,
@@ -225,7 +225,7 @@ class SigepWebConfigSettings(orm.TransientModel):
                 cr, uid, [('number', '=', contract.id_contrato)])
 
             post_card_ids = self._update_post_card(
-                cr, uid, contract.cartoes_postagem, context=context)
+                cr, uid, contract.cartoes_postagem)
 
             vals = {
                 'number': contract.id_contrato,
