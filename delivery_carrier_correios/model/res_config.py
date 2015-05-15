@@ -50,18 +50,6 @@ class SigepWebConfigSettings(orm.TransientModel):
                                        type='one2many',
                                        relation='sigepweb.contract'),
 
-        'post_card_ids': fields.related('contract_ids',
-                                        'post_card_ids',
-                                        string=u'Cartao Postagem',
-                                        type='one2many',
-                                        relation='sigepweb.post.card'),
-
-        'post_service_ids': fields.related('post_card_ids',
-                                           'post_service_ids',
-                                           string=u'Servico Postagem',
-                                           type='one2many',
-                                           relation='sigepweb.post.service'),
-
         'username': fields.related('sigepweb_company_id', 'sigepweb_username',
                                    string=u'Login', type='char'),
         'password': fields.related('sigepweb_company_id', 'sigepweb_password',
@@ -110,18 +98,12 @@ class SigepWebConfigSettings(orm.TransientModel):
         company = self.pool.get('res.company').browse(
             cr, uid, sigepweb_company_id, context=context)
 
-        a = company.sigepweb_contract_ids
-
-        # contract = self.pool.get('sigepweb.contract').browse(
-        #     cr, uid, company.sigepweb_contract_ids[0].id, context=context)
-
         values = {
             'username': company.sigepweb_username,
             'password': company.sigepweb_password,
             'contract_number': company.sigepweb_main_contract_number,
             'post_card_number': company.sigepweb_main_post_card_number,
             'contract_ids': [x.id for x in company.sigepweb_contract_ids],
-            # 'post_card_ids': contract.post_card_ids,
         }
         return {'value': values}
 
@@ -178,11 +160,8 @@ class SigepWebConfigSettings(orm.TransientModel):
             }
 
             if not post_service_id:
-                # post_service_id = pool.create(cr, uid, vals, context=context)
                 post_service_id = (0, 0, vals)
             else:
-                # post_service_id = post_service_id[0]
-                # pool.write(cr, uid, post_service_id, vals, context=context)
                 post_service_id = (1, post_service_id[0], vals)
 
             res.append(post_service_id)
@@ -195,7 +174,8 @@ class SigepWebConfigSettings(orm.TransientModel):
 
         for card in cards.values():
 
-            post_service_ids = self._update_post_services(cr, uid, card.servicos_postagem, context=context)
+            post_service_ids = self._update_post_services(
+                cr, uid, card.servicos_postagem, context=context)
 
             vals = {
                 'number': card.numero,
@@ -207,10 +187,8 @@ class SigepWebConfigSettings(orm.TransientModel):
             post_card_id = pool.search(cr, uid, [('number', '=', card.numero)])
 
             if not post_card_id:
-                # post_card_id = pool.create(cr, uid, vals, context=context)
                 post_card_id = (0, 0, vals)
             else:
-                # post_card_id = post_card_id[0]
                 post_card_id = (1, post_card_id[0], vals)
 
             res.append(post_card_id)
@@ -254,11 +232,9 @@ class SigepWebConfigSettings(orm.TransientModel):
             }
 
             if not contract_id:
-                # contract_id = pool.create(cr, uid, vals, context=context)
                 contract_id = (0, 0, vals)
             else:
                 # pegamos o primeiro id porque o contract e sempre unico
-                # pool.write(cr, uid, contract_id[0], vals, context=context)
                 contract_id = (1, contract_id[0], vals)
 
             res.append(contract_id)

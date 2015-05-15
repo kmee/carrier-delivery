@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <form string="Configure SygepWeb" version="7.0"
                       class="oe_form_configuration">
+
                     <header>
                         <button string="Apply" type="object" name="execute"
                                 class="oe_highlight"/>
@@ -21,7 +22,8 @@
                             <div>
                                 <label for="sigepweb_company_id"
                                        string="Select Company"/>
-                                <field name="sigepweb_company_id" widget="selection"
+                                <field name="sigepweb_company_id"
+                                       widget="selection"
                                        on_change="onchange_company_id(sigepweb_company_id, context)"
                                        class="oe_inline"/>
                             </div>
@@ -45,17 +47,18 @@
                         </group>
                         <group>
                             <button string="Update SigepWeb Services"
-                                type="object"
-                                name="update_sigepweb_webservice_options"
-                                class="oe_highlight"/>
+                                    type="object"
+                                    name="update_sigepweb_webservice_options"
+                                    class="oe_highlight"/>
                         </group>
                     </group>
 
-                    <group string="Contratos">
-                        <field name="contract_ids" nolabel="1"/>
-                        <field name="post_card_ids" nolabel="1"/>
-                        <field name="post_service_ids" nolabel="1"/>
-                    </group>
+                    <notebook>
+                        <page string="Contratos">
+                            <field name="contract_ids" nolabel="1"/>
+                        </page>
+                    </notebook>
+                    
                 </form>
             </field>
         </record>
