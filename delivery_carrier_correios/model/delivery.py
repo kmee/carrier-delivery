@@ -48,46 +48,6 @@ class DeliveryCarrier(orm.Model):
         res.append(('sigepweb', 'Correios SigepWeb'))
         return res
 
-    # def onchange_sigepweb_contract_ids(self, cr, uid, ids,
-    #                                    sigepweb_contract_ids, context=None):
-    #     res = {'value': {}}
-    #
-    #     # if not sigepweb_contract_ids:
-    #     #     return res
-    #     #
-    #     # contract = self.pool.get('sigepweb.contract').browse(
-    #     #     cr, uid, sigepweb_contract_ids, context=context)
-    #     #
-    #     # print contract.post_card_ids
-    #     #
-    #     # values = {
-    #     #     'sigepweb_post_card_ids': [x.id for x in contract.post_card_ids]
-    #     # }
-    #     #
-    #     # res['value'].update(values)
-    #
-    #     return res
-    #
-    # def onchange_sigepweb_post_card_ids(self, cr, uid, ids,
-    #                                    sigepweb_post_card_ids, context=None):
-    #     res = {'value': {}}
-    #
-    #     # if not sigepweb_post_card_ids:
-    #     #     return res
-    #     #
-    #     # post_card = self.pool.get('sigepweb.post.card').browse(
-    #     #     cr, uid, sigepweb_post_card_ids, context=context)
-    #     #
-    #     # print post_card.post_service_ids
-    #     #
-    #     # values = {
-    #     #     'sigepweb_post_service_ids': [x.id for x in post_card.post_service_ids]
-    #     # }
-    #     #
-    #     # res['value'].update(values)
-    #
-    #     return res
-
     def onchange_sigepweb_post_service_ids(self, cr, uid, ids,
                                            sigepweb_post_service_ids,
                                            context=None):
@@ -138,12 +98,9 @@ class DeliveryCarrier(orm.Model):
         (_check_post_card,
          u'O numero de Cartão de Postagem fornecido não '
          u'esta presente no Contrato selecionado.',
-         ['sigepweb_post_card_ids'])
-    ]
-
-    _constraints = [
+         ['sigepweb_post_card_ids']),
         (_check_service_card,
          u'O numero de Servico de Postagem fornecido não '
          u'esta presente no Cartão de Postagem selecionado.',
-         ['sigepweb_post_service_ids'])
+         ['sigepweb_post_service_ids']),
     ]
