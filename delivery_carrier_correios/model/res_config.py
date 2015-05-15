@@ -179,6 +179,9 @@ class SigepWebConfigSettings(orm.TransientModel):
 
         for card in cards.values():
 
+            pool = self.pool.get('sigepweb.post.card')
+            post_card_id = pool.search(cr, uid, [('number', '=', card.numero)])
+
             post_service_ids = self._update_post_services(
                 cr, uid, card.servicos_postagem)
 
@@ -187,9 +190,6 @@ class SigepWebConfigSettings(orm.TransientModel):
                 'admin_code': card.codigo_admin,
                 'post_service_ids': post_service_ids,
             }
-
-            pool = self.pool.get('sigepweb.post.card')
-            post_card_id = pool.search(cr, uid, [('number', '=', card.numero)])
 
             if not post_card_id:
                 post_card_id = (0, 0, vals)
