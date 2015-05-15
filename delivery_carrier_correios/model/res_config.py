@@ -147,9 +147,16 @@ class SigepWebConfigSettings(orm.TransientModel):
                 print cliente.nome
                 print cliente.login
 
-                self._update_contract(
+                contratos = self._update_contract(
                     cr, uid, cliente.contratos, config.sigepweb_company_id.id,
                     context=context)
+
+                vals = {
+                    'sigepweb_contract_ids': contratos
+                }
+
+                pool = self.pool.get('res.company')
+                pool.write(cr, uid, config.sigepweb_company_id.id, vals)
 
             except ErroConexaoComServidor as e:
                 print e.message
@@ -247,13 +254,12 @@ class SigepWebConfigSettings(orm.TransientModel):
             }
 
             if not contract_id:
-                contract_id = pool.create(cr, uid, vals, context=context)
-                # contract_id = (0, 0, vals)
+                # contract_id = pool.create(cr, uid, vals, context=context)
+                contract_id = (0, 0, vals)
             else:
                 # pegamos o primeiro id porque o contract e sempre unico
-                # contract_id = contract_id[0]
-                pool.write(cr, uid, contract_id[0], vals, context=context)
-                # contract_id = (1, contract_id[0], vals)
+                # pool.write(cr, uid, contract_id[0], vals, context=context)
+                contract_id = (1, contract_id[0], vals)
 
             res.append(contract_id)
 

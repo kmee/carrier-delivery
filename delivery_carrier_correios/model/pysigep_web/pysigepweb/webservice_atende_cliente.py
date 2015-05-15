@@ -80,7 +80,7 @@ class WebserviceAtendeCliente(WebserviceInterface):
                     codigo_admin, sp.codigo, cep_origem_form,
                     cep_destino_form, cliente.login, cliente.senha)
 
-                res[sp.nome] = status
+                res[sp.nome] = str(status)
             except WebFault as e:
                 raise ErroConexaoComServidor(e.message)
 
@@ -101,8 +101,9 @@ class WebserviceAtendeCliente(WebserviceInterface):
 
     def consulta_status_cartao_postagem(self, num_cartao, cliente):
         try:
-            return self._service.getStatusCartaoPostagem(
-                num_cartao, cliente.login, cliente.senha)
+            return str(self._service.getStatusCartaoPostagem(num_cartao,
+                                                             cliente.login,
+                                                             cliente.senha))
         except WebFault as e:
             raise ErroConexaoComServidor(e.message)
 
