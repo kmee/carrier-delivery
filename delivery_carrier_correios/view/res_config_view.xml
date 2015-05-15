@@ -58,7 +58,7 @@
                             <field name="contract_ids" nolabel="1"/>
                         </page>
                     </notebook>
-                    
+
                 </form>
             </field>
         </record>

@@ -41,7 +41,7 @@ class SigepWebConfigSettings(orm.TransientModel):
 
     _columns = {
         'sigepweb_company_id': fields.many2one('res.company',
-                                               'Company',
+                                               'Empresa',
                                                required=True),
 
         'contract_ids': fields.related('sigepweb_company_id',
@@ -51,20 +51,20 @@ class SigepWebConfigSettings(orm.TransientModel):
                                        relation='sigepweb.contract'),
 
         'username': fields.related('sigepweb_company_id', 'sigepweb_username',
-                                   string=u'Login', type='char'),
+                                   string=u'Login', type='char', required=True),
         'password': fields.related('sigepweb_company_id', 'sigepweb_password',
-                                   string=u'Senha', type='char'),
+                                   string=u'Senha', type='char', required=True),
         'contract_number': fields.related(
             'sigepweb_company_id', 'sigepweb_main_contract_number',
-            string=u'Número do Contrato', type='char'),
+            string=u'Número do Contrato', type='char', required=True),
         'post_card_number': fields.related(
             'sigepweb_company_id', 'sigepweb_main_post_card_number',
-            string=u'Número do Cartão de Postagem', type='char'),
+            string=u'Número do Cartão de Postagem', type='char', required=True),
 
         'environment': fields.selection(
             ((WebserviceAtendeCliente.AMBIENTE_PRODUCAO, u'Produçao'),
              (WebserviceAtendeCliente.AMBIENTE_HOMOLOGACAO, u'Homologação')),
-            string='Environment'),
+            string='Ambiente', required=True),
     }
 
     def _default_company(self, cr, uid, context=None):
