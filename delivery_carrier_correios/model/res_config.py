@@ -27,10 +27,10 @@ import logging
 from openerp.osv import orm, fields, osv
 from openerp.tools.translate import _
 
-from pysigep_web.pysigepweb.ambiente import FabricaAmbiente
 from pysigep_web.pysigepweb.webservice_atende_cliente import \
     WebserviceAtendeCliente
 from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor
+from company import PRODUCAO, HOMOLOGACAO
 
 _logger = logging.getLogger(__name__)
 
@@ -67,10 +67,13 @@ class SigepWebConfigSettings(orm.TransientModel):
             string=u'Número do Cartão de Postagem', type='char',
             required=True, size=10),
 
-        'environment': fields.selection(
-            ((WebserviceAtendeCliente.AMBIENTE_PRODUCAO, u'Produçao'),
-             (WebserviceAtendeCliente.AMBIENTE_HOMOLOGACAO, u'Homologação')),
-            string='Ambiente', required=True),
+        'environment': fields.related('sigepweb_company_id',
+                                      'sigepweb_environment',
+                                      string='Ambiente',
+                                      type='selection',
+                                      selection=[PRODUCAO, HOMOLOGACAO],
+                                      store=True,
+                                      required=True),
     }
 
     def _default_company(self, cr, uid, context=None):
@@ -79,7 +82,6 @@ class SigepWebConfigSettings(orm.TransientModel):
 
     _defaults = {
         'sigepweb_company_id': _default_company,
-        'environment': FabricaAmbiente.AMBIENTE_HOMOLOGACAO,
     }
 
     def create(self, cr, uid, values, context=None):
@@ -112,6 +114,7 @@ class SigepWebConfigSettings(orm.TransientModel):
             'contract_number': company.sigepweb_main_contract_number,
             'post_card_number': company.sigepweb_main_post_card_number,
             'contract_ids': [(4, x) for x in a],
+            'environment': company.sigepweb_environment,
         }
         return {'value': values}
 
