@@ -26,6 +26,9 @@
                                 <field name="name"/>
                                 <field name="code"/>
                             </group>
+                            <group>
+                                <field name="identifier"/>
+                            </group>
                         </group>
                         <notebook>
                             <page string="Cartões de Postagem">

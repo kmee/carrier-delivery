@@ -33,6 +33,7 @@ class PostService(orm.Model):
     _columns = {
         'name': fields.char(u'Nome'),
         'code': fields.char(u'Código'),
+        'identifier': fields.char(u'Identificador'),
         'details': fields.text(u'Detalhes'),
         'post_card_id':  fields.many2many('sigepweb.post.card',
                                           'sigepweb_post_card_service_rel',

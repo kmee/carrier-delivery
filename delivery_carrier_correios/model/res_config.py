@@ -158,6 +158,7 @@ class SigepWebConfigSettings(orm.TransientModel):
             vals = {
                 'name': serv.nome,
                 'code': serv.codigo,
+                'identifier': serv.identificador,
                 'details': serv.descricao,
             }
 

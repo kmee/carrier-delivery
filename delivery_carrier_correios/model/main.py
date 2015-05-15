@@ -97,7 +97,7 @@ def main():
 
     qtd_etiquetas = 3
     print '[INFO] Solicitando %d etiquetas...' % qtd_etiquetas
-    etiquetas = sv.solicita_etiquetas(sv_postagem.servico_postagem_id,
+    etiquetas = sv.solicita_etiquetas(sv_postagem.identificador,
                                       qtd_etiquetas, cliente)
 
     print
