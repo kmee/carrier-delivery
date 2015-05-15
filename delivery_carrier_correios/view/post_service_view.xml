@@ -26,11 +26,11 @@
                                 <field name="name"/>
                                 <field name="code"/>
                             </group>
-                            <group>
-                                <field name="post_card_id"/>
-                            </group>
                         </group>
                         <notebook>
+                            <page string="Cartões de Postagem">
+                                <field name="post_card_id"/>
+                            </page>
                             <page string="Descrição">
                                 <field name="details"/>
                             </page>
