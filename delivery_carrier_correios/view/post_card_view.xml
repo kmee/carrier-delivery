@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_sigepweb_post_card_tree" model="ir.ui.view">
+            <field name="name">sigepweb.post.card.tree.view</field>
+            <field name="model">sigepweb.post.card</field>
+            <field name="arch" type="xml">
+                <tree string="tree_sigep_post_card" version="7.0">
+                    <field name="number"/>
+                    <field name="admin_code"/>
+                    <field name="contract_id"/>
+                    <field name="post_service_ids"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_sigepweb_post_card_form" model="ir.ui.view">
+            <field name="name">sigepweb.post.card.form.view</field>
+            <field name="model">sigepweb.post.card</field>
+            <field name="arch" type="xml">
+                <form string="sigep_post_card" version="7.0">
+                    <sheet>
+                        <group string="Web Service Authentification">
+                            <group>
+                                <field name="number"/>
+                                <field name="admin_code"/>
+                            </group>
+                            <group>
+                                <field name="contract_id"/>
+                            </group>
+
+                        </group>
+                        <group string="Serviços de Postagem">
+                            <field name="post_service_ids"/>
+                        </group>
+                    </sheet>
+                </form>
+
+            </field>
+        </record>
+
+        <record id="action_sigepweb_post_card_config"
+                model="ir.actions.act_window">
+            <field name="name">Configure SygepWeb Post Card</field>
+            <field name="res_model">sigepweb.post.card</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_sigepweb_post_card_config" name="SygepWeb Post Card"
+                  parent="base_delivery_carrier_label.menu_carriers_config"
+                  sequence="20" action="action_sigepweb_post_card_config"/>
+
+    </data>
+</openerp>
