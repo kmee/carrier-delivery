@@ -6,7 +6,7 @@
             <field name="name">sigepweb.post.service.tree.view</field>
             <field name="model">sigepweb.post.service</field>
             <field name="arch" type="xml">
-                <tree string="tree_sigep_post_service" version="7.0">
+                <tree string="Serviço Postagem" version="7.0">
                     <field name="name"/>
                     <field name="code"/>
                     <field name="details"/>
@@ -19,9 +19,9 @@
             <field name="name">sigepweb.post.service.form.view</field>
             <field name="model">sigepweb.post.service</field>
             <field name="arch" type="xml">
-                <form string="sigep_post_service" version="7.0">
+                <form string="Serviço Postagem" version="7.0">
                     <sheet>
-                        <group string="Dados Gerais">
+                        <group>
                             <group>
                                 <field name="name"/>
                                 <field name="code"/>
@@ -29,10 +29,12 @@
                             <group>
                                 <field name="post_card_id"/>
                             </group>
-                            <group string="Descrição">
-                                <field name="details"/>
-                            </group>
                         </group>
+                        <notebook>
+                            <page string="Descrição">
+                                <field name="details"/>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
 
@@ -41,14 +43,14 @@
 
         <record id="action_sigepweb_post_service_config"
                 model="ir.actions.act_window">
-            <field name="name">Configure SygepWeb Post Card</field>
+            <field name="name">Configure SygepWeb Post Service</field>
             <field name="res_model">sigepweb.post.service</field>
             <field name="view_mode">tree,form</field>
         </record>
 
         <menuitem id="menu_sigepweb_post_service_config"
-                  name="SygepWeb Post Service"
-                  parent="base_delivery_carrier_label.menu_carriers_config"
+                  name="SygepWeb Serviço Postagem"
+                  parent="menu_sigepweb"
                   sequence="20" action="action_sigepweb_post_service_config"/>
 
     </data>

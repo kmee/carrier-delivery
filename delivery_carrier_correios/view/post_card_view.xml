@@ -21,7 +21,7 @@
             <field name="arch" type="xml">
                 <form string="sigep_post_card" version="7.0">
                     <sheet>
-                        <group string="Dados Gerais">
+                        <group>
                             <group>
                                 <field name="number"/>
                                 <field name="admin_code"/>
@@ -31,9 +31,11 @@
                             </group>
 
                         </group>
-                        <group string="Serviços de Postagem">
-                            <field name="post_service_ids" nolabel="1"/>
-                        </group>
+                        <notebook>
+                            <page string="Serviços de Postagem">
+                                <field name="post_service_ids" nolabel="1"/>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
 
@@ -47,8 +49,9 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-        <menuitem id="menu_sigepweb_post_card_config" name="SygepWeb Post Card"
-                  parent="base_delivery_carrier_label.menu_carriers_config"
+        <menuitem id="menu_sigepweb_post_card_config"
+                  name="SygepWeb Cartão de Postagem"
+                  parent="menu_sigepweb"
                   sequence="20" action="action_sigepweb_post_card_config"/>
 
     </data>
