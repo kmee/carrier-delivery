@@ -100,12 +100,14 @@ class SigepWebConfigSettings(orm.TransientModel):
         company = self.pool.get('res.company').browse(
             cr, uid, sigepweb_company_id, context=context)
 
+        a = [x.id for x in company.sigepweb_contract_ids]
+
         values = {
             'username': company.sigepweb_username,
             'password': company.sigepweb_password,
             'contract_number': company.sigepweb_main_contract_number,
             'post_card_number': company.sigepweb_main_post_card_number,
-            'contract_ids': [x.id for x in company.sigepweb_contract_ids],
+            'contract_ids': [(4, x) for x in a],
         }
         return {'value': values}
 
@@ -124,12 +126,9 @@ class SigepWebConfigSettings(orm.TransientModel):
                 print u'[INFO] Iniciando Serviço de Atendimento ao  Cliente'
                 sv = WebserviceAtendeCliente(config.environment)
 
-                print 'Cosultando dados do cliente'
+                print u'[INFO] Consultando dados do cliente'
                 cliente = sv.busca_cliente(contract_number, post_card_number,
                                            username, password)
-
-                print cliente.nome
-                print cliente.login
 
                 contratos = self._update_contract(
                     cr, uid, cliente.contratos, config.sigepweb_company_id.id,
@@ -140,7 +139,10 @@ class SigepWebConfigSettings(orm.TransientModel):
                 }
 
                 pool = self.pool.get('res.company')
-                pool.write(cr, uid, config.sigepweb_company_id.id, vals)
+                pool.write(cr, uid, config.sigepweb_company_id.id, vals,
+                           context=context)
+
+                print u'[INFO] Consulta realizada com sucesso!'
 
             except ErroConexaoComServidor as e:
                 print e.message
