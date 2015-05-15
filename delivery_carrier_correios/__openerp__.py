@@ -4,7 +4,7 @@
 #    Brazillian Carrier Correios Sigep WEB
 #    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
 #    @author Luis Felipe Mileo <mileo@kmee.com.br>
-#    @author: Michell Stuttgart <michell.stuttgartx@kmee.com.br>
+#    @author: Michell Stuttgart <michell.stuttgart@kmee.com.br>
 #
 #    Sponsored by Europestar www.europestar.com.br
 #
