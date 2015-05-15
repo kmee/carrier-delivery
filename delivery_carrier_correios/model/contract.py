@@ -30,16 +30,16 @@ class Contract(orm.Model):
     _name = 'sigepweb.contract'
 
     _columns = {
-        'number': fields.char('Number'),
+        'number': fields.char(u'Número'),
         'post_card_ids': fields.one2many('sigepweb.post.card',
                                          'contract_id',
-                                         'Post Cards'),
+                                         u'Cartaõ de Postagem'),
         'directorship_id': fields.many2one('sigepweb.directorship',
                                            'Directorship'),
         'delivery_id': fields.one2many('delivery.carrier',
                                        'sigepweb_contract_ids',
                                        'Carrier Delivery'),
-        'rescompany_id': fields.many2one('res.company', 'Company'),
+        'rescompany_id': fields.many2one('res.company', u'Empresa'),
 
     }
 
