@@ -24,7 +24,7 @@
 ##############################################################################
 import logging
 
-from openerp.osv import orm, fields
+from openerp.osv import orm, fields, osv
 from openerp.tools.translate import _
 
 from pysigep_web.pysigepweb.ambiente import FabricaAmbiente
@@ -144,7 +144,7 @@ class SigepWebConfigSettings(orm.TransientModel):
 
             except ErroConexaoComServidor as e:
                 print e.message
-                return
+                raise osv.except_osv(_('Error!'), e.message)
 
     def _update_post_services(self, cr, uid, services):
 
