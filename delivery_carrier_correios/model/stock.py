@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-#    Brazillian Carrier Correios Sigep WEB
 #    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
-#    @author Luis Felipe Mileo <mileo@kmee.com.br>
-#    @author: Michell Stuttgart <michell.stuttgartx@kmee.com.br>
+#    @author: Rodolfo Bertozo <rodolfo.bertozo@kmee.com.br
 #
-#    Sponsored by Europestar www.europestar.com.br
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -23,11 +20,29 @@
 #
 ##############################################################################
 
-from . import company
-from . import res_config
-from . import contract
-from . import directorship
-from . import post_card
-from . import post_service
-from . import delivery
-from . import stock
+from openerp.osv import orm, fields
+from openerp.tools.translate import _
+
+
+class StockPickingOut(orm.Model):
+	_inherit = 'stock.picking.out'
+
+	_columns = {
+		"x_barcode_id": fields.many2one('tr.barcode', 'BarCode')
+	}
+
+	def action_generate_carrier_label(self, cr, uid, ids, context=None):
+		result = {}
+		result = {
+			'type': 'ir.actions.report.xml',
+			'report_name': 'shipping.label.webkit'
+		}
+		return result
+
+
+class StockPicking(orm.Model):
+	_inherit = 'stock.picking'
+
+	_columns = {
+		"x_barcode_id": fields.many2one('tr.barcode', 'BarCode')
+	}

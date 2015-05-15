@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<report id="stock.shipping_etiqueta"
+				name="shipping.label.webkit"
+				auto="False"
+				model="stock.picking.out"
+				file="delivery_carrier_correios/report/shipping_label.mako"
+				string="Shipping Label"
+				report_type="webkit"
+				webkit_header="base_headers_webkit.base_minimum_reports_portrait_header"/>
+	</data>
+</openerp>

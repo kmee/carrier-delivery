@@ -29,8 +29,9 @@
     'category': 'version',
     'complexity': 'normal',
     'depends': [
-        'base_delivery_carrier_label',
         'tr_barcode_on_picking',
+        'base_delivery_carrier_label',
+        'base_headers_webkit',
     ],
     'description': """
     Carrier Delivery Correios Sigepweb WebService
@@ -42,6 +43,7 @@
         'view/contract_view.xml',
         'view/post_card_view.xml',
         'view/post_service_view.xml',
+        'report/stock_report.xml',
     ],
     'tests': [],
     'installable': True,
