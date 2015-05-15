@@ -53,15 +53,19 @@ class SigepWebConfigSettings(orm.TransientModel):
         'username': fields.related(
             'sigepweb_company_id', 'sigepweb_username',
             string=u'Login', type='char', required=True),
+
         'password': fields.related(
             'sigepweb_company_id', 'sigepweb_password',
             string=u'Senha', type='char', required=True),
+
         'contract_number': fields.related(
             'sigepweb_company_id', 'sigepweb_main_contract_number',
-            string=u'Número do Contrato', type='char', required=True),
+            string=u'Número do Contrato', type='char', required=True, size=10),
+
         'post_card_number': fields.related(
             'sigepweb_company_id', 'sigepweb_main_post_card_number',
-            string=u'Número do Cartão de Postagem', type='char', required=True),
+            string=u'Número do Cartão de Postagem', type='char',
+            required=True, size=10),
 
         'environment': fields.selection(
             ((WebserviceAtendeCliente.AMBIENTE_PRODUCAO, u'Produçao'),
