@@ -24,7 +24,6 @@
 ##############################################################################
 
 from openerp.osv import orm, fields
-from pysigep_web.pysigepweb.ambiente import FabricaAmbiente
 from pysigep_web.pysigepweb.webservice_atende_cliente import \
     WebserviceAtendeCliente
 
