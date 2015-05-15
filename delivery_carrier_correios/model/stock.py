@@ -25,24 +25,23 @@ from openerp.tools.translate import _
 
 
 class StockPickingOut(orm.Model):
-	_inherit = 'stock.picking.out'
+    _inherit = 'stock.picking.out'
 
-	_columns = {
-		"x_barcode_id": fields.many2one('tr.barcode', 'BarCode')
-	}
+    _columns = {
+        "x_barcode_id": fields.many2one('tr.barcode', 'BarCode'),
+    }
 
-	def action_generate_carrier_label(self, cr, uid, ids, context=None):
-		result = {}
-		result = {
-			'type': 'ir.actions.report.xml',
-			'report_name': 'shipping.label.webkit'
-		}
-		return result
+    def action_generate_carrier_label(self, cr, uid, ids, context=None):
+        result = {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'shipping.label.webkit'
+        }
+        return result
 
 
 class StockPicking(orm.Model):
-	_inherit = 'stock.picking'
+    _inherit = 'stock.picking'
 
-	_columns = {
-		"x_barcode_id": fields.many2one('tr.barcode', 'BarCode')
-	}
+    _columns = {
+        "x_barcode_id": fields.many2one('tr.barcode', 'BarCode'),
+    }
