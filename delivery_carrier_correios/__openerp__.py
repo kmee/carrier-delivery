@@ -40,6 +40,7 @@
         'view/res_config_view.xml',
         'view/delivery_view.xml',
         'view/post_card_view.xml',
+        'view/post_service_view.xml',
     ],
     'tests': [],
     'installable': True,

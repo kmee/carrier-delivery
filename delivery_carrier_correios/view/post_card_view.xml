@@ -21,7 +21,7 @@
             <field name="arch" type="xml">
                 <form string="sigep_post_card" version="7.0">
                     <sheet>
-                        <group string="Web Service Authentification">
+                        <group string="Dados Gerais">
                             <group>
                                 <field name="number"/>
                                 <field name="admin_code"/>
@@ -32,7 +32,7 @@
 
                         </group>
                         <group string="Serviços de Postagem">
-                            <field name="post_service_ids"/>
+                            <field name="post_service_ids" nolabel="1"/>
                         </group>
                     </sheet>
                 </form>
