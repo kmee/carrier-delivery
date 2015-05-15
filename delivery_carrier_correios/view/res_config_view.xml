@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <form string="Configure SygepWeb" version="7.0"
                       class="oe_form_configuration">
+
                     <header>
                         <button string="Apply" type="object" name="execute"
                                 class="oe_highlight"/>
@@ -19,10 +20,11 @@
                     <group groups="base.group_multi_company">
                         <div>
                             <div>
-                                <label for="company_id"
+                                <label for="sigepweb_company_id"
                                        string="Select Company"/>
-                                <field name="company_id" widget="selection"
-                                       on_change="onchange_company_id(company_id, context)"
+                                <field name="sigepweb_company_id"
+                                       widget="selection"
+                                       on_change="onchange_company_id(sigepweb_company_id, context)"
                                        class="oe_inline"/>
                             </div>
                         </div>
@@ -32,32 +34,30 @@
                         <group>
                             <field name="username"/>
                             <field name="password"/>
-                            <!--<field name="admin_code"/>-->
                         </group>
                         <group>
                             <field name="contract_number"/>
                             <field name="post_card_number"/>
-                            <!--<field name="post_card_status"/>-->
                         </group>
                     </group>
-                    <separator string="Sender Informations"/>
-                    <group>
+
+                    <group string="Default configs">
                         <group>
-                            <group>
-                                <label for="logo"/>
-                                <field name="logo" nolabel="1" widget="image"/>
-                            </group>
-                            <group>
-                                <label for="office"/>
-                                <field name="office" nolabel="1"
-                                       class="oe_inline"/>
-                            </group>
+                            <field name="environment"/>
+                        </group>
+                        <group>
+                            <button string="Update SigepWeb Services"
+                                    type="object"
+                                    name="update_sigepweb_webservice_options"
+                                    class="oe_highlight"/>
                         </group>
                     </group>
-                    <separator string="Default configs"/>
-                    <group>
-                        <field name="environment"/>
-                    </group>
+
+                    <notebook>
+                        <page string="Contratos">
+                            <field name="contract_ids" nolabel="1"/>
+                        </page>
+                    </notebook>
 
                 </form>
             </field>
@@ -71,9 +71,13 @@
             <field name="target">inline</field>
         </record>
 
-        <menuitem id="menu_sigepweb_config" name="SygepWeb"
+        <menuitem id="menu_sigepweb" name="SygepWeb"
                   parent="base_delivery_carrier_label.menu_carriers_config"
-                  sequence="20" action="action_sigepweb_config"/>
+                  sequence="20"/>
+
+        <menuitem id="menu_sigepweb_config" name="SygepWeb"
+                  parent="menu_sigepweb"
+                  sequence="5" action="action_sigepweb_config"/>
 
     </data>
 </openerp>

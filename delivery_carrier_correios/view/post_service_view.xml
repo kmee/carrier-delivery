@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_sigepweb_post_service_tree" model="ir.ui.view">
+            <field name="name">sigepweb.post.service.tree.view</field>
+            <field name="model">sigepweb.post.service</field>
+            <field name="arch" type="xml">
+                <tree string="Serviço Postagem" version="7.0">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="details"/>
+                    <field name="post_card_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_sigepweb_post_service_form" model="ir.ui.view">
+            <field name="name">sigepweb.post.service.form.view</field>
+            <field name="model">sigepweb.post.service</field>
+            <field name="arch" type="xml">
+                <form string="Serviço Postagem" version="7.0">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="code"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Cartões de Postagem">
+                                <field name="post_card_id"/>
+                            </page>
+                            <page string="Descrição">
+                                <field name="details"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+
+            </field>
+        </record>
+
+        <record id="action_sigepweb_post_service_config"
+                model="ir.actions.act_window">
+            <field name="name">Configure SygepWeb Post Service</field>
+            <field name="res_model">sigepweb.post.service</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_sigepweb_post_service_config"
+                  name="SygepWeb Serviço Postagem"
+                  parent="menu_sigepweb"
+                  sequence="20" action="action_sigepweb_post_service_config"/>
+
+    </data>
+</openerp>

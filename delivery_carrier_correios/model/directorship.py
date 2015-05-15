@@ -39,4 +39,6 @@ class Directorship(orm.Model):
                                         'Contract'),
     }
 
+    _rec_name = 'details'
+
 

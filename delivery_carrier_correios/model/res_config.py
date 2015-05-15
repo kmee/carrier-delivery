@@ -30,7 +30,7 @@ from openerp.tools.translate import _
 from pysigep_web.pysigepweb.ambiente import FabricaAmbiente
 from pysigep_web.pysigepweb.webservice_atende_cliente import \
     WebserviceAtendeCliente
-
+from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor
 
 _logger = logging.getLogger(__name__)
 
@@ -40,42 +40,33 @@ class SigepWebConfigSettings(orm.TransientModel):
     _inherit = 'res.config.settings'
 
     _columns = {
-        'company_id': fields.many2one('res.company', 'Company', required=True),
-        'username': fields.related('company_id', 'sigepweb_username',
-                                   string='Username', type='char'),
-        'password': fields.related('company_id', 'sigepweb_password',
-                                   string='Password', type='char'),
+        'sigepweb_company_id': fields.many2one('res.company',
+                                               'Empresa',
+                                               required=True),
+
+        'contract_ids': fields.related('sigepweb_company_id',
+                                       'sigepweb_contract_ids',
+                                       string=u'Contratos',
+                                       type='one2many',
+                                       relation='sigepweb.contract'),
+
+        'username': fields.related(
+            'sigepweb_company_id', 'sigepweb_username',
+            string=u'Login', type='char', required=True),
+        'password': fields.related(
+            'sigepweb_company_id', 'sigepweb_password',
+            string=u'Senha', type='char', required=True),
         'contract_number': fields.related(
-            'company_id', 'sigepweb_main_contract_number',
-            string='Contract Number', type='char'),
+            'sigepweb_company_id', 'sigepweb_main_contract_number',
+            string=u'Número do Contrato', type='char', required=True),
         'post_card_number': fields.related(
-            'company_id', 'sigepweb_main_post_card_number',
-            string='Post Card Number', type='char'),
+            'sigepweb_company_id', 'sigepweb_main_post_card_number',
+            string=u'Número do Cartão de Postagem', type='char', required=True),
 
         'environment': fields.selection(
             ((WebserviceAtendeCliente.AMBIENTE_PRODUCAO, u'Produçao'),
              (WebserviceAtendeCliente.AMBIENTE_HOMOLOGACAO, u'Homologação')),
-            string='Environment'),
-
-        'logo': fields.related(
-            'company_id', 'sigepweb_logo',
-            string='Company Logo on Post labels', type='binary',
-            help="Optional company logo to show on label.\n"
-                 "If using an image / logo, please note the following:\n"
-                 "– Image width: 47 mm\n"
-                 "– Image height: 25 mm\n"
-                 "– File size: max. 30 kb\n"
-                 "– File format: GIF or PNG\n"
-                 "– Colour table: indexed colours, max. 200 colours\n"
-                 "– The logo will be printed rotated counter-clockwise by 90°"
-                 "\n"
-                 "We recommend using a black and white logo for printing in "
-                 " the ZPL2 format."
-        ),
-        'office': fields.related(
-            'company_id', 'sigepweb_office',
-            string='Domicile Post office', type='char',
-            help="Post office which will receive the shipped goods"),
+            string='Ambiente', required=True),
     }
 
     def _default_company(self, cr, uid, context=None):
@@ -83,7 +74,7 @@ class SigepWebConfigSettings(orm.TransientModel):
         return user.company_id.id
 
     _defaults = {
-        'company_id': _default_company,
+        'sigepweb_company_id': _default_company,
         'environment': FabricaAmbiente.AMBIENTE_HOMOLOGACAO,
     }
 
@@ -99,23 +90,155 @@ class SigepWebConfigSettings(orm.TransientModel):
         self.write(cr, uid, [rec_id], vals, context)
         return rec_id
 
-    def onchange_company_id(self, cr, uid, ids, company_id, context=None):
+    def onchange_company_id(self, cr, uid, ids, sigepweb_company_id, context=None):
         # update related fields
         values = {'currency_id': False}
 
-        if not company_id:
+        if not sigepweb_company_id:
             return {'value': values}
 
         company = self.pool.get('res.company').browse(
-            cr, uid, company_id, context=context)
+            cr, uid, sigepweb_company_id, context=context)
 
         values = {
             'username': company.sigepweb_username,
             'password': company.sigepweb_password,
             'contract_number': company.sigepweb_main_contract_number,
             'post_card_number': company.sigepweb_main_post_card_number,
-            'logo': company.sigepweb_logo,
-            'office': company.sigepweb_office,
-
+            'contract_ids': [x.id for x in company.sigepweb_contract_ids],
         }
         return {'value': values}
+
+    def update_sigepweb_webservice_options(self, cr, uid, ids, context=None):
+
+        for config in self.browse(cr, uid, ids, context=context):
+
+            username = config.sigepweb_company_id.sigepweb_username
+            password = config.sigepweb_company_id.sigepweb_password
+            contract_number = \
+                config.sigepweb_company_id.sigepweb_main_contract_number
+            post_card_number = \
+                config.sigepweb_company_id.sigepweb_main_post_card_number
+
+            try:
+                print u'[INFO] Iniciando Serviço de Atendimento ao  Cliente'
+                sv = WebserviceAtendeCliente(config.environment)
+
+                print 'Cosultando dados do cliente'
+                cliente = sv.busca_cliente(contract_number, post_card_number,
+                                           username, password)
+
+                print cliente.nome
+                print cliente.login
+
+                contratos = self._update_contract(
+                    cr, uid, cliente.contratos, config.sigepweb_company_id.id,
+                    context=context)
+
+                vals = {
+                    'sigepweb_contract_ids': contratos
+                }
+
+                pool = self.pool.get('res.company')
+                pool.write(cr, uid, config.sigepweb_company_id.id, vals)
+
+            except ErroConexaoComServidor as e:
+                print e.message
+                return
+
+    def _update_post_services(self, cr, uid, services, context=None):
+
+        res = []
+
+        for serv in services.values():
+
+            pool = self.pool.get('sigepweb.post.service')
+            post_service_id = pool.search(cr, uid, [('code', '=', serv.codigo)])
+
+            vals = {
+                'name': serv.nome,
+                'code': serv.codigo,
+                'details': serv.descricao,
+            }
+
+            if not post_service_id:
+                post_service_id = (0, 0, vals)
+            else:
+                post_service_id = (1, post_service_id[0], vals)
+
+            res.append(post_service_id)
+
+        return res
+
+    def _update_post_card(self, cr, uid, cards, context=None):
+
+        res = []
+
+        for card in cards.values():
+
+            post_service_ids = self._update_post_services(
+                cr, uid, card.servicos_postagem, context=context)
+
+            vals = {
+                'number': card.numero,
+                'admin_code': card.codigo_admin,
+                'post_service_ids': post_service_ids,
+            }
+
+            pool = self.pool.get('sigepweb.post.card')
+            post_card_id = pool.search(cr, uid, [('number', '=', card.numero)])
+
+            if not post_card_id:
+                post_card_id = (0, 0, vals)
+            else:
+                post_card_id = (1, post_card_id[0], vals)
+
+            res.append(post_card_id)
+
+        return res
+
+    def _update_contract(self, cr, uid, contracts, company_id, context=None):
+
+        res = []
+
+        for contract in contracts.values():
+
+            pool = self.pool.get('sigepweb.directorship')
+            directorship_id = pool.search(
+                cr, uid, [('code', '=', contract.diretoria.codigo)])
+
+            vals = {
+                'code': contract.diretoria.codigo,
+                'acronym': contract.diretoria.sigla,
+                'details': contract.diretoria.descricao,
+            }
+
+            if not directorship_id:
+                directorship_id = pool.create(cr, uid, vals, context=context)
+            else:
+                directorship_id = directorship_id[0]
+                pool.write(cr, uid, directorship_id, vals, context=context)
+
+            pool = self.pool.get('sigepweb.contract')
+            contract_id = pool.search(
+                cr, uid, [('number', '=', contract.id_contrato)])
+
+            post_card_ids = self._update_post_card(
+                cr, uid, contract.cartoes_postagem, context=context)
+
+            vals = {
+                'number': contract.id_contrato,
+                'post_card_ids': post_card_ids,
+                'directorship_id': directorship_id,
+                'rescompany_id': company_id,
+            }
+
+            if not contract_id:
+                contract_id = (0, 0, vals)
+            else:
+                # pegamos o primeiro id porque o contract e sempre unico
+                contract_id = (1, contract_id[0], vals)
+
+            res.append(contract_id)
+
+        return res
