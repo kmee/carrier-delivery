@@ -141,6 +141,8 @@ class DeliveryGrid(orm.Model):
 
         if order.carrier_id:
 
+            print 'TSTSTSTS'
+
             fields = {
                 "cod": int(grid.service_type),
                 "GOCEP": order.partner_shipping_id.zip,

@@ -22,13 +22,17 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from openerp.osv import orm, fields, osv
 
-from . import company
-from . import res_config
-from . import contract
-from . import directorship
-from . import post_card
-from . import post_service
-from . import delivery
-from . import stock
-from . import sale
+
+class SaleOrder(orm.Model):
+
+    _inherit = 'sale.order'
+
+    def _get_carrier(self, cr, uid, ids, context=None):
+        cr_ids = self.pool.get('delivery.carrier').search(cr, uid, [])
+        return cr_ids[0] if cr_ids else False
+
+    _defaults = {
+        'carrier_id': _get_carrier,
+    }
