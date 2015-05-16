@@ -267,11 +267,11 @@ class DeliveryGrid(orm.Model):
             print '[INFO] Conectanco com webservice de calculo de prazo e preco'
             calc = WebserviceCalculaPrecoPrazo()
 
-            service_post = [ServicoPostagem(fields['cod'])]
+            service_post = [ServicoPostagem(fields['codigo'])]
 
-            dimensao = Dimensao(Caixa(fields['comprimento'],
+            dimensao = Dimensao(Caixa(fields['largura'],
                                       fields['altura'],
-                                      fields['largura']))
+                                      fields['comprimento']))
 
             # nome, login, senha, cnpj, descricao_status_cliente=''):
 
