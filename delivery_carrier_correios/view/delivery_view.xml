@@ -20,11 +20,11 @@
                            attrs="{'invisible': [('type', '!=', 'sigepweb')], 'required': [('type', '=', 'sigepweb')]}"
                            on_change="onchange_sigepweb_post_service_ids(sigepweb_post_service_ids)"/>
                 </field>
-                <field name="code" position="attributes">
-                    <attribute name="attrs">{'readonly': [('type', '=',
-                        'sigepweb')]}
-                    </attribute>
-                </field>
+                <!--<field name="code" position="attributes">-->
+                    <!--<attribute name="attrs">{'readonly': [('type', '=',-->
+                        <!--'sigepweb')]}-->
+                    <!--</attribute>-->
+                <!--</field>-->
 
                 <field name="available_option_ids" position="attributes">
                     <attribute name="context">{'default_carrier_id': active_id,
