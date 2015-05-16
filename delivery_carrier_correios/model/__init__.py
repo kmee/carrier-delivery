@@ -31,3 +31,4 @@ from . import post_card
 from . import post_service
 from . import delivery
 from . import stock
+from . import sale
