@@ -99,10 +99,16 @@ def main():
     qtd_etiquetas = 3
     print '[INFO] Solicitando %d etiquetas...' % qtd_etiquetas
     etiquetas = sv.solicita_etiquetas(sv_postagem, qtd_etiquetas, cliente)
+    #
+    # etiquetas[0].valor = 'SX02001754 BR'
+    # etiquetas[1].valor = 'SX02001755 BR'
+    # etiquetas[2].valor = 'SX02001756 BR'
+
+    # digito 9,2,6
 
     print
     print '[INFO] Solicitando digito verificador para etiquetas...'
-    print sv.gera_digito_verificador_etiquetas(etiquetas, cliente, online=True)
+    print sv.gera_digito_verificador_etiquetas(etiquetas, cliente, online=False)
 
     for etq in etiquetas:
         print etq.com_digito_verificador()
