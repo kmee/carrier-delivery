@@ -97,3 +97,5 @@ class StockPicking(orm.Model):
     _columns = {
         "x_barcode_id": fields.many2one('tr.barcode', 'BarCode'),
     }
+
+#TODO: apagar campo carrier_tracking_ref quando duplicamos a ordem de entrega

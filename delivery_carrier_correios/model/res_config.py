@@ -252,3 +252,7 @@ class SigepWebConfigSettings(orm.TransientModel):
             res.append(contract_id)
 
         return res
+
+#TODO: verificar porque quando o campo contract_ids é removido ele nao linka com
+#  os records existented
+#TODO: colocar campo com widget password para esconder a senha
