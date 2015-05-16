@@ -43,6 +43,7 @@
         'view/contract_view.xml',
         'view/post_card_view.xml',
         'view/post_service_view.xml',
+        'view/plp_view.xml',
         'report/stock_report.xml',
     ],
     'tests': [],

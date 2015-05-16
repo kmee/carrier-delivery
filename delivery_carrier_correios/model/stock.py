@@ -34,7 +34,8 @@ class StockPickingOut(orm.Model):
     _inherit = 'stock.picking.out'
 
     _columns = {
-        "x_barcode_id": fields.many2one('tr.barcode', 'BarCode'),
+        'x_barcode_id': fields.many2one('tr.barcode', u'BarCode'),
+        # 'plp_id': fields.many2one('sigepweb.plp', u'PLP'),
     }
 
     def action_process(self, cr, uid, ids, *args):
@@ -95,5 +96,5 @@ class StockPicking(orm.Model):
     _inherit = 'stock.picking'
 
     _columns = {
-        "x_barcode_id": fields.many2one('tr.barcode', 'BarCode'),
+        "x_barcode_id": fields.many2one('tr.barcode', u'BarCode'),
     }

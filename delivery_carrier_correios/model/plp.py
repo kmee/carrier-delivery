@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-#    Brazillian Carrier Correios Sigep WEB
+# Brazillian Carrier Correios Sigep WEB
 #    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
-#    @author Luis Felipe Mileo <mileo@kmee.com.br>
-#    @author: Michell Stuttgart <michell.stuttgart@kmee.com.br>
+#    @author: Rodolfo Bertozo <rodolfo.bertozo@kmee.com.br>
 #
 #    Sponsored by Europestar www.europestar.com.br
 #
@@ -23,12 +22,17 @@
 #
 ##############################################################################
 
-from . import company
-from . import res_config
-from . import contract
-from . import directorship
-from . import post_card
-from . import post_service
-from . import delivery
-from . import stock
-from . import plp
+from openerp.osv import orm, fields
+
+
+class Plp(orm.Model):
+    _name = 'sigepweb.plp'
+
+    _columns = {
+        'contract': fields.char(u'Contrato'),
+        'client_id': fields.many2one('res.company', u'Cliente'),
+        'plp_number': fields.char(u'Num PLP'),
+        # 'stock_picking_out_ids': fields.one2many('stock.picking.out', 'plp_id', u'Ordens de entrega'),
+        'delivery_date': fields.date(u'Data de Entrega'),
+        'x_barcode_id': fields.many2one('tr.barcode', u'BarCode'),
+    }

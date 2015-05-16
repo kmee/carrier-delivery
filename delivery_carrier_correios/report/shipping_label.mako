@@ -245,15 +245,15 @@ td.main_col1 {
                                 <table style="border-style: none; white-space: nowrap;">
                                     <tbody>
                                     <tr>
-                                        <td>${ label.name }</td>
+                                        <td>${ label.name or ''}</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Destinat&aacute;rio: ${label.partner_id.legal_name}</td>
+                                            Destinat&aacute;rio: ${label.partner_id.legal_name  or ''}</td>
                                     </tr>
                                     <tr>
-                                        <td>Rua: ${label.partner_id.street}
-                                            , ${label.partner_id.number}
+                                        <td>Rua: ${label.partner_id.street  or ''}
+                                            , ${label.partner_id.number  or ''}
                                             , ${label.partner_id.street2 or ''}
                                             </td>
                                     </tr>
@@ -263,16 +263,16 @@ td.main_col1 {
                                     </tr>
                                     <tr>
                                         <td>
-                                            Bairro: ${label.partner_id.district}</td>
+                                            Bairro: ${label.partner_id.district  or ''}</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            CEP:&nbsp;${label.partner_id.zip}&nbsp;&nbsp;</td>
+                                            CEP:&nbsp;${label.partner_id.zip  or ''}&nbsp;&nbsp;</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Cidade: ${label.partner_id.l10n_br_city_id.name}
-                                            , ${label.partner_id.l10n_br_city_id.state_id.code}</td>
+                                            Cidade: ${label.partner_id.l10n_br_city_id.name  or ''}
+                                            , ${label.partner_id.l10n_br_city_id.state_id.code  or ''}</td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -289,12 +289,12 @@ td.main_col1 {
                         <tbody>
                         <tr>
                             <td><span style="font-size:8px;">
-                                Remetente: ${company.street}
-                                - ${company.number} - ${company.district}
+                                Remetente: ${company.street  or ''}
+                                - ${company.number  or ''} - ${company.district  or ''}
                                 - ${company.street2 or ''}
-                                - ${company.zip}
-                                - ${company.l10n_br_city_id.name}
-                                (${company.partner_id.l10n_br_city_id.state_id.code})</span>
+                                - ${company.zip  or ''}
+                                - ${company.l10n_br_city_id.name  or ''}
+                                (${company.partner_id.l10n_br_city_id.state_id.code  or ''})</span>
                             </td>
                         </tr>
                         </tbody>
