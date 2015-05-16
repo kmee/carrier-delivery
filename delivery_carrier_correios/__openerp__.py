@@ -32,7 +32,7 @@
         'tr_barcode_on_picking',
         'base_delivery_carrier_label',
         'base_headers_webkit',
-        'l10n_br_delivery',
+        'kmee_delivery_webservice_correios',
     ],
     'description': """
     Carrier Delivery Correios Sigepweb WebService
