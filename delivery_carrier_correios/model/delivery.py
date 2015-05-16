@@ -22,9 +22,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from openerp.osv import orm, fields
+from openerp.osv import orm, fields, osv
 import time
 import math
+from pysigep_web.pysigepweb.webservice_calcula_preco_prazo import WebserviceCalculaPrecoPrazo
+from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor
+from pysigep_web.pysigepweb.servico_postagem import ServicoPostagem
+from pysigep_web.pysigepweb.dimensao import Dimensao, Caixa
+from pysigep_web.pysigepweb.resposta_busca_cliente import Cliente
 
 
 class DeliveryCarrier(orm.Model):
@@ -44,9 +49,8 @@ class DeliveryCarrier(orm.Model):
             order = self.pool.get('sale.order').browse(cr, uid, order_id,
                                                        context=context)
             currency = order.pricelist_id.currency_id.name or ''
-            res = [(r['id'], r['name'] + ' (' + (
-            str(r['price'])) + ' ' + currency + ' ' + str(
-                r['term']) + ' dia(s))') for r in
+            res = [(r['id'], r['name'] + ' (' + (str(r['price'])) + ' ' +
+                    currency + ' ' + str(r['term']) + ' (s))') for r in
                    self.read(cr, uid, ids, ['name', 'price', 'term'], context)]
         return res
 
@@ -56,14 +60,20 @@ class DeliveryCarrier(orm.Model):
             context = {}
         sale_obj = self.pool.get('sale.order')
         grid_obj = self.pool.get('delivery.grid')
+
         for carrier in self.browse(cr, uid, ids, context=context):
+
             order_id = context.get('order_id', False)
+
             res[carrier.id] = {
                 'price': 0.00,
                 'term': 0.00,
             }
+
             if order_id:
+
                 order = sale_obj.browse(cr, uid, order_id, context=context)
+
                 carrier_grid = self.grid_get(cr, uid, [carrier.id],
                                              order.partner_shipping_id.id,
                                              context)
@@ -72,17 +82,14 @@ class DeliveryCarrier(orm.Model):
                                            context=context)
                     print grid.service
 
-                    if (grid.service == "correios"):  #CHANGE
+                    if grid.service == "correios":  #CHANGE
                         res[carrier.id]['price'], res[carrier.id][
                             'term'] = grid_obj.get_price_term(cr, uid, grid,
                                                               order, context)
                     else:
-                        res[carrier.id]['price'] = grid_obj.get_price(cr, uid,
-                                                                      carrier_grid,
-                                                                      order,
-                                                                      time.strftime(
-                                                                          '%Y-%m-%d'),
-                                                                      context)
+                        res[carrier.id]['price'] = grid_obj.get_price(
+                            cr, uid, carrier_grid, order,
+                            time.strftime('%Y-%m-%d'), context)
         return res
 
     def _get_carrier_type_selection(self, cr, uid, context=None):
@@ -126,14 +133,16 @@ class DeliveryCarrier(orm.Model):
 
     def _check_service_card(self, cr, uid, ids):
 
+        # Garante que o record seja salvo com um servico que nao pertenca
+        # cartao de postagem selecionado
         for delivery in self.browse(cr, uid, ids):
 
-            record_post_service = \
+            post_service_ids = \
                 delivery.sigepweb_post_card_ids.post_service_ids
 
-            a = delivery.sigepweb_post_service_ids
+            post_service = delivery.sigepweb_post_service_ids
 
-            if a.id not in [s.id for s in record_post_service]:
+            if post_service.id not in [s.id for s in post_service_ids]:
                 return False
 
         return True
@@ -188,26 +197,108 @@ class DeliveryGrid(orm.Model):
         peso_considerado = max(weight, peso_volumetrico)
         aresta = int(math.ceil(volume_cm**(1/3.0)))
 
-        fields = {
-            "cod": int(grid.service_type),
-            "GOCEP": order.partner_shipping_id.zip,
-            "HERECEP": order.shop_id.company_id.partner_id.zip,
-            "peso": peso_considerado,
-            "formato": "1",
-            "comprimento": aresta,
-            "altura": aresta,
-            "largura": aresta,
-            "diametro": "0",
-            "empresa": grid.login,
-            "senha": grid.password,
-        }
+        if order.carrier_id.type == 'sigepweb':
+
+            post_serv = order.carrier_id.sigepweb_post_service_ids
+
+            fields = {
+                "codigo": int(post_serv.code),
+                "descricao": post_serv.details,
+                "indentificador": int(post_serv.identifier),
+                "GOCEP": order.partner_shipping_id.zip,
+                "HERECEP": order.shop_id.company_id.partner_id.zip,
+                "peso": peso_considerado,
+                "formato": "1",
+                "comprimento": aresta,
+                "altura": aresta,
+                "largura": aresta,
+                "diametro": "0",
+                "nome": order.company_id.name,
+                "login": order.company_id.sigepweb_username,
+                "senha": order.company_id.sigepweb_password,
+                "cnpj": order.company_id.cnpj_cpf,
+                "contrato": order.company_id.sigepweb_main_contract_number,
+                "cartao de postagem":
+                    order.company_id.sigepweb_main_post_card_number,
+                "cod_admin": order.carrier_id.sigepweb_post_card_ids.admin_code,
+            }
+
+            try:
+                # response = Correios().frete(**fields)
+                response = self._frete(fields)
+            except Exception as exp:
+                return (0.00, 0.00)
+                raise osv.except_osv(_('Erro no calculo do frete!'),
+                                     _('Nao foi possivel conectar'))
+            return (float(response['Valor'].replace(",", ".")), response[
+                'PrazoEntrega'] or 0.00)
+
+        else:
+            print u'[INFO] Tipo do Método de Entrega não é SigepWeb!'
+            return (0.00, 0.00)
+
+
+    def _frete(self, fields):
+
+        # data = {'MsgErro',
+        #         'Erro',
+        #         'Codigo',
+        #         'Valor',
+        #         'PrazoEntrega',
+        #              'ValorMaoPropria',
+        #              'ValorValorDeclarado',
+        #              'EntregaDomiciliar',
+        #              'EntregaSabado',}
+
+        #  self.codigo = returno_suds.Codigo
+        # self.valor = returno_suds.Valor
+        # self.prazo_entrega = returno_suds.PrazoEntrega
+        # self.valor_mao_propria = returno_suds.ValorMaoPropria
+        # self.valor_aviso_recebimento = returno_suds.ValorAvisoRecebimento
+        # self.valor_declarado = returno_suds.ValorValorDeclarado
+        # self.entrega_domiciliar = returno_suds.EntregaDomiciliar
+        # self.entrega_sabado = returno_suds.EntregaSabado
+        # self.erro = returno_suds.Erro
+        # self.msg_erro = returno_suds.MsgErro
+        # self.valor_sem_adicionais = returno_suds.ValorSemAdicionais
+        # self.obs_fim = returno_suds.obsFim
 
         try:
-            response = Correios().frete(**fields)
-        except Exception as exp:
-            print exp.message
-            return (0.00, 0.00)
-            # raise osv.except_osv(_('Erro no calculo do frete!'),
-            #                      _('Nao foi possivel conectar'))
-        return (float(response['Valor'].replace(",", ".")), response[
-            'PrazoEntrega'] or 0.00)
+            print '[INFO] Conectanco com webservice de calculo de prazo e preco'
+            calc = WebserviceCalculaPrecoPrazo()
+
+            service_post = [ServicoPostagem(fields['cod'])]
+
+            dimensao = Dimensao(Caixa(fields['comprimento'],
+                                      fields['altura'],
+                                      fields['largura']))
+
+            # nome, login, senha, cnpj, descricao_status_cliente=''):
+
+            cliente = Cliente(fields['nome'], fields['login'],
+                              fields['senha'], fields['cnpj'])
+
+            retorno = calc.calcula_preco_prazo(service_post, fields['cod_admin'],
+                                               fields['HERECEP'], fields['GOCEP'],
+                                               fields['peso'], dimensao,
+                                               False, 0, False, cliente)
+
+            if retorno:
+
+                data = {
+                    'MsgErro': retorno[0].msg_erro,
+                    'Erro': retorno[0].erro,
+                    'Codigo': retorno[0].codigo,
+                    'Valor': retorno[0].valor,
+                    'PrazoEntrega': retorno[0].prazo_entrega,
+                    'ValorMaoPropria': retorno[0].valor_mao_propria,
+                    'ValorValorDeclarado': retorno[0].valor_declarado,
+                    'EntregaDomiciliar': retorno[0].entrega_domiciliar,
+                    'EntregaSabado': retorno[0].entrega_sabado
+                }
+
+                return data
+
+        except ErroConexaoComServidor as e:
+            raise osv.except_osv(_('Erro no calculo do frete!'),
+                                 _('Nao foi possivel conectar.\n' + e.message))

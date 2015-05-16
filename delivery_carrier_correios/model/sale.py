@@ -31,26 +31,33 @@ class SaleOrder(orm.Model):
         grid_obj = self.pool.get('delivery.grid')
         carrier_obj = self.pool.get('delivery.carrier')
 
+        print 'SGAHSASS'
+
         for order in self.browse(cr, uid, ids, context=context):
             term = 0
             grid_id = carrier_obj.grid_get(cr, uid, [order.carrier_id.id],
-            order.partner_shipping_id.id)
+                                           order.partner_shipping_id.id)
 
             if not grid_id:
                 raise osv.except_osv(_('No Grid Available!'),
                      _('No grid matching for this carrier!'))
 
-            if not order.state in ('draft'):
+            if not order.state in ['draft']:
                 raise osv.except_osv(_('Order not in Draft State!'),
                     _('The order state have to be draft to add delivery lines.'))
 
             grid = grid_obj.browse(cr, uid, grid_id, context=context)
-            if (grid.service == "correios"):
-                amount_freight,term = grid_obj.get_price_term(cr, uid, grid, order, context)
+            if grid.service == "correios":
+                amount_freight, term = grid_obj.get_price_term(cr, uid, grid,
+                                                               order, context)
             else:
-                amount_freight = grid_obj.get_price(cr, uid, grid.id, order, time.strftime('%Y-%m-%d'), context)
+                amount_freight = grid_obj.get_price(cr, uid, grid.id, order,
+                                                    time.strftime('%Y-%m-%d'),
+                                                    context)
             note = ""
             if term > 0:
                 note = "Prazo de entrega {0} dia(s)".format(term)
-            super(SaleOrder, self).onchange_amount_freight(cr, uid, ids, amount_freight)
-        return self.write(cr, uid, ids, {'amount_freight': amount_freight, 'note': note})
+            super(SaleOrder, self).onchange_amount_freight(cr, uid, ids,
+                                                           amount_freight)
+        return self.write(cr, uid, ids, {'amount_freight': amount_freight,
+                                         'note': note})
