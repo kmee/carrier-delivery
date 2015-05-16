@@ -27,10 +27,10 @@ import logging
 from openerp.osv import orm, fields, osv
 from openerp.tools.translate import _
 
-from pysigep_web.pysigepweb.ambiente import FabricaAmbiente
 from pysigep_web.pysigepweb.webservice_atende_cliente import \
     WebserviceAtendeCliente
 from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor
+from company import PRODUCAO, HOMOLOGACAO
 
 _logger = logging.getLogger(__name__)
 
@@ -53,20 +53,27 @@ class SigepWebConfigSettings(orm.TransientModel):
         'username': fields.related(
             'sigepweb_company_id', 'sigepweb_username',
             string=u'Login', type='char', required=True),
+
         'password': fields.related(
             'sigepweb_company_id', 'sigepweb_password',
             string=u'Senha', type='char', required=True),
+
         'contract_number': fields.related(
             'sigepweb_company_id', 'sigepweb_main_contract_number',
-            string=u'Número do Contrato', type='char', required=True),
+            string=u'Número do Contrato', type='char', required=True, size=10),
+
         'post_card_number': fields.related(
             'sigepweb_company_id', 'sigepweb_main_post_card_number',
-            string=u'Número do Cartão de Postagem', type='char', required=True),
+            string=u'Número do Cartão de Postagem', type='char',
+            required=True, size=10),
 
-        'environment': fields.selection(
-            ((WebserviceAtendeCliente.AMBIENTE_PRODUCAO, u'Produçao'),
-             (WebserviceAtendeCliente.AMBIENTE_HOMOLOGACAO, u'Homologação')),
-            string='Ambiente', required=True),
+        'environment': fields.related('sigepweb_company_id',
+                                      'sigepweb_environment',
+                                      string='Ambiente',
+                                      type='selection',
+                                      selection=[PRODUCAO, HOMOLOGACAO],
+                                      store=True,
+                                      required=True),
     }
 
     def _default_company(self, cr, uid, context=None):
@@ -75,7 +82,6 @@ class SigepWebConfigSettings(orm.TransientModel):
 
     _defaults = {
         'sigepweb_company_id': _default_company,
-        'environment': FabricaAmbiente.AMBIENTE_HOMOLOGACAO,
     }
 
     def create(self, cr, uid, values, context=None):
@@ -108,6 +114,7 @@ class SigepWebConfigSettings(orm.TransientModel):
             'contract_number': company.sigepweb_main_contract_number,
             'post_card_number': company.sigepweb_main_post_card_number,
             'contract_ids': [(4, x) for x in a],
+            'environment': company.sigepweb_environment,
         }
         return {'value': values}
 
@@ -179,6 +186,9 @@ class SigepWebConfigSettings(orm.TransientModel):
 
         for card in cards.values():
 
+            pool = self.pool.get('sigepweb.post.card')
+            post_card_id = pool.search(cr, uid, [('number', '=', card.numero)])
+
             post_service_ids = self._update_post_services(
                 cr, uid, card.servicos_postagem)
 
@@ -187,9 +197,6 @@ class SigepWebConfigSettings(orm.TransientModel):
                 'admin_code': card.codigo_admin,
                 'post_service_ids': post_service_ids,
             }
-
-            pool = self.pool.get('sigepweb.post.card')
-            post_card_id = pool.search(cr, uid, [('number', '=', card.numero)])
 
             if not post_card_id:
                 post_card_id = (0, 0, vals)

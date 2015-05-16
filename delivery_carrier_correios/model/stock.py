@@ -20,8 +20,14 @@
 #
 ##############################################################################
 
-from openerp.osv import orm, fields
+from openerp.osv import orm, fields, osv
 from openerp.tools.translate import _
+
+from pysigep_web.pysigepweb.webservice_atende_cliente import \
+    WebserviceAtendeCliente
+from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor
+from pysigep_web.pysigepweb.resposta_busca_cliente import Cliente
+from pysigep_web.pysigepweb.servico_postagem import ServicoPostagem
 
 
 class StockPickingOut(orm.Model):
@@ -30,6 +36,52 @@ class StockPickingOut(orm.Model):
     _columns = {
         "x_barcode_id": fields.many2one('tr.barcode', 'BarCode'),
     }
+
+    def action_process(self, cr, uid, ids, *args):
+        res = super(StockPickingOut, self).action_process(cr, uid, ids, *args)
+
+        for stock in self.browse(cr, uid, ids):
+
+            if stock.carrier_id.type == 'sigepweb':
+
+                company_id = stock.company_id
+
+                try:
+                    print u'[INFO] Iniciando Serviço de Atendimento ao  Cliente'
+                    sv = WebserviceAtendeCliente(company_id.sigepweb_environment)
+
+                    print u'[INFO] Consultando dados do cliente'
+
+                    cliente = Cliente(company_id.name,
+                                      company_id.sigepweb_username,
+                                      company_id.sigepweb_password,
+                                      company_id.cnpj_cpf)
+
+                    servico_postagem_id = \
+                        stock.carrier_id.sigepweb_post_service_ids
+
+                    serv_post = ServicoPostagem(servico_postagem_id.code,
+                                                servico_postagem_id.details,
+                                                servico_postagem_id.identifier)
+
+                    etiquetas = sv.solicita_etiquetas(serv_post, 1, cliente)
+
+                    sv.gera_digito_verificador_etiquetas(etiquetas,
+                                                         cliente,
+                                                         online=False)
+
+                    for etq in etiquetas:
+
+                        vals = {
+                            'carrier_tracking_ref': etq.com_digito_verificador(),
+                        }
+                        self.write(cr, uid, stock.id, vals, context=None)
+
+                except ErroConexaoComServidor as e:
+                    print e.message
+                    raise osv.except_osv(_('Error!'), e.message)
+
+        return res
 
     def action_generate_carrier_label(self, cr, uid, ids, context=None):
         result = {

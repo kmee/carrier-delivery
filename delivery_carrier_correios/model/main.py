@@ -35,6 +35,7 @@ from pysigep_web.pysigepweb.tag_correios_log import TagCorreiosLog
 from pysigep_web.pysigepweb.diretoria import Diretoria
 from pysigep_web.pysigepweb.endereco import Endereco
 from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor
+from pysigep_web.pysigepweb.etiqueta import Etiqueta
 
 LOGIN = 'sigep'
 SENHA = 'n5f9t8'
@@ -97,12 +98,17 @@ def main():
 
     qtd_etiquetas = 3
     print '[INFO] Solicitando %d etiquetas...' % qtd_etiquetas
-    etiquetas = sv.solicita_etiquetas(sv_postagem.identificador,
-                                      qtd_etiquetas, cliente)
+    etiquetas = sv.solicita_etiquetas(sv_postagem, qtd_etiquetas, cliente)
+    #
+    # etiquetas[0].valor = 'SX02001754 BR'
+    # etiquetas[1].valor = 'SX02001755 BR'
+    # etiquetas[2].valor = 'SX02001756 BR'
+
+    # digito 9,2,6
 
     print
     print '[INFO] Solicitando digito verificador para etiquetas...'
-    print sv.gera_digito_verificador_etiquetas(etiquetas, cliente, online=True)
+    print sv.gera_digito_verificador_etiquetas(etiquetas, cliente, online=False)
 
     for etq in etiquetas:
         print etq.com_digito_verificador()
@@ -197,7 +203,7 @@ def main():
           'SS123456789BR; DM524874789BR; DM149692327BR; DG799572796BR'
 
     etqs = [Etiqueta('SS123456789BR'),
-            Etiqueta('DM524874789BR'),
+            Etiqueta('DN046425562BR'),
             Etiqueta('DM149692327BR'),
             Etiqueta('DG799572796BR')]
 
@@ -232,6 +238,12 @@ def main():
             print 'UF evento: ', evento.uf
             print 'STO: ', evento.sto
             print
+
+    etq = Etiqueta('SS123456789BR')
+    print etq.prefixo
+    print etq.numero
+    print etq.sufixo
+    print etq.valor
 
 if __name__ == '__main__':
     main()

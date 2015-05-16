@@ -22,8 +22,13 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+
 from openerp.osv import orm, fields
-from openerp.tools import file_open
+from pysigep_web.pysigepweb.webservice_atende_cliente import \
+    WebserviceAtendeCliente
+
+PRODUCAO = (WebserviceAtendeCliente.AMBIENTE_PRODUCAO, u'Produçao')
+HOMOLOGACAO = (WebserviceAtendeCliente.AMBIENTE_HOMOLOGACAO, u'Homologação')
 
 
 class ResCompany(orm.Model):
@@ -37,4 +42,11 @@ class ResCompany(orm.Model):
         'sigepweb_contract_ids': fields.one2many('sigepweb.contract',
                                                  'rescompany_id',
                                                  'Contract'),
+        'sigepweb_environment': fields.selection((HOMOLOGACAO, PRODUCAO),
+                                                 string='Ambiente',
+                                                 required=True),
+    }
+
+    _defaults = {
+        'sigepweb_environment': WebserviceAtendeCliente.AMBIENTE_HOMOLOGACAO,
     }
