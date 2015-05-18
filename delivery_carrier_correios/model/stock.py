@@ -43,7 +43,7 @@ class StockPickingOut(orm.Model):
             'Shipping Group',
             readonly=True,
             states={'draft': [('readonly', False)]}),
-        }
+    }
 
     def action_process(self, cr, uid, ids, *args):
         res = super(StockPickingOut, self).action_process(cr, uid, ids, *args)
