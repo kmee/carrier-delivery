@@ -76,21 +76,13 @@ class ShippingResponse(orm.Model):
             contract_id = ship.contract_id
             post_card_id = ship.post_card_id
 
-            remetente_endereco = Endereco(logradouro=company_id.street,
-                                          numero=company_id.number,
-                                          bairro=company_id.district,
-                                          cep=int(company_id.zip.replace('-', '')),
-                                          cidade=company_id.l10n_br_city_id.name,
-                                          uf=company_id.state_id.code,
-                                          complemento=company_id.street2)
-
-            destinatario_endereco = Endereco(logradouro=partner_id.street,
-                                             numero=partner_id.number,
-                                             bairro=partner_id.district,
-                                             cep=int(partner_id.zip.replace('-', '')),
-                                             cidade=partner_id.l10n_br_city_id.name,
-                                             uf=partner_id.state_id.code,
-                                             complemento=partner_id.street2)
+            obj_endereco = Endereco(logradouro=company_id.street,
+                                    numero=company_id.number,
+                                    bairro=company_id.district,
+                                    cep=int(company_id.zip.replace('-', '')),
+                                    cidade=company_id.l10n_br_city_id.name,
+                                    uf=company_id.state_id.code,
+                                    complemento=company_id.street2)
 
             obj_tag_plp = TagPLP(post_card_id.number)
 
@@ -102,14 +94,55 @@ class ShippingResponse(orm.Model):
             obj_remetente = TagRemetente(cliente.nome,
                                          contract_id.number,
                                          post_card_id.admin_code,
-                                         remetente_endereco,
+                                         obj_endereco,
                                          Diretoria(
                                              contract_id.directorship_id.code),
                                          telefone=company_id.phone,
                                          email=company_id.email)
 
-            picking_ids = ship.picking_line
-            print picking_ids
+            for picking in ship.picking_line:
+
+                obj_endereco = Endereco(logradouro=partner_id.street,
+                                        numero=partner_id.number,
+                                        bairro=partner_id.district,
+                                        cep=int(partner_id.zip.replace('-', '')),
+                                        cidade=partner_id.l10n_br_city_id.name,
+                                        uf=partner_id.state_id.code,
+                                        complemento=partner_id.street2)
+
+                obj_destinatario = TagDestinatario(picking.partner_id.name,
+                                                   obj_endereco,
+                                                   telefone=picking.partner_id.phone)
+
+                # obj_nacional = TagNacionalPAC41068(obj_endereco,
+                #                                    102030, '1')
+                #TODO: Implementar para PAC41068.
+                #TODO: Buscar numero e serie da fatura a partir da invoice
+                obj_nacional = TagNacional(obj_endereco)
+
+                # obj_nacional.valor_a_cobrar = 23.01
+
+                obj_servico_adicional = TagServicoAdicional()
+
+                # obj_servico_adicional.add_tipo_servico_adicional(
+                #     TagServicoAdicional.TIPO_AVISO_RECEBIMENTO)
+                #
+                # obj_servico_adicional.add_tipo_servico_adicional(
+                #     TagServicoAdicional.TIPO_VALOR_DECLARADO, 99.00)
+
+                # Caixa(20, 30, 38)
+                obj_dimensao_objeto = TagDimensaoObjeto(Caixa(18, 11, 20))
+
+                obj_postal = TagObjetoPostal(obj_destinatario=obj_destinatario,
+                                             obj_nacional=obj_nacional,
+                                             obj_dimensao_objeto=obj_dimensao_objeto,
+                                             obj_servico_adicional=obj_servico_adicional,
+                                             obj_servico_postagem=sv_postagem,
+                                             ob_etiqueta=etiquetas[0],
+                                             peso=1, status_processamento=0)
+
+            obj_correios_log = TagCorreiosLog('2.3', obj_tag_plp, obj_remetente,
+                                              [obj_postal])
 
 
 
@@ -128,10 +161,6 @@ class ShippingResponse(orm.Model):
         'carrier_id': fields.many2one('res.partner', string='Carrier',
                                       readonly=True,
                                       states={'draft': [('readonly', False)]}),
-
-        'partner_id': fields.many2one('res.partner', string='Partner',
-                                          readonly=True,
-                                          states={'draft': [('readonly', False)]}),
 
         'carrier_responsible': fields.char('Carrier Responsible'),
 
