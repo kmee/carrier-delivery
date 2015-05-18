@@ -136,7 +136,8 @@ class ShippingResponse(orm.Model):
 
         'contract_id': fields.many2one('sigepweb.contract',
                                         string='Contract',
-                                        domain="[('rescompany_id', '=',company_id)]"),
+                                        domain="[('company_id', '=',"
+                                               "company_id)]"),
 
         'post_card_id': fields.many2one('sigepweb.post.card',
                                          string='Post Cards',

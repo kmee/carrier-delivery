@@ -37,12 +37,12 @@ class Contract(orm.Model):
         'directorship_id': fields.many2one('sigepweb.directorship',
                                            'Diretoria'),
         'delivery_id': fields.one2many('delivery.carrier',
-                                       'sigepweb_contract_ids',
+                                       'sigepweb_contract_id',
                                        'Carrier Delivery'),
         'company_id': fields.many2one('res.company', u'Empresa'),
         'shipping_response_ids': fields.one2many('shipping.response',
                                                  'contract_id',
-                                                 string='Shipping Response')
+                                                 string='Shipping Response'),
     }
 
     _rec_name = 'number'

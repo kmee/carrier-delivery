@@ -240,7 +240,7 @@ class SigepWebConfigSettings(orm.TransientModel):
                 'number': contract.id_contrato,
                 'post_card_ids': post_card_ids,
                 'directorship_id': directorship_id,
-                'rescompany_id': company_id,
+                'company_id': company_id,
             }
 
             if not contract_id:

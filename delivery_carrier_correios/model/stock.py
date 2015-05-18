@@ -66,7 +66,7 @@ class StockPickingOut(orm.Model):
                                       company_id.cnpj_cpf)
 
                     servico_postagem_id = \
-                        stock.carrier_id.sigepweb_post_service_ids
+                        stock.carrier_id.sigepweb_post_service_id
 
                     serv_post = ServicoPostagem(servico_postagem_id.code,
                                                 servico_postagem_id.details,

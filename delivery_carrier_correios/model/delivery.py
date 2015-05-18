@@ -44,16 +44,16 @@ class DeliveryCarrier(orm.Model):
         res.append(('sigepweb', 'Correios SigepWeb'))
         return res
 
-    def onchange_sigepweb_post_service_ids(self, cr, uid, ids,
-                                           sigepweb_post_service_ids,
+    def onchange_sigepweb_post_service_id(self, cr, uid, ids,
+                                           sigepweb_post_service_id,
                                            context=None):
         res = {'value': {}}
 
-        if not sigepweb_post_service_ids:
+        if not sigepweb_post_service_id:
             return res
 
         post_service = self.pool.get('sigepweb.post.service').browse(
-            cr, uid, sigepweb_post_service_ids, context=context)
+            cr, uid, sigepweb_post_service_id, context=context)
 
         values = {
             'code': post_service.code,
@@ -68,9 +68,9 @@ class DeliveryCarrier(orm.Model):
 
         for delivery in self.browse(cr, uid, ids):
 
-            record_post_card = delivery.sigepweb_contract_ids.post_card_ids
+            record_post_card = delivery.sigepweb_contract_id.post_card_ids
 
-            a = delivery.sigepweb_post_card_ids
+            a = delivery.sigepweb_post_card_id
             if a.id not in [c.id for c in record_post_card]:
                 return False
 
@@ -83,9 +83,9 @@ class DeliveryCarrier(orm.Model):
         for delivery in self.browse(cr, uid, ids):
 
             post_service_ids = \
-                delivery.sigepweb_post_card_ids.post_service_ids
+                delivery.sigepweb_post_card_id.post_service_ids
 
-            post_service = delivery.sigepweb_post_service_ids
+            post_service = delivery.sigepweb_post_service_id
 
             if post_service.id not in [s.id for s in post_service_ids]:
                 return False
@@ -93,7 +93,7 @@ class DeliveryCarrier(orm.Model):
         return True
 
     _columns = {
-        'sigepweb_contract_id': fields.many2one('sigepweb.contract'
+        'sigepweb_contract_id': fields.many2one('sigepweb.contract',
                                                 'Contract'),
         'sigepweb_post_card_id': fields.many2one(
             'sigepweb.post.card', string='Post Cards',
@@ -108,11 +108,11 @@ class DeliveryCarrier(orm.Model):
         (_check_post_card,
          u'O numero de Cartão de Postagem fornecido não '
          u'esta presente no Contrato selecionado.',
-         ['sigepweb_post_card_ids']),
+         ['sigepweb_post_card_id']),
         (_check_service_card,
          u'O numero de Servico de Postagem fornecido não '
          u'esta presente no Cartão de Postagem selecionado.',
-         ['sigepweb_post_service_ids']),
+         ['sigepweb_post_service_id']),
     ]
 
 
@@ -157,7 +157,7 @@ class DeliveryGrid(orm.Model):
                 "login": order.company_id.sigepweb_username,
                 "senha": order.company_id.sigepweb_password,
                 "cnpj": order.company_id.cnpj_cpf,
-                "cod_admin": order.carrier_id.sigepweb_post_card_ids.admin_code,
+                "cod_admin": order.carrier_id.sigepweb_post_card_id.admin_code,
             }
 
             return self._frete(fields)
