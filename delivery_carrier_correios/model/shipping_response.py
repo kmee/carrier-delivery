@@ -49,6 +49,9 @@ class ShippingResponse(orm.Model):
             res[obj] = 0.00
         return res
 
+    def shipment_confirm(self, cr, uid, ids, *args):
+        print 'arrroroor'
+
     _columns = {
         'user_id': fields.many2one('res.users',
                                    'Responsible',

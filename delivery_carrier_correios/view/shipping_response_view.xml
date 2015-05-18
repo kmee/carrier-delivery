@@ -10,7 +10,8 @@
                 <button name="shipment_confirm"
                     string="Confirm"
                     states="draft"
-                    class="oe_highlight"/>
+                    class="oe_highlight"
+                    type="object"/>
                 <button name="button_action_transit"
                     string="Sent to transit"
                     states="confirmed"
