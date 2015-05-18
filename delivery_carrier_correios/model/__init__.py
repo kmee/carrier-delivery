@@ -23,8 +23,12 @@
 #
 ##############################################################################
 
-from . import company
-from . import res_config
+
+#
+# from . import res_config, contract, directorship, post_card, post_service, \
+#     delivery, stock, sale, shipping_response, company
+
+from . import shipping_response
 from . import contract
 from . import directorship
 from . import post_card
@@ -32,3 +36,6 @@ from . import post_service
 from . import delivery
 from . import stock
 from . import sale
+from . import company
+from . import res_config
+

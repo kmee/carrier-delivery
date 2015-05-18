@@ -34,8 +34,16 @@ class StockPickingOut(orm.Model):
     _inherit = 'stock.picking.out'
 
     _columns = {
-        "x_barcode_id": fields.many2one('tr.barcode', 'BarCode'),
-    }
+        'x_barcode_id': fields.many2one('tr.barcode', 'BarCode'),
+        'shipping_group': fields.many2many(
+            'shipping.response',
+            'shipping_stock_picking_rel',
+            'picking_id',
+            'response_id',
+            'Shipping Group',
+            readonly=True,
+            states={'draft': [('readonly', False)]}),
+        }
 
     def action_process(self, cr, uid, ids, *args):
         res = super(StockPickingOut, self).action_process(cr, uid, ids, *args)

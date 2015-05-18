@@ -26,11 +26,11 @@
                     <!--</attribute>-->
                 <!--</field>-->
 
-                <field name="available_option_ids" position="attributes">
-                    <attribute name="context">{'default_carrier_id': active_id,
-                        'default_allowed_option_ids': allowed_option_ids}
-                    </attribute>
-                </field>
+                <!--<field name="available_option_ids" position="attributes">-->
+                    <!--<attribute name="context">{'default_carrier_id': active_id,-->
+                        <!--'default_allowed_option_ids': allowed_option_ids}-->
+                    <!--</attribute>-->
+                <!--</field>-->
             </field>
         </record>
 
