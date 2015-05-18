@@ -40,7 +40,9 @@ class Contract(orm.Model):
                                        'sigepweb_contract_ids',
                                        'Carrier Delivery'),
         'rescompany_id': fields.many2one('res.company', u'Empresa'),
-
+        'shipping_response_ids': fields.one2many('shipping.response',
+                                                 'contract_id',
+                                                 string='Shipping Response')
     }
 
     _rec_name = 'number'

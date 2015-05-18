@@ -133,6 +133,16 @@ class ShippingResponse(orm.Model):
         'note': fields.text('Description / Remarks', readonly=True,
                             states={'draft': [('readonly', False)]}),
 
+        'company_id': fields.many2one('res.company', 'Company'),
+
+        'contract_id': fields.many2one('sigepweb.contract',
+                                        string='Contract',
+                                        domain="[('rescompany_id', '=',company_id)]"),
+
+        'post_card_id': fields.many2one('sigepweb.post.card',
+                                         string='Post Cards',
+                                         domain="[('contract_id', '=', contract_id)]"),
+
         'state': fields.selection(
             [('draft', 'Draft'),
              ('confirmed', 'Confirmed'),

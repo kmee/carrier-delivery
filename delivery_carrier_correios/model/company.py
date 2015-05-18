@@ -45,6 +45,9 @@ class ResCompany(orm.Model):
         'sigepweb_environment': fields.selection((HOMOLOGACAO, PRODUCAO),
                                                  string='Ambiente',
                                                  required=True),
+        'shipping_response_ids': fields.one2many('shipping.response',
+                                                 'company_id',
+                                                 string='Shipping Response')
     }
 
     _defaults = {

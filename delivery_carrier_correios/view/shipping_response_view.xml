@@ -43,6 +43,11 @@
                     <field name="carrier_responsible" />
                     <field name="date"/>
                   </group>
+                  <group>
+                    <field name="company_id"/>
+                    <field name="contract_id"/>
+                    <field name="post_card_id"/>
+                  </group>
                 </group>
                 <notebook>
                   <page string="Details">
