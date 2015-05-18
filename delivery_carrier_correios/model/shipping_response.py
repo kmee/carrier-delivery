@@ -22,7 +22,7 @@
 #
 ##############################################################################
 
-from openerp.osv import fields, orm
+from openerp.osv import fields, orm, osv
 
 
 from pysigep_web.pysigepweb.webservice_atende_cliente import WebserviceAtendeCliente
@@ -72,12 +72,11 @@ class ShippingResponse(orm.Model):
         for ship in self.browse(cr, uid, ids):
 
             company_id = ship.company_id
-            partner_id = ship.partner_id
             contract_id = ship.contract_id
             post_card_id = ship.post_card_id
 
             obj_endereco = Endereco(logradouro=company_id.street,
-                                    numero=company_id.number,
+                                    numero=int(company_id.number),
                                     bairro=company_id.district,
                                     cep=int(company_id.zip.replace('-', '')),
                                     cidade=company_id.l10n_br_city_id.name,
@@ -100,19 +99,24 @@ class ShippingResponse(orm.Model):
                                          telefone=company_id.phone,
                                          email=company_id.email)
 
+            lista_obj_postal = []
+            lista_etiqueta = []
+
             for picking in ship.picking_line:
 
+                partner_id = picking.partner_id
+
                 obj_endereco = Endereco(logradouro=partner_id.street,
-                                        numero=partner_id.number,
+                                        numero=int(partner_id.number),
                                         bairro=partner_id.district,
                                         cep=int(partner_id.zip.replace('-', '')),
                                         cidade=partner_id.l10n_br_city_id.name,
                                         uf=partner_id.state_id.code,
                                         complemento=partner_id.street2)
 
-                obj_destinatario = TagDestinatario(picking.partner_id.name,
+                obj_destinatario = TagDestinatario(partner_id.name,
                                                    obj_endereco,
-                                                   telefone=picking.partner_id.phone)
+                                                   telefone=partner_id.phone)
 
                 # obj_nacional = TagNacionalPAC41068(obj_endereco,
                 #                                    102030, '1')
@@ -131,18 +135,47 @@ class ShippingResponse(orm.Model):
                 #     TagServicoAdicional.TIPO_VALOR_DECLARADO, 99.00)
 
                 # Caixa(20, 30, 38)
-                obj_dimensao_objeto = TagDimensaoObjeto(Caixa(18, 11, 20))
+                #TODO: Inserir campos de dimensao do objeto em cada
+                #TODO: Ordem de Entrega
+                obj_dimensao_objeto = TagDimensaoObjeto(Caixa(0, 0, 0))
+
+                sv_postagem = ServicoPostagem(
+                    picking.carrier_id.sigepweb_post_service_id.code)
+
+                etq = Etiqueta(picking.carrier_tracking_ref)
+                lista_etiqueta.append(etq)
 
                 obj_postal = TagObjetoPostal(obj_destinatario=obj_destinatario,
                                              obj_nacional=obj_nacional,
                                              obj_dimensao_objeto=obj_dimensao_objeto,
                                              obj_servico_adicional=obj_servico_adicional,
                                              obj_servico_postagem=sv_postagem,
-                                             ob_etiqueta=etiquetas[0],
-                                             peso=1, status_processamento=0)
+                                             ob_etiqueta=etq,
+                                             peso=picking.weight,
+                                             status_processamento=0)
 
-            obj_correios_log = TagCorreiosLog('2.3', obj_tag_plp, obj_remetente,
-                                              [obj_postal])
+                lista_obj_postal.append(obj_postal)
+
+            obj_correios_log = TagCorreiosLog('2.3',
+                                              obj_tag_plp,
+                                              obj_remetente,
+                                              lista_obj_postal)
+
+            try:
+                print u'[INFO] Iniciando Serviço de Atendimento ao  Cliente'
+                sv = WebserviceAtendeCliente(company_id.sigepweb_environment)
+
+                plp = sv.fecha_plp_varios_servicos(obj_correios_log,
+                                                   long(123),
+                                                   lista_etiqueta,
+                                                   post_card_id.number,
+                                                   cliente)
+
+                print plp
+
+            except ErroConexaoComServidor as e:
+                print e.message
+                raise osv.except_osv(_('Error!'), e.message)
 
 
 
