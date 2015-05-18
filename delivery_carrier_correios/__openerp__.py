@@ -44,6 +44,7 @@
         'view/post_card_view.xml',
         'view/post_service_view.xml',
         'report/stock_report.xml',
+        'report/plp_report.xml',
     ],
     'tests': [],
     'installable': True,
