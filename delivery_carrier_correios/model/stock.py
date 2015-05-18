@@ -69,7 +69,7 @@ class StockPickingOut(orm.Model):
                     sv.gera_digito_verificador_etiquetas(etiquetas,
                                                          cliente,
                                                          online=False)
-
+                    # Adicionamos a etiqueta no campo carrier_tracking_ref
                     for etq in etiquetas:
 
                         vals = {
@@ -97,3 +97,5 @@ class StockPicking(orm.Model):
     _columns = {
         "x_barcode_id": fields.many2one('tr.barcode', 'BarCode'),
     }
+
+#TODO: apagar campo carrier_tracking_ref quando duplicamos a ordem de entrega
