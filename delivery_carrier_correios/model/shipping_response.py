@@ -25,6 +25,22 @@
 from openerp.osv import fields, orm
 
 
+from pysigep_web.pysigepweb.webservice_atende_cliente import WebserviceAtendeCliente
+from pysigep_web.pysigepweb.webservice_calcula_preco_prazo import \
+    WebserviceCalculaPrecoPrazo
+from pysigep_web.pysigepweb.webservice_rastreamento import WebserviceRastreamento
+from pysigep_web.pysigepweb.tag_nacional import TagNacionalPAC41068
+from pysigep_web.pysigepweb.tag_plp import TagPLP
+from pysigep_web.pysigepweb.tag_remetente import TagRemetente
+from pysigep_web.pysigepweb.tag_dimensao_objeto import *
+from pysigep_web.pysigepweb.tag_objeto_postal import *
+from pysigep_web.pysigepweb.tag_correios_log import TagCorreiosLog
+from pysigep_web.pysigepweb.diretoria import Diretoria
+from pysigep_web.pysigepweb.endereco import Endereco
+from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor
+from pysigep_web.pysigepweb.etiqueta import Etiqueta
+
+
 class ShippingResponse(orm.Model):
     _name = 'shipping.response'
 
@@ -49,8 +65,47 @@ class ShippingResponse(orm.Model):
             res[obj] = 0.00
         return res
 
-    def shipment_confirm(self, cr, uid, ids, *args):
-        print 'arrroroor'
+    def shipment_confirm(self, cr, uid, ids, context=None):
+        print 'ARROZ ARROZS'
+
+        company_id = self.pool.get('res.users').browse(cr, uid, uid).company_id
+
+        for ship in self.browse(cr, uid, ids):
+
+            partner_id = ship.partner_id
+
+            remetente_endereco = Endereco(logradouro=company_id.street,
+                                          numero=company_id.number,
+                                          bairro=company_id.district,
+                                          cep=int(company_id.zip.replace('-', '')),
+                                          cidade=company_id.l10n_br_city_id.name,
+                                          uf=company_id.state_id.code,
+                                          complemento=company_id.street2)
+
+            destinatario_endereco = Endereco(logradouro=partner_id.street,
+                                             numero=partner_id.number,
+                                             bairro=partner_id.district,
+                                             cep=int(partner_id.zip.replace('-', '')),
+                                             cidade=partner_id.l10n_br_city_id.name,
+                                             uf=partner_id.state_id.code,
+                                             complemento=partner_id.street2)
+
+            obj_tag_plp = TagPLP(company_id.sigepweb_main_post_card_number)
+
+            obj_remetente = TagRemetente(cliente.nome,
+                                         company_id.sigepweb_main_contract_number,
+                                         cartao_postagem.codigo_admin,
+                                         remetente_endereco,
+                                         Diretoria(Diretoria.DIRETORIA_DR_PARANA),
+                                         telefone=6112345008, email='cli@mail.com.br')
+
+
+            picking_ids = ship.picking_line
+            print picking_ids
+
+
+
+
 
     _columns = {
         'user_id': fields.many2one('res.users',
@@ -65,6 +120,10 @@ class ShippingResponse(orm.Model):
         'carrier_id': fields.many2one('res.partner', string='Carrier',
                                       readonly=True,
                                       states={'draft': [('readonly', False)]}),
+
+        'partner_id': fields.many2one('res.partner', string='Partner',
+                                          readonly=True,
+                                          states={'draft': [('readonly', False)]}),
 
         'carrier_responsible': fields.char('Carrier Responsible'),
 
