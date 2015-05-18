@@ -39,6 +39,7 @@ from pysigep_web.pysigepweb.diretoria import Diretoria
 from pysigep_web.pysigepweb.endereco import Endereco
 from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor
 from pysigep_web.pysigepweb.etiqueta import Etiqueta
+from pysigep_web.pysigepweb.resposta_busca_cliente import Cliente
 
 
 class ShippingResponse(orm.Model):
@@ -72,6 +73,8 @@ class ShippingResponse(orm.Model):
 
             company_id = ship.company_id
             partner_id = ship.partner_id
+            contract_id = ship.contract_id
+            post_card_id = ship.post_card_id
 
             remetente_endereco = Endereco(logradouro=company_id.street,
                                           numero=company_id.number,
@@ -89,15 +92,21 @@ class ShippingResponse(orm.Model):
                                              uf=partner_id.state_id.code,
                                              complemento=partner_id.street2)
 
-            obj_tag_plp = TagPLP(company_id.sigepweb_main_post_card_number)
+            obj_tag_plp = TagPLP(post_card_id.number)
+
+            cliente = Cliente(company_id.name,
+                              company_id.sigepweb_username,
+                              company_id.sigepweb_password,
+                              company_id.cnpj_cpf)
 
             obj_remetente = TagRemetente(cliente.nome,
-                                         company_id.sigepweb_main_contract_number,
-                                         cartao_postagem.codigo_admin,
+                                         contract_id.number,
+                                         post_card_id.admin_code,
                                          remetente_endereco,
-                                         Diretoria(Diretoria.DIRETORIA_DR_PARANA),
-                                         telefone=6112345008,
-                                         email='cli@mail.com.br')
+                                         Diretoria(
+                                             contract_id.directorship_id.code),
+                                         telefone=company_id.phone,
+                                         email=company_id.email)
 
             picking_ids = ship.picking_line
             print picking_ids
