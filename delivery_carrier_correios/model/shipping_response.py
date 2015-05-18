@@ -68,10 +68,9 @@ class ShippingResponse(orm.Model):
     def shipment_confirm(self, cr, uid, ids, context=None):
         print 'ARROZ ARROZS'
 
-        company_id = self.pool.get('res.users').browse(cr, uid, uid).company_id
-
         for ship in self.browse(cr, uid, ids):
 
+            company_id = ship.company_id
             partner_id = ship.partner_id
 
             remetente_endereco = Endereco(logradouro=company_id.street,
@@ -97,8 +96,8 @@ class ShippingResponse(orm.Model):
                                          cartao_postagem.codigo_admin,
                                          remetente_endereco,
                                          Diretoria(Diretoria.DIRETORIA_DR_PARANA),
-                                         telefone=6112345008, email='cli@mail.com.br')
-
+                                         telefone=6112345008,
+                                         email='cli@mail.com.br')
 
             picking_ids = ship.picking_line
             print picking_ids
@@ -151,6 +150,7 @@ class ShippingResponse(orm.Model):
              ('cancel', 'Cancel')
              ],
             required=True,),
+
         'picking_line': fields.many2many(
             'stock.picking.out',
             'shipping_stock_picking_rel',

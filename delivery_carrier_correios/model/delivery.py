@@ -93,15 +93,15 @@ class DeliveryCarrier(orm.Model):
         return True
 
     _columns = {
-        'sigepweb_contract_ids': fields.many2one('sigepweb.contract',
-                                                 'Contract'),
-        'sigepweb_post_card_ids': fields.many2one(
+        'sigepweb_contract_id': fields.many2one('sigepweb.contract'
+                                                'Contract'),
+        'sigepweb_post_card_id': fields.many2one(
             'sigepweb.post.card', string='Post Cards',
-            domain="[('contract_id', '=', sigepweb_contract_ids)]"),
+            domain="[('contract_id', '=', sigepweb_contract_id)]"),
 
-        'sigepweb_post_service_ids': fields.many2one(
+        'sigepweb_post_service_id': fields.many2one(
             'sigepweb.post.service', string='Post Services',
-            domain="[('post_card_id', '=', sigepweb_post_card_ids)]"),
+            domain="[('post_card_id', '=', sigepweb_post_card_id)]"),
     }
 
     _constraints = [
