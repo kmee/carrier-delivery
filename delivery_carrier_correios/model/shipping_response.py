@@ -27,9 +27,6 @@ from openerp.tools.translate import _
 
 
 from pysigep_web.pysigepweb.webservice_atende_cliente import WebserviceAtendeCliente
-from pysigep_web.pysigepweb.webservice_calcula_preco_prazo import \
-    WebserviceCalculaPrecoPrazo
-from pysigep_web.pysigepweb.webservice_rastreamento import WebserviceRastreamento
 from pysigep_web.pysigepweb.tag_nacional import TagNacionalPAC41068
 from pysigep_web.pysigepweb.tag_plp import TagPLP
 from pysigep_web.pysigepweb.tag_remetente import TagRemetente
@@ -52,24 +49,42 @@ class ShippingResponse(orm.Model):
     def _compute_volume(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         for obj in ids:
-            res[obj] = 0.00
+            res[obj] = 0
+
+            obj_ship = self.browse(cr, uid, obj, context=context)
+            for picking in obj_ship.picking_line:
+                res[obj] += int(picking.quantity_of_volumes)
+
         return res
 
     def _compute_weight(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         for obj in ids:
             res[obj] = 0.00
+
+            obj_ship = self.browse(cr, uid, obj, context=context)
+            for picking in obj_ship.picking_line:
+                res[obj] += picking.weight
+
         return res
 
     def _compute_weight_net(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         for obj in ids:
             res[obj] = 0.00
+
+            obj_ship = self.browse(cr, uid, obj, context=context)
+            for picking in obj_ship.picking_line:
+                res[obj] += picking.weight_net
+
         return res
 
     def shipment_confirm(self, cr, uid, ids, context=None):
 
         for ship in self.browse(cr, uid, ids):
+
+            weight = 0.0
+            weight_net = 0.0
 
             company_id = ship.company_id
             contract_id = ship.contract_id
@@ -104,6 +119,9 @@ class ShippingResponse(orm.Model):
             lista_etiqueta = []
 
             for picking in ship.picking_line:
+
+                weight += picking.weight
+                weight_net += picking.weight_net
 
                 partner_id = picking.partner_id
 
@@ -167,8 +185,11 @@ class ShippingResponse(orm.Model):
 
                 print plp.id_plp_cliente
 
-                self.write(cr, uid, ship.id, {
-                    'carrier_responsible': plp.id_plp_cliente}, context=context)
+                vals = {
+                    'carrier_tracking_ref': plp.id_plp_cliente,
+                }
+
+                self.write(cr, uid, ship.id, vals, context=context)
 
             except ErroConexaoComServidor as e:
                 print e.message
@@ -249,7 +270,8 @@ class ShippingResponse(orm.Model):
         'weight_net': fields.function(_compute_weight_net,
                                       type='float',
                                       string="Net Weight",
-                                      readonly=True, store=True,),
+                                      readonly=True, store=True,
+                                      method=True),
     }
     _defaults = {
         'user_id': lambda obj, cr, uid, context: uid,

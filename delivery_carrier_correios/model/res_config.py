@@ -36,6 +36,7 @@ _logger = logging.getLogger(__name__)
 
 
 class SigepWebConfigSettings(orm.TransientModel):
+
     _name = 'sigepweb.config.settings'
     _inherit = 'res.config.settings'
 
