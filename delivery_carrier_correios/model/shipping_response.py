@@ -96,8 +96,9 @@ class ShippingResponse(orm.Model):
                                          obj_endereco,
                                          Diretoria(
                                              contract_id.directorship_id.code),
-                                         telefone=company_id.phone,
-                                         email=company_id.email)
+                                         telefone=company_id.phone or False,
+                                         email=company_id.email,
+                                         fax=company_id.fax)
 
             lista_obj_postal = []
             lista_etiqueta = []
@@ -109,14 +110,15 @@ class ShippingResponse(orm.Model):
                 obj_endereco = Endereco(logradouro=partner_id.street,
                                         numero=int(partner_id.number),
                                         bairro=partner_id.district,
-                                        cep=int(partner_id.zip.replace('-', '')),
+                                        cep=partner_id.zip.replace('-', ''),
                                         cidade=partner_id.l10n_br_city_id.name,
                                         uf=partner_id.state_id.code,
                                         complemento=partner_id.street2)
 
                 obj_destinatario = TagDestinatario(partner_id.name,
                                                    obj_endereco,
-                                                   telefone=partner_id.phone)
+                                                   telefone=partner_id.phone
+                                                            or False)
 
                 # obj_nacional = TagNacionalPAC41068(obj_endereco,
                 #                                    102030, '1')
@@ -137,7 +139,7 @@ class ShippingResponse(orm.Model):
                 # Caixa(20, 30, 38)
                 #TODO: Inserir campos de dimensao do objeto em cada
                 #TODO: Ordem de Entrega
-                obj_dimensao_objeto = TagDimensaoObjeto(Caixa(0, 0, 0))
+                obj_dimensao_objeto = TagDimensaoObjeto(Caixa())
 
                 sv_postagem = ServicoPostagem(
                     picking.carrier_id.sigepweb_post_service_id.code)
@@ -166,20 +168,16 @@ class ShippingResponse(orm.Model):
                 sv = WebserviceAtendeCliente(company_id.sigepweb_environment)
 
                 plp = sv.fecha_plp_varios_servicos(obj_correios_log,
-                                                   long(123),
+                                                   long(ship.id),
                                                    lista_etiqueta,
                                                    post_card_id.number,
                                                    cliente)
 
-                print plp
+                print plp.id_plp_cliente
 
             except ErroConexaoComServidor as e:
                 print e.message
                 raise osv.except_osv(_('Error!'), e.message)
-
-
-
-
 
     _columns = {
         'user_id': fields.many2one('res.users',
