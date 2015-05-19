@@ -68,7 +68,6 @@ class ShippingResponse(orm.Model):
         return res
 
     def shipment_confirm(self, cr, uid, ids, context=None):
-        print 'ARROZ ARROZS'
 
         for ship in self.browse(cr, uid, ids):
 
