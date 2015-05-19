@@ -23,6 +23,7 @@
 ##############################################################################
 
 from openerp.osv import fields, orm, osv
+from openerp.tools.translate import _
 
 
 from pysigep_web.pysigepweb.webservice_atende_cliente import WebserviceAtendeCliente
@@ -126,17 +127,11 @@ class ShippingResponse(orm.Model):
                 #TODO: Buscar numero e serie da fatura a partir da invoice
                 obj_nacional = TagNacional(obj_endereco)
 
-                # obj_nacional.valor_a_cobrar = 23.01
+                if picking.carrier_id.sigepweb_post_service_id.code == '41068':
+                    print "[Warnig] service PAC41068 need nfe number and serie"
 
                 obj_servico_adicional = TagServicoAdicional()
 
-                # obj_servico_adicional.add_tipo_servico_adicional(
-                #     TagServicoAdicional.TIPO_AVISO_RECEBIMENTO)
-                #
-                # obj_servico_adicional.add_tipo_servico_adicional(
-                #     TagServicoAdicional.TIPO_VALOR_DECLARADO, 99.00)
-
-                # Caixa(20, 30, 38)
                 #TODO: Inserir campos de dimensao do objeto em cada
                 #TODO: Ordem de Entrega
                 obj_dimensao_objeto = TagDimensaoObjeto(Caixa())
@@ -158,10 +153,8 @@ class ShippingResponse(orm.Model):
 
                 lista_obj_postal.append(obj_postal)
 
-            obj_correios_log = TagCorreiosLog('2.3',
-                                              obj_tag_plp,
-                                              obj_remetente,
-                                              lista_obj_postal)
+            obj_correios_log = TagCorreiosLog('2.3', obj_tag_plp,
+                                              obj_remetente, lista_obj_postal)
 
             try:
                 print u'[INFO] Iniciando Serviço de Atendimento ao  Cliente'
@@ -174,6 +167,9 @@ class ShippingResponse(orm.Model):
                                                    cliente)
 
                 print plp.id_plp_cliente
+
+                self.write(cr, uid, ship.id, {
+                    'carrier_responsible': plp.id_plp_cliente}, context=context)
 
             except ErroConexaoComServidor as e:
                 print e.message
