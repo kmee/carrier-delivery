@@ -25,6 +25,8 @@
 from openerp.osv import fields, orm, osv
 from openerp.tools.translate import _
 
+import re
+
 
 from pysigep_web.pysigepweb.webservice_atende_cliente import WebserviceAtendeCliente
 from pysigep_web.pysigepweb.tag_nacional import TagNacionalPAC41068
@@ -90,8 +92,11 @@ class ShippingResponse(orm.Model):
             contract_id = ship.contract_id
             post_card_id = ship.post_card_id
 
+            reg = re.compile('[0-9]*')
+            numero = ''.join(reg.findall(partner_id.number))
+
             obj_endereco = Endereco(logradouro=company_id.street,
-                                    numero=int(company_id.number),
+                                    numero=int(numero),
                                     bairro=company_id.district,
                                     cep=int(company_id.zip.replace('-', '')),
                                     cidade=company_id.l10n_br_city_id.name,
@@ -125,8 +130,11 @@ class ShippingResponse(orm.Model):
 
                 partner_id = picking.partner_id
 
+                reg = re.compile('[0-9]*')
+                numero = ''.join(reg.findall(partner_id.number))
+
                 obj_endereco = Endereco(logradouro=partner_id.street,
-                                        numero=int(partner_id.number),
+                                        numero=int(numero),
                                         bairro=partner_id.district,
                                         cep=partner_id.zip.replace('-', ''),
                                         cidade=partner_id.l10n_br_city_id.name,
