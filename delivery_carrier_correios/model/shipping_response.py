@@ -191,7 +191,7 @@ class ShippingResponse(orm.Model):
                                                    post_card_id.number,
                                                    cliente)
 
-                print plp.id_plp_cliente
+                print '[INFO] Id PLP: ', plp.id_plp_cliente
 
                 vals = {
                     'name': 'SP' + str(plp.id_plp_cliente),
@@ -215,7 +215,7 @@ class ShippingResponse(orm.Model):
         'carrier_tracking_ref': fields.char('Tracking Ref.', readonly=True),
 
         'carrier_id': fields.many2one('res.partner', string='Carrier',
-                                      readonly=True,
+                                      required=True, readonly=True,
                                       states={'draft': [('readonly', False)]}),
 
         'carrier_responsible': fields.char('Carrier Responsible'),
@@ -228,18 +228,22 @@ class ShippingResponse(orm.Model):
 
         'company_id': fields.many2one('res.company',
                                       string='Company',
+                                      required=True,
                                       readonly=True,
                                       states={'draft': [('readonly', False)]}),
 
         'contract_id': fields.many2one('sigepweb.contract',
                                        string='Contract',
+                                       required=True,
                                        readonly=True,
                                        states={'draft': [('readonly', False)]},
                                        domain="[('company_id', '=',"
                                               "company_id)]"),
-
+        #TODO: filtrar ondem de entrega cujo metodo de entrega use o cartao
+        # postagem fornecido
         'post_card_id': fields.many2one('sigepweb.post.card',
                                         string='Post Cards',
+                                        required=True,
                                         readonly=True,
                                         states={'draft': [('readonly',
                                                            False)]},
