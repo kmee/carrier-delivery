@@ -194,6 +194,7 @@ class ShippingResponse(orm.Model):
                 print plp.id_plp_cliente
 
                 vals = {
+                    'name': 'SP' + str(plp.id_plp_cliente),
                     'carrier_tracking_ref': plp.id_plp_cliente,
                 }
 
@@ -225,15 +226,23 @@ class ShippingResponse(orm.Model):
         'note': fields.text('Description / Remarks', readonly=True,
                             states={'draft': [('readonly', False)]}),
 
-        'company_id': fields.many2one('res.company', 'Company'),
+        'company_id': fields.many2one('res.company',
+                                      string='Company',
+                                      readonly=True,
+                                      states={'draft': [('readonly', False)]}),
 
         'contract_id': fields.many2one('sigepweb.contract',
                                         string='Contract',
+                                        readonly=True,
+                                        states={'draft': [('readonly', False)]},
                                         domain="[('company_id', '=',"
                                                "company_id)]"),
 
         'post_card_id': fields.many2one('sigepweb.post.card',
                                          string='Post Cards',
+                                         readonly=True,
+                                         states={'draft': [('readonly',
+                                                            False)]},
                                          domain="[('contract_id', '=', contract_id)]"),
 
         'state': fields.selection(
