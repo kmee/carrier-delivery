@@ -35,14 +35,9 @@ class StockPickingOut(orm.Model):
 
     _columns = {
         'x_barcode_id': fields.many2one('tr.barcode', 'BarCode'),
-        'shipping_group': fields.many2many(
-            'shipping.response',
-            'shipping_stock_picking_rel',
-            'picking_id',
-            'response_id',
-            'Shipping Group',
-            readonly=True,
-            states={'draft': [('readonly', False)]}),
+        'shipping_response_id': fields.many2one('shipping.response',
+                                                string='Shipping Group',
+                                                readonly=True),
     }
 
     def action_process(self, cr, uid, ids, *args):
@@ -104,6 +99,9 @@ class StockPicking(orm.Model):
 
     _columns = {
         "x_barcode_id": fields.many2one('tr.barcode', u'BarCode'),
+        'shipping_response_id': fields.many2one('shipping.response',
+                                                string='Shipping Group',
+                                                readonly=True),
     }
 
 #TODO: apagar campo carrier_tracking_ref quando duplicamos a ordem de entrega
