@@ -39,9 +39,9 @@ class PostService(orm.Model):
                                           'sigepweb_post_card_service_rel',
                                           'post_service_id', 'post_card_id',
                                           u'Cartões de Postagem'),
-        'delivery_id': fields.one2many('delivery.carrier',
-                                       'sigepweb_post_service_ids',
-                                       'Carrier Delivery'),
+        'delivery_ids': fields.one2many('delivery.carrier',
+                                        'sigepweb_post_service_id',
+                                        'Carrier Delivery'),
     }
 
 

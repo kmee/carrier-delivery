@@ -32,6 +32,7 @@
         'tr_barcode_on_picking',
         'base_delivery_carrier_label',
         'base_headers_webkit',
+        'kmee_delivery_webservice_correios',
     ],
     'description': """
     Carrier Delivery Correios Sigepweb WebService
@@ -43,7 +44,7 @@
         'view/contract_view.xml',
         'view/post_card_view.xml',
         'view/post_service_view.xml',
-        'view/plp_view.xml',
+        'view/shipping_response_view.xml',
         'report/stock_report.xml',
     ],
     'tests': [],

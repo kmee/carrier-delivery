@@ -12,25 +12,25 @@
                    ref="base_delivery_carrier_label.view_delivery_carrier_form"/>
             <field name="arch" type="xml">
                 <field name="type" position="after">
-                    <field name="sigepweb_contract_ids"
+                    <field name="sigepweb_contract_id"
                            attrs="{'invisible': [('type', '!=', 'sigepweb')], 'required': [('type', '=', 'sigepweb')]}"/>
-                    <field name="sigepweb_post_card_ids"
+                    <field name="sigepweb_post_card_id"
                            attrs="{'invisible': [('type', '!=', 'sigepweb')], 'required': [('type', '=', 'sigepweb')]}"/>
-                    <field name="sigepweb_post_service_ids"
+                    <field name="sigepweb_post_service_id"
                            attrs="{'invisible': [('type', '!=', 'sigepweb')], 'required': [('type', '=', 'sigepweb')]}"
-                           on_change="onchange_sigepweb_post_service_ids(sigepweb_post_service_ids)"/>
+                           on_change="onchange_sigepweb_post_service_id(sigepweb_post_service_id)"/>
                 </field>
-                <field name="code" position="attributes">
-                    <attribute name="attrs">{'readonly': [('type', '=',
-                        'sigepweb')]}
-                    </attribute>
-                </field>
+                <!--<field name="code" position="attributes">-->
+                    <!--<attribute name="attrs">{'readonly': [('type', '=',-->
+                        <!--'sigepweb')]}-->
+                    <!--</attribute>-->
+                <!--</field>-->
 
-                <field name="available_option_ids" position="attributes">
-                    <attribute name="context">{'default_carrier_id': active_id,
-                        'default_allowed_option_ids': allowed_option_ids}
-                    </attribute>
-                </field>
+                <!--<field name="available_option_ids" position="attributes">-->
+                    <!--<attribute name="context">{'default_carrier_id': active_id,-->
+                        <!--'default_allowed_option_ids': allowed_option_ids}-->
+                    <!--</attribute>-->
+                <!--</field>-->
             </field>
         </record>
 

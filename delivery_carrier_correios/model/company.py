@@ -40,11 +40,14 @@ class ResCompany(orm.Model):
         'sigepweb_main_contract_number': fields.char('Main Contract'),
         'sigepweb_main_post_card_number': fields.char('Main Post Card'),
         'sigepweb_contract_ids': fields.one2many('sigepweb.contract',
-                                                 'rescompany_id',
+                                                 'company_id',
                                                  'Contract'),
         'sigepweb_environment': fields.selection((HOMOLOGACAO, PRODUCAO),
                                                  string='Ambiente',
                                                  required=True),
+        'shipping_response_ids': fields.one2many('shipping.response',
+                                                 'company_id',
+                                                 string='Shipping Response')
     }
 
     _defaults = {

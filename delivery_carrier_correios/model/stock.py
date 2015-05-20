@@ -34,8 +34,15 @@ class StockPickingOut(orm.Model):
     _inherit = 'stock.picking.out'
 
     _columns = {
-        'x_barcode_id': fields.many2one('tr.barcode', u'BarCode'),
-        # 'plp_id': fields.many2one('sigepweb.plp', u'PLP'),
+        'x_barcode_id': fields.many2one('tr.barcode', 'BarCode'),
+        'shipping_group': fields.many2many(
+            'shipping.response',
+            'shipping_stock_picking_rel',
+            'picking_id',
+            'response_id',
+            'Shipping Group',
+            readonly=True,
+            states={'draft': [('readonly', False)]}),
     }
 
     def action_process(self, cr, uid, ids, *args):
@@ -59,7 +66,7 @@ class StockPickingOut(orm.Model):
                                       company_id.cnpj_cpf)
 
                     servico_postagem_id = \
-                        stock.carrier_id.sigepweb_post_service_ids
+                        stock.carrier_id.sigepweb_post_service_id
 
                     serv_post = ServicoPostagem(servico_postagem_id.code,
                                                 servico_postagem_id.details,
@@ -70,7 +77,7 @@ class StockPickingOut(orm.Model):
                     sv.gera_digito_verificador_etiquetas(etiquetas,
                                                          cliente,
                                                          online=False)
-
+                    # Adicionamos a etiqueta no campo carrier_tracking_ref
                     for etq in etiquetas:
 
                         vals = {
@@ -98,3 +105,5 @@ class StockPicking(orm.Model):
     _columns = {
         "x_barcode_id": fields.many2one('tr.barcode', u'BarCode'),
     }
+
+#TODO: apagar campo carrier_tracking_ref quando duplicamos a ordem de entrega

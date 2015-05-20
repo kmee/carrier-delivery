@@ -31,7 +31,7 @@ class Directorship(orm.Model):
     _name = 'sigepweb.directorship'
 
     _columns = {
-        'code': fields.char('Code'),
+        'code': fields.integer('Code'),
         'acronym': fields.char('Acronym'),
         'details': fields.char('Details'),
         'contract_ids': fields.one2many('sigepweb.contract',
