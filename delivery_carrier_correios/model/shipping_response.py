@@ -93,7 +93,7 @@ class ShippingResponse(orm.Model):
             post_card_id = ship.post_card_id
 
             reg = re.compile('[0-9]*')
-            numero = ''.join(reg.findall(partner_id.number))
+            numero = ''.join(reg.findall(company_id.number))
 
             obj_endereco = Endereco(logradouro=company_id.street,
                                     numero=int(numero),
