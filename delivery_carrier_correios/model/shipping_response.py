@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-#    Brazillian Carrier Correios Sigep WEB
+# Brazillian Carrier Correios Sigep WEB
 #    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
 #    @author Luis Felipe Mileo <mileo@kmee.com.br>
 #
@@ -27,8 +27,8 @@ from openerp.tools.translate import _
 
 import re
 
-
-from pysigep_web.pysigepweb.webservice_atende_cliente import WebserviceAtendeCliente
+from pysigep_web.pysigepweb.webservice_atende_cliente import \
+    WebserviceAtendeCliente
 from pysigep_web.pysigepweb.tag_nacional import TagNacionalPAC41068
 from pysigep_web.pysigepweb.tag_plp import TagPLP
 from pysigep_web.pysigepweb.tag_remetente import TagRemetente
@@ -232,42 +232,27 @@ class ShippingResponse(orm.Model):
                                       states={'draft': [('readonly', False)]}),
 
         'contract_id': fields.many2one('sigepweb.contract',
-                                        string='Contract',
-                                        readonly=True,
-                                        states={'draft': [('readonly', False)]},
-                                        domain="[('company_id', '=',"
-                                               "company_id)]"),
+                                       string='Contract',
+                                       readonly=True,
+                                       states={'draft': [('readonly', False)]},
+                                       domain="[('company_id', '=',"
+                                              "company_id)]"),
 
         'post_card_id': fields.many2one('sigepweb.post.card',
-                                         string='Post Cards',
-                                         readonly=True,
-                                         states={'draft': [('readonly',
-                                                            False)]},
-                                         domain="[('contract_id', '=', contract_id)]"),
+                                        string='Post Cards',
+                                        readonly=True,
+                                        states={'draft': [('readonly',
+                                                           False)]},
+                                        domain="[('contract_id', '=', "
+                                               "contract_id)]"),
 
         'state': fields.selection(
             [('draft', 'Draft'),
              ('confirmed', 'Confirmed'),
              ('in_transit', 'In Transit'),
              ('done', 'Done'),
-             ('cancel', 'Cancel')
-             ],
-            required=True,),
-
-        # 'picking_line': fields.many2many(
-        #     'stock.picking.out',
-        #     'shipping_stock_picking_rel',
-        #     'response_id',
-        #     'picking_id',
-        #     'Pickings',
-        #     readonly=True,
-        #     states={'draft': [('readonly', False)]},
-        #     domain=[
-        #         ('type', '=', 'out'),
-        #         ('state', '=', 'done'),
-        #         # ('carrier_id', '=', 'picking_line.carrier_id.partner_id'),
-        #         # ('shipping_group', '=', False),
-        #         ]),
+             ('cancel', 'Cancel')],
+            required=True, ),
 
         'picking_line': fields.one2many('stock.picking.out',
                                         'shipping_response_id',
@@ -288,11 +273,11 @@ class ShippingResponse(orm.Model):
                                   type='float',
                                   string=u'Nº Volume',
                                   readonly=True,
-                                  store=True,),
+                                  store=True, ),
         'weight': fields.function(_compute_weight,
                                   type='float',
                                   string="Weight",
-                                  readonly=True, store=True,),
+                                  readonly=True, store=True, ),
         'weight_net': fields.function(_compute_weight_net,
                                       type='float',
                                       string="Net Weight",
