@@ -70,7 +70,7 @@
                     <field name="note" colspan="4" class="oe_inline" placeholder="Additional notes..."/>
                   </page>
                   <page string="Entregas">
-                    <field name="picking_line"/>
+                    <field name="picking_line" widget="many2many"/>
                       <!--<tree>-->
                         <!--<field name="product_id"/>-->
                         <!--<field name="state"/>-->

@@ -237,21 +237,30 @@ class ShippingResponse(orm.Model):
              ],
             required=True,),
 
-        'picking_line': fields.many2many(
-            'stock.picking.out',
-            'shipping_stock_picking_rel',
-            'response_id',
-            'picking_id',
-            'Pickings',
-            readonly=True,
-            states={'draft': [('readonly', False)]},
-            domain=[
-                ('type', '=', 'out'),
-                ('state', '=', 'done'),
-                # ('carrier_id', '=', 'picking_line.carrier_id.partner_id'),
-                # ('shipping_group', '=', False),
-                ],
-        ),
+        # 'picking_line': fields.many2many(
+        #     'stock.picking.out',
+        #     'shipping_stock_picking_rel',
+        #     'response_id',
+        #     'picking_id',
+        #     'Pickings',
+        #     readonly=True,
+        #     states={'draft': [('readonly', False)]},
+        #     domain=[
+        #         ('type', '=', 'out'),
+        #         ('state', '=', 'done'),
+        #         # ('carrier_id', '=', 'picking_line.carrier_id.partner_id'),
+        #         # ('shipping_group', '=', False),
+        #         ]),
+
+        'picking_line': fields.one2many('stock.picking.out',
+                                        'shipping_response_id',
+                                        string='Pickings',
+                                        readonly=True,
+                                        states={'draft': [('readonly', False)]},
+                                        domain=[
+                                            ('type', '=', 'out'),
+                                            ('state', '=', 'done')]),
+
         # 'departure_picking_ids': fields.one2many('stock.picking.out',
         #                                          'shipping_response_id',
         #                                          'Departure Pickings',
