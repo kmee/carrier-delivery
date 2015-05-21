@@ -19,6 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from bsddb.dbtables import _columns_key
 
 from openerp.osv import orm, fields, osv
 from openerp.tools.translate import _
@@ -34,10 +35,12 @@ class StockPickingOut(orm.Model):
     _inherit = 'stock.picking.out'
 
     _columns = {
-        'x_barcode_id': fields.many2one('tr.barcode', 'BarCode'),
+        'x_barcode_id': fields.many2one('tr.barcode', string=u'BarCode'),
         'shipping_response_id': fields.many2one('shipping.response',
-                                                string='Shipping Group',
+                                                string=u'Shipping Group',
                                                 readonly=True),
+        'barcode_id': fields.many2one('tr.barcode', string=u'QR Code'),
+        'qr_code_id': fields.many2one('tr.barcode', string=u'Código de Barras'),
     }
 
     def action_process(self, cr, uid, ids, *args):
@@ -91,17 +94,55 @@ class StockPickingOut(orm.Model):
             'type': 'ir.actions.report.xml',
             'report_name': 'shipping.label.webkit'
         }
+        qr_code_id = self.create_qr_code(cr, uid, ids, context)
+        barcode_id = self.create_barcode(cr, uid, ids, context)
+
+        self.write(cr, uid, ids, {'barcode_id': barcode_id, 'qr_code_id': qr_code_id})
+
         return result
 
+    def create_qr_code(self, cr, uid, id, context):
+
+        barcode_vals = {
+            'code': 'pypcrjycuhzvxbpcfwqjjarfmeyeewznfiyvdetokcxdbtfqyucizzsjskidnowshsdbqzgwnfwgdetzusxgrdtcosbwkgqyugvpzcmwfehmybjtgxveunjfbnizebaxtqskfkkqwc',
+            'res_id': id[0],
+            'barcode_type': 'qrcode',
+            'hr_form': True,
+            'width': 32,
+            'height': 32,
+        }
+
+        barcode_obj = self.pool.get('tr.barcode')
+        barcode_id = barcode_obj.create(cr, uid, barcode_vals, context=context)
+        barcode_obj.generate_image(cr, uid, [barcode_id], context=context)
+
+        return barcode_id
+
+    def create_barcode(self, cr, uid, id, context):
+
+        barcode_vals = {
+            'code': self.browse(cr, uid, id, context)[0].name,
+            'res_id': id[0],
+            'barcode_type': 'Code128',
+            'width': 125,
+        }
+
+        barcode_obj = self.pool.get('tr.barcode')
+        barcode_id = barcode_obj.create(cr, uid, barcode_vals, context=context)
+        barcode_obj.generate_image(cr, uid, [barcode_id], context=context)
+
+        return barcode_id
 
 class StockPicking(orm.Model):
     _inherit = 'stock.picking'
 
     _columns = {
-        "x_barcode_id": fields.many2one('tr.barcode', u'BarCode'),
+        "x_barcode_id": fields.many2one('tr.barcode', string=u'BarCode'),
         'shipping_response_id': fields.many2one('shipping.response',
                                                 string='Shipping Group',
                                                 readonly=True),
+        'barcode_id': fields.many2one('tr.barcode', string=u'QR Code'),
+        'qr_code_id': fields.many2one('tr.barcode', string=u'Código de Barras'),
     }
 
 #TODO: apagar campo carrier_tracking_ref quando duplicamos a ordem de entrega
