@@ -81,6 +81,19 @@ class ShippingResponse(orm.Model):
 
         return res
 
+    def onchange_post_card_id(self, cr, uid, ids, post_card_id, context=None):
+        print 'tetet'
+        res = {'value': {}}
+
+        print post_card_id
+        pool = self.pool.get('sigepweb.post.card')
+
+        for post_card in pool.browse(cr, uid, [post_card_id], context=context):
+            res['value']['delivery_ids'] = [d.id for d in
+                                            post_card.delivery_ids]
+
+        return res
+
     def shipment_confirm(self, cr, uid, ids, context=None):
 
         for ship in self.browse(cr, uid, ids):
@@ -191,7 +204,7 @@ class ShippingResponse(orm.Model):
                                                    post_card_id.number,
                                                    cliente)
 
-                print '[INFO] Id PLP: ', plp.id_plp_cliente
+                print u'[INFO] Id PLP: ', plp.id_plp_cliente
 
                 vals = {
                     'name': 'SP' + str(plp.id_plp_cliente),
@@ -258,6 +271,13 @@ class ShippingResponse(orm.Model):
              ('cancel', 'Cancel')],
             required=True, ),
 
+
+        'delivery_ids': fields.many2many('delivery.carrier',
+                                         'sigepweb_response_delivery_rel',
+                                         'response_id',
+                                         'delivery_id', 'Deliverys'),
+
+
         'picking_line': fields.one2many('stock.picking.out',
                                         'shipping_response_id',
                                         string='Pickings',
@@ -265,7 +285,20 @@ class ShippingResponse(orm.Model):
                                         states={'draft': [('readonly', False)]},
                                         domain=[
                                             ('type', '=', 'out'),
-                                            ('state', '=', 'done')]),
+                                            ('state', '=', 'done'),
+                                        ],
+                                        ),
+
+        # 'picking_line_2': fields.function(_get_delivery,
+        #                                   relation="stock.picking.out",
+        #                                   method=True, type="one2many"),
+        #
+        # 'piking_carrier_id': fields.related('picking_line',
+        #                                     'carrier_id',
+        #                                     string='Picking carrier',
+        #                                     type='many2one',
+        #                                     relation='delivery.carrier'),
+
 
         # 'departure_picking_ids': fields.one2many('stock.picking.out',
         #                                          'shipping_response_id',
@@ -280,11 +313,11 @@ class ShippingResponse(orm.Model):
                                   store=True, ),
         'weight': fields.function(_compute_weight,
                                   type='float',
-                                  string="Weight",
+                                  string=u'Weight',
                                   readonly=True, store=True, ),
         'weight_net': fields.function(_compute_weight_net,
                                       type='float',
-                                      string="Net Weight",
+                                      string=u'Net Weight',
                                       readonly=True, store=True,
                                       method=True),
     }
