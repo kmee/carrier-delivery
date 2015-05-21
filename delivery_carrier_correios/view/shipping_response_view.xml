@@ -81,15 +81,15 @@
                                        domain="[('carrier_id','in', delivery_ids[0][2])]">
                                     <tree>
 
-                                    <field name="product_id"/>
-                                    <field name="state"/>
+                                        <field name="name"/>
+                                        <field name="partner_id"/>
+                                        <field name="date"/>
+                                        <field name="carrier_id"/>
+                                        <field name="product_id"/>
+                                        <field name="state"/>
 
                                     </tree>
                                 </field>
-                                <!--<field name="picking_line_2">-->
-                                <!--<field name="product_id"/>-->
-                                <!--<field name="state"/>-->
-                                <!--</field>-->
                             </page>
                         </notebook>
                     </sheet>

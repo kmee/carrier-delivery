@@ -2,7 +2,7 @@
 # #############################################################################
 #
 # Brazillian Carrier Correios Sigep WEB
-#    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
+# Copyright (C) 2015 KMEE (http://www.kmee.com.br)
 #    @author Luis Felipe Mileo <mileo@kmee.com.br>
 #
 #    Sponsored by Europestar www.europestar.com.br
@@ -287,7 +287,7 @@ class ShippingResponse(orm.Model):
                                             ('type', '=', 'out'),
                                             ('state', '=', 'done'),
                                         ],
-                                        ),
+        ),
 
         # 'picking_line_2': fields.function(_get_delivery,
         #                                   relation="stock.picking.out",
