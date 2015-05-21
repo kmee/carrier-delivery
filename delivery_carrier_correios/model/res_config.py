@@ -131,7 +131,7 @@ class SigepWebConfigSettings(orm.TransientModel):
                 config.sigepweb_company_id.sigepweb_main_post_card_number
 
             try:
-                print u'[INFO] Iniciando Serviço de Atendimento ao  Cliente'
+                print u'[INFO] Iniciando Serviço de Atendimento ao Cliente'
                 sv = WebserviceAtendeCliente(config.environment)
 
                 print u'[INFO] Consultando dados do cliente'
