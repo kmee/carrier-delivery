@@ -286,8 +286,7 @@ class ShippingResponse(orm.Model):
                                         domain=[
                                             ('type', '=', 'out'),
                                             ('state', '=', 'done'),
-                                        ],
-        ),
+                                        ]),
 
         # 'picking_line_2': fields.function(_get_delivery,
         #                                   relation="stock.picking.out",

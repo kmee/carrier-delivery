@@ -51,7 +51,7 @@
                                 <field name="post_card_id"
                                        on_change="onchange_post_card_id(post_card_id)"/>
                                 <!--<field name="piking_carrier_id"/>-->
-                                <field name="delivery_ids"/>
+                                <field name="delivery_ids" invisible="1"/>
                             </group>
                         </group>
                         <notebook>
