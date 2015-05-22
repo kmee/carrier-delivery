@@ -37,7 +37,7 @@ from pysigep_web.pysigepweb.tag_objeto_postal import *
 from pysigep_web.pysigepweb.tag_correios_log import TagCorreiosLog
 from pysigep_web.pysigepweb.diretoria import Diretoria
 from pysigep_web.pysigepweb.endereco import Endereco
-from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor
+from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor, ErroValidacaoXML
 from pysigep_web.pysigepweb.etiqueta import Etiqueta
 from pysigep_web.pysigepweb.resposta_busca_cliente import Cliente
 
@@ -159,7 +159,7 @@ class ShippingResponse(orm.Model):
 
                 #TODO: Inserir campos de dimensao do objeto em cada
                 #TODO: Ordem de Entrega
-                obj_dimensao_objeto = TagDimensaoObjeto(Caixa())
+                obj_dimensao_objeto = TagDimensaoObjeto(Caixa(0,0,0))
 
                 sv_postagem = ServicoPostagem(
                     picking.carrier_id.sigepweb_post_service_id.code)
@@ -201,6 +201,9 @@ class ShippingResponse(orm.Model):
                 self.write(cr, uid, ship.id, vals, context=context)
 
             except ErroConexaoComServidor as e:
+                print e.message
+                raise osv.except_osv(_('Error!'), e.message)
+            except ErroValidacaoXML as e:
                 print e.message
                 raise osv.except_osv(_('Error!'), e.message)
 
