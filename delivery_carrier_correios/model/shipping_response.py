@@ -253,7 +253,8 @@ class ShippingResponse(orm.Model):
                                        readonly=True,
                                        states={'draft': [('readonly', False)]},
                                        domain="[('company_id', '=',"
-                                              "company_id)]"),
+                                              "company_id)]",
+                                       ),
         #TODO: filtrar ondem de entrega cujo metodo de entrega use o cartao
         # postagem fornecido
         'post_card_id': fields.many2one('sigepweb.post.card',

@@ -78,7 +78,7 @@
                             </page>
                             <page string="Entregas">
                                 <field name="picking_line" widget="many2many"
-                                       domain="[('carrier_id','in', delivery_ids[0][2])]">
+                                       domain="[('company_id', '=', 'company_id'),('carrier_id','in', delivery_ids[0][2])]">
                                     <tree>
 
                                         <field name="name"/>
