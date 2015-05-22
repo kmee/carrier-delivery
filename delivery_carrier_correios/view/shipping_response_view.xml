@@ -48,10 +48,7 @@
                             <group>
                                 <field name="company_id"/>
                                 <field name="contract_id"/>
-                                <field name="post_card_id"
-                                       on_change="onchange_post_card_id(post_card_id)"/>
-                                <!--<field name="piking_carrier_id"/>-->
-                                <field name="delivery_ids" invisible="1"/>
+                                <field name="post_card_id"/>
                             </group>
                         </group>
                         <notebook>
@@ -78,7 +75,7 @@
                             </page>
                             <page string="Entregas">
                                 <field name="picking_line" widget="many2many"
-                                       domain="[('company_id', '=', 'company_id'),('carrier_id','in', delivery_ids[0][2])]">
+                                       domain="[('company_id', '=', company_id),('carrier_id.sigepweb_post_card_id.id','=', post_card_id)]">
                                     <tree>
 
                                         <field name="name"/>
