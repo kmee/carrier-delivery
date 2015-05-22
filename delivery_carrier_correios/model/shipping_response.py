@@ -231,7 +231,9 @@ class ShippingResponse(orm.Model):
                                       required=True, readonly=True,
                                       states={'draft': [('readonly', False)]}),
 
-        'carrier_responsible': fields.char('Carrier Responsible'),
+        'carrier_responsible': fields.many2one('res.partner',
+                                               string='Carrier Responsible',
+                                               states={'draft': [('readonly', False)]}),
 
         'date': fields.date('Date', require=True, readonly=True,
                             states={'draft': [('readonly', False)]}),
@@ -271,7 +273,7 @@ class ShippingResponse(orm.Model):
              ('cancel', 'Cancel')],
             required=True, ),
 
-
+        # fields create to used like domain in picking_line
         'delivery_ids': fields.many2many('delivery.carrier',
                                          'sigepweb_response_delivery_rel',
                                          'response_id',
