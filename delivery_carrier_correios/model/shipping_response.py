@@ -81,19 +81,6 @@ class ShippingResponse(orm.Model):
 
         return res
 
-    def onchange_post_card_id(self, cr, uid, ids, post_card_id, context=None):
-        print 'tetet'
-        res = {'value': {}}
-
-        print post_card_id
-        pool = self.pool.get('sigepweb.post.card')
-
-        for post_card in pool.browse(cr, uid, [post_card_id], context=context):
-            res['value']['delivery_ids'] = [d.id for d in
-                                            post_card.delivery_ids]
-
-        return res
-
     def shipment_confirm(self, cr, uid, ids, context=None):
 
         for ship in self.browse(cr, uid, ids):
@@ -255,7 +242,6 @@ class ShippingResponse(orm.Model):
                                        domain="[('company_id', '=',"
                                               "company_id)]",
                                        ),
-        #TODO: filtrar ondem de entrega cujo metodo de entrega use o cartao
         # postagem fornecido
         'post_card_id': fields.many2one('sigepweb.post.card',
                                         string='Post Cards',
@@ -266,20 +252,12 @@ class ShippingResponse(orm.Model):
                                         domain="[('contract_id', '=', "
                                                "contract_id)]"),
 
-        'state': fields.selection(
-            [('draft', 'Draft'),
-             ('confirmed', 'Confirmed'),
-             ('in_transit', 'In Transit'),
-             ('done', 'Done'),
-             ('cancel', 'Cancel')],
-            required=True, ),
-
-        # fields create to used like domain in picking_line
-        'delivery_ids': fields.many2many('delivery.carrier',
-                                         'sigepweb_response_delivery_rel',
-                                         'response_id',
-                                         'delivery_id', 'Deliverys'),
-
+        'state': fields.selection([('draft', 'Draft'),
+                                   ('confirmed', 'Confirmed'),
+                                   ('in_transit', 'In Transit'),
+                                   ('done', 'Done'),
+                                   ('cancel', 'Cancel'),
+                                   ], required=True, ),
 
         'picking_line': fields.one2many('stock.picking.out',
                                         'shipping_response_id',
@@ -291,23 +269,6 @@ class ShippingResponse(orm.Model):
                                             ('state', '=', 'done'),
                                         ]),
 
-        # 'picking_line_2': fields.function(_get_delivery,
-        #                                   relation="stock.picking.out",
-        #                                   method=True, type="one2many"),
-        #
-        # 'piking_carrier_id': fields.related('picking_line',
-        #                                     'carrier_id',
-        #                                     string='Picking carrier',
-        #                                     type='many2one',
-        #                                     relation='delivery.carrier'),
-
-
-        # 'departure_picking_ids': fields.one2many('stock.picking.out',
-        #                                          'shipping_response_id',
-        #                                          'Departure Pickings',
-        #     # readonly=True,
-        #     # states={'draft': [('readonly', False)]}
-        # ),
         'volume': fields.function(_compute_volume,
                                   type='float',
                                   string=u'Nº Volume',
@@ -326,7 +287,6 @@ class ShippingResponse(orm.Model):
     _defaults = {
         'user_id': lambda obj, cr, uid, context: uid,
         'state': 'draft',
-        # 'selected': False,
         'name': '/',
     }
 
