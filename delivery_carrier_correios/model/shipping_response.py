@@ -159,7 +159,7 @@ class ShippingResponse(orm.Model):
 
                 #TODO: Inserir campos de dimensao do objeto em cada
                 #TODO: Ordem de Entrega
-                obj_dimensao_objeto = TagDimensaoObjeto(Caixa(0,0,0))
+                obj_dimensao_objeto = TagDimensaoObjeto(Caixa())
 
                 sv_postagem = ServicoPostagem(
                     picking.carrier_id.sigepweb_post_service_id.code)
