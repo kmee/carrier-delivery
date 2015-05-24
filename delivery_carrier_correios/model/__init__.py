@@ -47,6 +47,6 @@ from . import res_config
 #TODO: Verificar tamanho das caixas usadas
 #TODO: Montar workflow da PLP
 #TODO: Montar ficha de postagem dos correios com chancela, qrcode e cod. barras
-#TODO: Adicionar campos no relatorio de ficha de dados da PLP
+#TODO: Adicionar campos no relatorio do vouncher da PLP
 #TODO: Verificar se PLP não pode mais ser usada depois de gerada.as
 #TODO: Pesquisar o que é id_plp_master
