@@ -32,7 +32,7 @@
             <field name="flow_stop">True</field>
         </record>
 
-        <record model="workflow.activity" id="act_lost">
+        <record model="workflow.activity" id="act_cancel">
             <field name="wkf_id" ref="wkf_shipment"/>
             <field name="name">cancel</field>
             <field name="kind">function</field>

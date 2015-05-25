@@ -81,6 +81,24 @@ class ShippingResponse(orm.Model):
 
         return res
 
+    def action_shipment_draft(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'draft'}, context=context)
+        return True
+
+    def action_shipment_confirm(self, cr, uid, ids, context=None):
+        if self.shipment_confirm(cr, uid, ids):
+            self.write(cr, uid, ids, {'state': 'confirmed'}, context=context)
+            return True
+        return False
+
+    def action_shipment_cancel(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'cancel'}, context=context)
+        return True
+
+    def action_shipment_done(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'done'}, context=context)
+        return True
+
     def shipment_confirm(self, cr, uid, ids, context=None):
 
         for ship in self.browse(cr, uid, ids):
@@ -198,7 +216,7 @@ class ShippingResponse(orm.Model):
                     'carrier_tracking_ref': plp.id_plp_cliente,
                 }
 
-                self.write(cr, uid, ship.id, vals, context=context)
+                return self.write(cr, uid, ship.id, vals, context=context)
 
             except ErroConexaoComServidor as e:
                 print e.message
@@ -206,6 +224,8 @@ class ShippingResponse(orm.Model):
             except ErroValidacaoXML as e:
                 print e.message
                 raise osv.except_osv(_('Error!'), e.message)
+
+        return False
 
     _columns = {
         'user_id': fields.many2one('res.users',
@@ -255,13 +275,6 @@ class ShippingResponse(orm.Model):
                                         domain="[('contract_id', '=', "
                                                "contract_id)]"),
 
-        'state': fields.selection([('draft', 'Draft'),
-                                   ('confirmed', 'Confirmed'),
-                                   ('in_transit', 'In Transit'),
-                                   ('done', 'Done'),
-                                   ('cancel', 'Cancel'),
-                                   ], required=True, ),
-
         'picking_line': fields.one2many('stock.picking.out',
                                         'shipping_response_id',
                                         string='Pickings',
@@ -286,6 +299,12 @@ class ShippingResponse(orm.Model):
                                       string=u'Net Weight',
                                       readonly=True, store=True,
                                       method=True),
+
+        'state': fields.selection([('draft', 'Draft'),
+                                   ('confirmed', 'Confirmed'),
+                                   ('done', 'Done'),
+                                   ('cancel', 'Cancel'),
+                                   ], required=True, ),
     }
     _defaults = {
         'user_id': lambda obj, cr, uid, context: uid,
