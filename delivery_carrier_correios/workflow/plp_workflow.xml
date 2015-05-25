@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record model="workflow" id="wkf_shipment">
+            <field name="name">shipment.wkf</field>
+            <field name="osv">shipment.shipment</field>
+            <field name="on_create">True</field>
+        </record>
+
+
+        <record model="workflow.activity" id="act_draft">
+            <field name="wkf_id" ref="wkf_shipment"/>
+            <field name="flow_start">True</field>
+            <field name="name">draft</field>
+            <field name="kind">function</field>
+            <field name="action">action_shipment_draft()</field>
+        </record>
+
+        <record model="workflow.activity" id="act_confirm">
+            <field name="wkf_id" ref="wkf_shipment"/>
+            <field name="name">confirmed</field>
+            <field name="kind">function</field>
+            <field name="action">action_shipment_confirm()</field>
+        </record>
+
+        <record model="workflow.activity" id="act_done">
+            <field name="wkf_id" ref="wkf_shipment"/>
+            <field name="name">done</field>
+            <field name="kind">function</field>
+            <field name="action">action_shipment_done()</field>
+            <field name="flow_stop">True</field>
+        </record>
+
+        <record model="workflow.activity" id="act_lost">
+            <field name="wkf_id" ref="wkf_shipment"/>
+            <field name="name">cancel</field>
+            <field name="kind">function</field>
+            <field name="action">action_shipment_cancel()</field>
+            <field name="flow_stop">True</field>
+        </record>
+
+
+        <record model="workflow.transition" id="t1">
+            <field name="act_from" ref="act_draft"/>
+            <field name="act_to" ref="act_confirm"/>
+            <field name="signal">action_shipment_confirm</field>
+        </record>
+
+        <record model="workflow.transition" id="t2">
+            <field name="act_from" ref="act_confirm"/>
+            <field name="act_to" ref="act_done"/>
+            <field name="signal">action_shipment_done</field>
+        </record>
+
+        <record model="workflow.transition" id="t3">
+            <field name="act_from" ref="act_confirm"/>
+            <field name="act_to" ref="act_cancel"/>
+            <field name="signal">action_shipment_cancel</field>
+        </record>
+
+    </data>
+</openerp>
