@@ -59,6 +59,11 @@ class SigepWebConfigSettings(orm.TransientModel):
             'sigepweb_company_id', 'sigepweb_password',
             string=u'Senha', type='char', required=True),
 
+        'carrier_id': fields.related(
+            'sigepweb_company_id', 'sigepweb_carrier_id',
+            string=u'Correios', type='many2one', required=True,
+            relation='res.partner'),
+
         'contract_number': fields.related(
             'sigepweb_company_id', 'sigepweb_main_contract_number',
             string=u'Número do Contrato', type='char', required=True, size=10),

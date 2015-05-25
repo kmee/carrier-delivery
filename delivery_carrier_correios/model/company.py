@@ -37,6 +37,8 @@ class ResCompany(orm.Model):
     _columns = {
         'sigepweb_username': fields.char('Username'),
         'sigepweb_password': fields.char('Password'),
+        'sigepweb_carrier_id': fields.many2one('res.partner',
+                                               'Partner Carrier'),
         'sigepweb_main_contract_number': fields.char('Main Contract'),
         'sigepweb_main_post_card_number': fields.char('Main Post Card'),
         'sigepweb_contract_ids': fields.one2many('sigepweb.contract',

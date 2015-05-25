@@ -38,6 +38,7 @@
                         <group>
                             <field name="contract_number"/>
                             <field name="post_card_number"/>
+                            <field name="carrier_id"/>
                         </group>
                     </group>
 

@@ -40,7 +40,6 @@ from . import company
 from . import res_config
 
 #TODO: Adicionar opcao de selecionar os servicos adicionais na Ordem de Entrega
-#TODO: Adicionar field partner_id em res_company para guardamos o partner correio
 #TODO: Adicionar numero e serie da fatura na PLP quando a encomenda for do tipo PAC
 #TODO: Inserir campos de dimensao do objeto em cada Ordem de Entrega (PLP e
 # etiqueta)
