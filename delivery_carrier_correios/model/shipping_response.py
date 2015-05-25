@@ -304,7 +304,7 @@ class ShippingResponse(orm.Model):
                                    ('confirmed', 'Confirmed'),
                                    ('done', 'Done'),
                                    ('cancel', 'Cancel'),
-                                   ], required=True, ),
+                                   ], required=True, string=u'Situation'),
     }
     _defaults = {
         'user_id': lambda obj, cr, uid, context: uid,
