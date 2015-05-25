@@ -119,6 +119,7 @@ class SigepWebConfigSettings(orm.TransientModel):
             'password': company.sigepweb_password,
             'contract_number': company.sigepweb_main_contract_number,
             'post_card_number': company.sigepweb_main_post_card_number,
+            'carrier_id': company.sigepweb_carrier_id.id,
             'contract_ids': [(4, x) for x in a],
             'environment': company.sigepweb_environment,
         }
