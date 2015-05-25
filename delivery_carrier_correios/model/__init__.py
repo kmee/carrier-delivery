@@ -38,3 +38,15 @@ from . import stock
 from . import sale
 from . import company
 from . import res_config
+
+#TODO: Adicionar opcao de selecionar os servicos adicionais na Ordem de Entrega
+#TODO: Adicionar field partner_id em res_company para guardamos o partner correio
+#TODO: Adicionar numero e serie da fatura na PLP quando a encomenda for do tipo PAC
+#TODO: Inserir campos de dimensao do objeto em cada Ordem de Entrega (PLP e
+# etiqueta)
+#TODO: Verificar tamanho das caixas usadas
+#TODO: Montar workflow da PLP
+#TODO: Montar ficha de postagem dos correios com chancela, qrcode e cod. barras
+#TODO: Adicionar campos no relatorio do vouncher da PLP
+#TODO: Verificar se PLP não pode mais ser usada depois de gerada.as
+#TODO: Pesquisar o que é id_plp_master

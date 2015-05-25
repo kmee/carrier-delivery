@@ -2,7 +2,7 @@
 # #############################################################################
 #
 # Brazillian Carrier Correios Sigep WEB
-#    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
+# Copyright (C) 2015 KMEE (http://www.kmee.com.br)
 #    @author Luis Felipe Mileo <mileo@kmee.com.br>
 #    @author: Michell Stuttgart <michell.stuttgart@kmee.com.br>
 #
@@ -45,8 +45,8 @@ class DeliveryCarrier(orm.Model):
         return res
 
     def onchange_sigepweb_post_service_id(self, cr, uid, ids,
-                                           sigepweb_post_service_id,
-                                           context=None):
+                                          sigepweb_post_service_id,
+                                          context=None):
         res = {'value': {}}
 
         if not sigepweb_post_service_id:
@@ -68,11 +68,12 @@ class DeliveryCarrier(orm.Model):
 
         for delivery in self.browse(cr, uid, ids):
 
-            record_post_card = delivery.sigepweb_contract_id.post_card_ids
+            if delivery.type == 'sigepweb':
+                record_post_card = delivery.sigepweb_contract_id.post_card_ids
 
-            a = delivery.sigepweb_post_card_id
-            if a.id not in [c.id for c in record_post_card]:
-                return False
+                a = delivery.sigepweb_post_card_id
+                if a.id not in [c.id for c in record_post_card]:
+                    return False
 
         return True
 
@@ -82,13 +83,15 @@ class DeliveryCarrier(orm.Model):
         # cartao de postagem selecionado
         for delivery in self.browse(cr, uid, ids):
 
-            post_service_ids = \
-                delivery.sigepweb_post_card_id.post_service_ids
+            if delivery.type == 'sigepweb':
 
-            post_service = delivery.sigepweb_post_service_id
+                post_service_ids = \
+                    delivery.sigepweb_post_card_id.post_service_ids
 
-            if post_service.id not in [s.id for s in post_service_ids]:
-                return False
+                post_service = delivery.sigepweb_post_service_id
+
+                if post_service.id not in [s.id for s in post_service_ids]:
+                    return False
 
         return True
 
@@ -102,6 +105,12 @@ class DeliveryCarrier(orm.Model):
         'sigepweb_post_service_id': fields.many2one(
             'sigepweb.post.service', string='Post Services',
             domain="[('post_card_id', '=', sigepweb_post_card_id)]"),
+        #
+        # 'response_ids': fields.many2many('shipping.response',
+        #                                  'sigepweb_response_delivery_rel',
+        #                                  'delivery_id',
+        #                                  'response_id',
+        #                                  'Deliverys'),
     }
 
     _constraints = [
@@ -137,10 +146,9 @@ class DeliveryGrid(orm.Model):
             peso_volumetrico = math.ceil(volume_cm / 6000)
 
         peso_considerado = max(weight, peso_volumetrico)
-        aresta = int(math.ceil(volume_cm**(1/3.0)))
+        aresta = int(math.ceil(volume_cm ** (1 / 3.0)))
 
         if order.carrier_id:
-
             print 'TSTSTSTS'
 
             fields = {
@@ -188,13 +196,14 @@ class DeliveryGrid(orm.Model):
             cliente = Cliente(fields['nome'], fields['login'],
                               fields['senha'], fields['cnpj'])
 
-            retorno = calc.calcula_preco_prazo(service_post, fields['cod_admin'],
-                                               fields['HERECEP'], fields['GOCEP'],
+            retorno = calc.calcula_preco_prazo(service_post,
+                                               fields['cod_admin'],
+                                               fields['HERECEP'],
+                                               fields['GOCEP'],
                                                fields['peso'], dimensao,
                                                False, 0, False, cliente)
 
             if retorno:
-
                 data = {
                     'MsgErro': retorno[0].msg_erro,
                     'Erro': retorno[0].erro,

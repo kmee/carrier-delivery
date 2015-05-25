@@ -2,7 +2,7 @@
 # #############################################################################
 #
 # Brazillian Carrier Correios Sigep WEB
-#    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
+# Copyright (C) 2015 KMEE (http://www.kmee.com.br)
 #    @author Luis Felipe Mileo <mileo@kmee.com.br>
 #
 #    Sponsored by Europestar www.europestar.com.br
@@ -37,7 +37,7 @@ from pysigep_web.pysigepweb.tag_objeto_postal import *
 from pysigep_web.pysigepweb.tag_correios_log import TagCorreiosLog
 from pysigep_web.pysigepweb.diretoria import Diretoria
 from pysigep_web.pysigepweb.endereco import Endereco
-from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor
+from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor, ErroValidacaoXML
 from pysigep_web.pysigepweb.etiqueta import Etiqueta
 from pysigep_web.pysigepweb.resposta_busca_cliente import Cliente
 
@@ -191,7 +191,7 @@ class ShippingResponse(orm.Model):
                                                    post_card_id.number,
                                                    cliente)
 
-                print '[INFO] Id PLP: ', plp.id_plp_cliente
+                print u'[INFO] Id PLP: ', plp.id_plp_cliente
 
                 vals = {
                     'name': 'SP' + str(plp.id_plp_cliente),
@@ -201,6 +201,9 @@ class ShippingResponse(orm.Model):
                 self.write(cr, uid, ship.id, vals, context=context)
 
             except ErroConexaoComServidor as e:
+                print e.message
+                raise osv.except_osv(_('Error!'), e.message)
+            except ErroValidacaoXML as e:
                 print e.message
                 raise osv.except_osv(_('Error!'), e.message)
 
@@ -218,7 +221,9 @@ class ShippingResponse(orm.Model):
                                       required=True, readonly=True,
                                       states={'draft': [('readonly', False)]}),
 
-        'carrier_responsible': fields.char('Carrier Responsible'),
+        'carrier_responsible': fields.many2one('res.partner',
+                                               string='Carrier Responsible',
+                                               states={'draft': [('readonly', False)]}),
 
         'date': fields.date('Date', require=True, readonly=True,
                             states={'draft': [('readonly', False)]}),
@@ -238,8 +243,8 @@ class ShippingResponse(orm.Model):
                                        readonly=True,
                                        states={'draft': [('readonly', False)]},
                                        domain="[('company_id', '=',"
-                                              "company_id)]"),
-        #TODO: filtrar ondem de entrega cujo metodo de entrega use o cartao
+                                              "company_id)]",
+                                       ),
         # postagem fornecido
         'post_card_id': fields.many2one('sigepweb.post.card',
                                         string='Post Cards',
@@ -250,13 +255,12 @@ class ShippingResponse(orm.Model):
                                         domain="[('contract_id', '=', "
                                                "contract_id)]"),
 
-        'state': fields.selection(
-            [('draft', 'Draft'),
-             ('confirmed', 'Confirmed'),
-             ('in_transit', 'In Transit'),
-             ('done', 'Done'),
-             ('cancel', 'Cancel')],
-            required=True, ),
+        'state': fields.selection([('draft', 'Draft'),
+                                   ('confirmed', 'Confirmed'),
+                                   ('in_transit', 'In Transit'),
+                                   ('done', 'Done'),
+                                   ('cancel', 'Cancel'),
+                                   ], required=True, ),
 
         'picking_line': fields.one2many('stock.picking.out',
                                         'shipping_response_id',
@@ -265,14 +269,9 @@ class ShippingResponse(orm.Model):
                                         states={'draft': [('readonly', False)]},
                                         domain=[
                                             ('type', '=', 'out'),
-                                            ('state', '=', 'done')]),
+                                            ('state', '=', 'done'),
+                                        ]),
 
-        # 'departure_picking_ids': fields.one2many('stock.picking.out',
-        #                                          'shipping_response_id',
-        #                                          'Departure Pickings',
-        #     # readonly=True,
-        #     # states={'draft': [('readonly', False)]}
-        # ),
         'volume': fields.function(_compute_volume,
                                   type='float',
                                   string=u'Nº Volume',
@@ -280,18 +279,17 @@ class ShippingResponse(orm.Model):
                                   store=True, ),
         'weight': fields.function(_compute_weight,
                                   type='float',
-                                  string="Weight",
+                                  string=u'Weight',
                                   readonly=True, store=True, ),
         'weight_net': fields.function(_compute_weight_net,
                                       type='float',
-                                      string="Net Weight",
+                                      string=u'Net Weight',
                                       readonly=True, store=True,
                                       method=True),
     }
     _defaults = {
         'user_id': lambda obj, cr, uid, context: uid,
         'state': 'draft',
-        # 'selected': False,
         'name': '/',
     }
 
