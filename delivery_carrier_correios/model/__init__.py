@@ -50,3 +50,5 @@ from . import res_config
 #TODO: Adicionar campos no relatorio do vouncher da PLP
 #TODO: Verificar se PLP não pode mais ser usada depois de gerada.as
 #TODO: Pesquisar o que é id_plp_master
+#TODO: Colocar campos contract, post_card, e post_services como readonly em
+# res_config
