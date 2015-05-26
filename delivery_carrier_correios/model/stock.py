@@ -38,7 +38,8 @@ class StockPickingOut(orm.Model):
         'shipping_response_id': fields.many2one('shipping.response',
                                                 string='Shipping Group',
                                                 readonly=True),
-        'invoice_id': fields.many2one('account.invoice', 'Invoice'),
+        'invoice_id': fields.many2one('account.invoice', 'Invoice',
+                                      readonly=True),
     }
 
     def copy(self, cr, uid, id, default=None, context=None):
@@ -50,7 +51,7 @@ class StockPickingOut(orm.Model):
             'carrier_tracking_ref': '',
             'invoice_id': False,
         }
-        
+
         default.update(vals)
         return super(StockPickingOut, self).copy(
             cr, uid, id, default=default, context=context)
@@ -117,7 +118,8 @@ class StockPicking(orm.Model):
         'shipping_response_id': fields.many2one('shipping.response',
                                                 string='Shipping Group',
                                                 readonly=True),
-        'invoice_id': fields.many2one('account.invoice', 'Invoice'),
+        'invoice_id': fields.many2one('account.invoice', 'Invoice',
+                                      readonly=True),
     }
 
     def _invoice_hook(self, cursor, user, picking, invoice_id):
