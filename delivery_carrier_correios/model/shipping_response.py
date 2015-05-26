@@ -171,7 +171,9 @@ class ShippingResponse(orm.Model):
                 obj_nacional = TagNacional(obj_endereco)
 
                 if picking.carrier_id.sigepweb_post_service_id.code == '41068':
-                    print "[Warnig] service PAC41068 need nfe number and serie"
+                    msg = "[Warning] service PAC41068 need nfe number and serie"
+                    print msg
+                    raise osv.except_osv(_('Error!'), msg)
 
                 obj_servico_adicional = TagServicoAdicional()
 

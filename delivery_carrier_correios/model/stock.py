@@ -38,6 +38,7 @@ class StockPickingOut(orm.Model):
         'shipping_response_id': fields.many2one('shipping.response',
                                                 string='Shipping Group',
                                                 readonly=True),
+        'invoice_id': fields.many2one('account.invoice', 'Invoice'),
     }
 
     def action_process(self, cr, uid, ids, *args):
@@ -102,4 +103,13 @@ class StockPicking(orm.Model):
         'shipping_response_id': fields.many2one('shipping.response',
                                                 string='Shipping Group',
                                                 readonly=True),
+        'invoice_id': fields.many2one('account.invoice', 'Invoice'),
     }
+
+    def _invoice_hook(self, cursor, user, picking, invoice_id):
+
+        self.write(cursor, user, [picking.id],
+                   {'invoice_id': [(4, invoice_id)]})
+
+        return super(StockPicking, self)._invoice_hook(
+            cursor, user, picking, invoice_id)
