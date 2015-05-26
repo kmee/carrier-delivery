@@ -105,12 +105,6 @@ class DeliveryCarrier(orm.Model):
         'sigepweb_post_service_id': fields.many2one(
             'sigepweb.post.service', string='Post Services',
             domain="[('post_card_id', '=', sigepweb_post_card_id)]"),
-        #
-        # 'response_ids': fields.many2many('shipping.response',
-        #                                  'sigepweb_response_delivery_rel',
-        #                                  'delivery_id',
-        #                                  'response_id',
-        #                                  'Deliverys'),
     }
 
     _constraints = [

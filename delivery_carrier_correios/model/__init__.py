@@ -23,11 +23,6 @@
 #
 ##############################################################################
 
-
-#
-# from . import res_config, contract, directorship, post_card, post_service, \
-#     delivery, stock, sale, shipping_response, company
-
 from . import shipping_response
 from . import contract
 from . import directorship
@@ -39,7 +34,6 @@ from . import sale
 from . import company
 from . import res_config
 
-#TODO: Adicionar opcao de selecionar os servicos adicionais na Ordem de Entrega
 #TODO: Adicionar numero e serie da fatura na PLP quando a encomenda for do tipo PAC
 #TODO: Inserir campos de dimensao do objeto em cada Ordem de Entrega (PLP e
 # etiqueta)
@@ -49,6 +43,7 @@ from . import res_config
 #TODO: Montar ficha de postagem dos correios com chancela, qrcode e cod. barras
 #TODO: Adicionar campos no relatorio do vouncher da PLP
 
+#TODO: Adicionar opcao de selecionar os servicos adicionais na Ordem de Entrega
 #TODO: Verificar se PLP não pode mais ser usada depois de gerada
 #TODO: Pesquisar o que é id_plp_master
 #TODO: Verificar tamanho das caixas usadas
