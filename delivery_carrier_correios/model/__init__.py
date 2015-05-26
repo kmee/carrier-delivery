@@ -49,6 +49,7 @@ from . import res_config
 #TODO: Anexar xml da PLP da view da PLP
 #TODO: Inserir campos de dimensao do objeto em cada Ordem de Entrega (PLP e
 # etiqueta)
+#TODO: Numero da etiqueta na Ordem de Entrega como readonly no state Entregue
 #TODO: Adicionar opcao de selecionar os servicos adicionais na Ordem de Entrega
 #TODO: Verificar se PLP não pode mais ser usada depois de gerada
 #TODO: Pesquisar o que é id_plp_master
