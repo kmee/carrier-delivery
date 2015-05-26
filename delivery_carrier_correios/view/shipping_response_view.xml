@@ -80,7 +80,7 @@
                             </page>
                             <page string="Entregas">
                                 <field name="picking_line" widget="many2many"
-                                       domain="[('company_id', '=', company_id),('carrier_id.sigepweb_post_card_id.id','=', post_card_id)]">
+                                       domain="[('company_id.id', '=', company_id),('carrier_id.sigepweb_post_card_id.id','=', post_card_id),('invoice_id.state','=','sefaz_export')]">
                                     <tree>
 
                                         <field name="name"/>
