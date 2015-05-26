@@ -43,13 +43,12 @@ from . import res_config
 #TODO: Adicionar numero e serie da fatura na PLP quando a encomenda for do tipo PAC
 #TODO: Inserir campos de dimensao do objeto em cada Ordem de Entrega (PLP e
 # etiqueta)
-#TODO: Concertar calculo do frete no Pedido de Venda para ser possivel7
+#TODO: Consertar calculo do frete no Pedido de Venda para ser possivel
 # verifica-lo sem salvar o Pedido de Venda
 #TODO: Anexar xml da PLP da view da PLP
-#TODO: Montar workflow da PLP
 #TODO: Montar ficha de postagem dos correios com chancela, qrcode e cod. barras
 #TODO: Adicionar campos no relatorio do vouncher da PLP
 
-#TODO: Verificar se PLP não pode mais ser usada depois de gerada.as
+#TODO: Verificar se PLP não pode mais ser usada depois de gerada
 #TODO: Pesquisar o que é id_plp_master
 #TODO: Verificar tamanho das caixas usadas
