@@ -30,15 +30,12 @@ from . import post_card
 from . import post_service
 from . import delivery
 from . import stock
-from . import sale
 from . import company
 from . import res_config
 
 #TODO: Adicionar numero e serie da fatura na PLP quando a encomenda for do tipo PAC
 #TODO: Inserir campos de dimensao do objeto em cada Ordem de Entrega (PLP e
 # etiqueta)
-#TODO: Consertar calculo do frete no Pedido de Venda para ser possivel
-# verifica-lo sem salvar o Pedido de Venda
 #TODO: Anexar xml da PLP da view da PLP
 #TODO: Montar ficha de postagem dos correios com chancela, qrcode e cod. barras
 #TODO: Adicionar campos no relatorio do vouncher da PLP

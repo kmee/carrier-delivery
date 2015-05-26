@@ -142,29 +142,24 @@ class DeliveryGrid(orm.Model):
         peso_considerado = max(weight, peso_volumetrico)
         aresta = int(math.ceil(volume_cm ** (1 / 3.0)))
 
-        if order.carrier_id:
-            print 'TSTSTSTS'
+        fields = {
+            "cod": int(grid.service_type),
+            "GOCEP": order.partner_shipping_id.zip,
+            "HERECEP": order.shop_id.company_id.partner_id.zip,
+            "peso": peso_considerado,
+            "formato": "1",
+            "comprimento": aresta,
+            "altura": aresta,
+            "largura": aresta,
+            "diametro": "0",
+            "nome": order.company_id.name,
+            "login": order.company_id.sigepweb_username,
+            "senha": order.company_id.sigepweb_password,
+            "cnpj": order.company_id.cnpj_cpf,
+            "cod_admin": grid.carrier_id.sigepweb_post_card_id.admin_code,
+        }
 
-            fields = {
-                "cod": int(grid.service_type),
-                "GOCEP": order.partner_shipping_id.zip,
-                "HERECEP": order.shop_id.company_id.partner_id.zip,
-                "peso": peso_considerado,
-                "formato": "1",
-                "comprimento": aresta,
-                "altura": aresta,
-                "largura": aresta,
-                "diametro": "0",
-                "nome": order.company_id.name,
-                "login": order.company_id.sigepweb_username,
-                "senha": order.company_id.sigepweb_password,
-                "cnpj": order.company_id.cnpj_cpf,
-                "cod_admin": order.carrier_id.sigepweb_post_card_id.admin_code,
-            }
-
-            return self._frete(fields)
-
-        return (0.00, 0.00)
+        return self._frete(fields)
 
     def _frete(self, fields):
 
