@@ -41,6 +41,20 @@ class StockPickingOut(orm.Model):
         'invoice_id': fields.many2one('account.invoice', 'Invoice'),
     }
 
+    def copy(self, cr, uid, id, default=None, context=None):
+
+        if default is None:
+            default = {}
+
+        vals = {
+            'carrier_tracking_ref': '',
+            'invoice_id': False,
+        }
+        
+        default.update(vals)
+        return super(StockPickingOut, self).copy(
+            cr, uid, id, default=default, context=context)
+
     def action_process(self, cr, uid, ids, *args):
         res = super(StockPickingOut, self).action_process(cr, uid, ids, *args)
 

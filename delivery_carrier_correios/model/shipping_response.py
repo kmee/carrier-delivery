@@ -153,7 +153,7 @@ class ShippingResponse(orm.Model):
 
                 obj_endereco = Endereco(logradouro=partner_id.street,
                                         numero=int(numero),
-                                        bairro=partner_id.district,
+                                    bairro=partner_id.district,
                                         cep=partner_id.zip.replace('-', ''),
                                         cidade=partner_id.l10n_br_city_id.name,
                                         uf=partner_id.state_id.code,
@@ -168,12 +168,21 @@ class ShippingResponse(orm.Model):
                 #                                    102030, '1')
                 #TODO: Implementar para PAC41068.
                 #TODO: Buscar numero e serie da fatura a partir da invoice
-                obj_nacional = TagNacional(obj_endereco)
 
                 if picking.carrier_id.sigepweb_post_service_id.code == '41068':
-                    msg = "[Warning] service PAC41068 need nfe number and serie"
-                    print msg
-                    raise osv.except_osv(_('Error!'), msg)
+                    nfe_number = picking.invoice_id.internal_number
+                    nfe_serie = picking.invoice_id.document_serie_id.code
+
+                    if nfe_number == '':
+                        msg = "A ordem de entrega deve estar faturada antes " \
+                              "de entrar na PLP!"
+                        raise osv.except_osv(_('Error!'), msg)
+
+                    obj_nacional = TagNacionalPAC41068(obj_endereco,
+                                                       nfe_number,
+                                                       nfe_serie)
+                else:
+                    obj_nacional = TagNacional(obj_endereco)
 
                 obj_servico_adicional = TagServicoAdicional()
 
