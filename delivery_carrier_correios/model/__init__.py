@@ -42,6 +42,7 @@ from . import res_config
 #TODO: Anexar xml da PLP da view da PLP
 #TODO: Montar ficha de postagem dos correios com chancela, qrcode e cod. barras
 #TODO: Adicionar campos no relatorio do vouncher da PLP
+#TODO: apagar campo carrier_tracking_ref quando duplicamos a ordem de entrega
 
 #TODO: Adicionar opcao de selecionar os servicos adicionais na Ordem de Entrega
 #TODO: Verificar se PLP não pode mais ser usada depois de gerada

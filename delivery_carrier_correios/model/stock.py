@@ -103,5 +103,3 @@ class StockPicking(orm.Model):
                                                 string='Shipping Group',
                                                 readonly=True),
     }
-
-#TODO: apagar campo carrier_tracking_ref quando duplicamos a ordem de entrega
