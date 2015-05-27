@@ -45,9 +45,6 @@ from pysigep_web.pysigepweb.resposta_busca_cliente import Cliente
 class ShippingResponse(orm.Model):
     _name = 'shipping.response'
 
-    def generate_tracking_no(self, cr, uid, ids, context={}, error=True):
-        pass
-
     def _compute_volume(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         for obj in ids:
@@ -86,7 +83,7 @@ class ShippingResponse(orm.Model):
         return True
 
     def action_shipment_confirm(self, cr, uid, ids, context=None):
-        if self.shipment_confirm(cr, uid, ids):
+        if self.generate_tracking_no(cr, uid, ids, context=context):
             self.write(cr, uid, ids, {'state': 'confirmed'}, context=context)
             return True
         return False
@@ -99,7 +96,7 @@ class ShippingResponse(orm.Model):
         self.write(cr, uid, ids, {'state': 'done'}, context=context)
         return True
 
-    def shipment_confirm(self, cr, uid, ids, context=None):
+    def generate_tracking_no(self, cr, uid, ids, context=None):
 
         for ship in self.browse(cr, uid, ids):
 
@@ -254,6 +251,7 @@ class ShippingResponse(orm.Model):
 
         'carrier_responsible': fields.many2one('res.partner',
                                                string='Carrier Responsible',
+                                               readonly=True,
                                                states={'draft': [('readonly', False)]}),
 
         'date': fields.date('Date', require=True, readonly=True,
