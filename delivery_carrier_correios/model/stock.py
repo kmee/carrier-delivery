@@ -38,8 +38,11 @@ class StockPickingOut(orm.Model):
         'shipping_response_id': fields.many2one('shipping.response',
                                                 string='Shipping Group',
                                                 readonly=True),
-        'invoice_id': fields.many2one('account.invoice', 'Invoice',
+        'invoice_id': fields.many2one('account.invoice',
+                                      string='Invoice',
                                       readonly=True),
+        'carrier_tracking_ref': fields.text('Ref Rastreamento de Carga',
+                                            readonly=True),
     }
 
     def copy(self, cr, uid, id, default=None, context=None):
@@ -89,18 +92,29 @@ class StockPickingOut(orm.Model):
                                                 servico_postagem_id.details,
                                                 servico_postagem_id.identifier)
 
-                    etiquetas = sv.solicita_etiquetas(serv_post, 1, cliente)
+                    etiquetas = sv.solicita_etiquetas(serv_post,
+                                                      int(stock.quantity_of_volumes),
+                                                      cliente)
 
                     sv.gera_digito_verificador_etiquetas(etiquetas,
                                                          cliente,
                                                          online=False)
                     # Adicionamos a etiqueta no campo carrier_tracking_ref
-                    for etq in etiquetas:
+                    # if etiquetas:
+                    #     etq_str = etiquetas[0].com_digito_verificador()
+                    #
+                    #     # Montamos o intervalo da etiqueta
+                    #     if len(etiquetas) > 1:
+                    #         etq_str += ',' + etiquetas[len(etiquetas)-1].com_digito_verificador()
 
-                        vals = {
-                            'carrier_tracking_ref': etq.com_digito_verificador(),
-                        }
-                        self.write(cr, uid, stock.id, vals, context=None)
+                    etq_str = ''
+                    for etq in etiquetas:
+                        etq_str += etq.com_digito_verificador() + ','
+
+                    vals = {
+                        'carrier_tracking_ref': etq_str,
+                    }
+                    self.write(cr, uid, stock.id, vals, context=None)
 
                 except ErroConexaoComServidor as e:
                     print e.message
@@ -124,8 +138,11 @@ class StockPicking(orm.Model):
         'shipping_response_id': fields.many2one('shipping.response',
                                                 string='Shipping Group',
                                                 readonly=True),
-        'invoice_id': fields.many2one('account.invoice', 'Invoice',
+        'invoice_id': fields.many2one('account.invoice',
+                                      string='Invoice',
                                       readonly=True),
+        'carrier_tracking_ref': fields.text(string='Ref Rastreamento de Carga',
+                                            readonly=True),
     }
 
     def _invoice_hook(self, cursor, user, picking, invoice_id):
