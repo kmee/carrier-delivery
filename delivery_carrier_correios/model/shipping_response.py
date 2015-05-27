@@ -45,6 +45,19 @@ from pysigep_web.pysigepweb.resposta_busca_cliente import Cliente
 class ShippingResponse(orm.Model):
     _name = 'shipping.response'
 
+    def copy(self, cr, uid, ids, default=None, context=None):
+
+        if default is None:
+            default = {}
+
+        vals = {
+            'picking_line': False,
+        }
+
+        default.update(vals)
+        return super(ShippingResponse, self).copy(
+            cr, uid, ids, default=default, context=context)
+
     def _compute_volume(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         for obj in ids:
