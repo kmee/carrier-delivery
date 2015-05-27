@@ -33,10 +33,8 @@ from . import stock
 from . import company
 from . import res_config
 
-#TODO: Adicionar numero e serie da fatura na PLP quando a encomenda for do tipo PAC
 #TODO: Montar ficha de postagem dos correios com chancela, qrcode e cod. barras
 #TODO: Adicionar campos no relatorio do vouncher da PLP
-#FIXME: Apagar campo carrier_tracking_ref quando duplicamos a ordem de entrega
 #FIXME: Ao acrescentar mais produtos no Pedido de Venda, o frete continua o
 # mesmo
 #FIXME: Na Ordem de Entrega, cada volume deve possuir uma etiqueta
