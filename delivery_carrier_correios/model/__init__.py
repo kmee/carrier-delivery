@@ -39,6 +39,7 @@ from . import res_config
 #FIXME: Apagar campo carrier_tracking_ref quando duplicamos a ordem de entrega
 #FIXME: Ao acrescentar mais produtos no Pedido de Venda, o frete continua o
 # mesmo
+#FIXME: Na Ordem de Entrega, cada volume deve possuir uma etiqueta
 #TODO: O botão atualizar do Pedido de Venda pode ser usado para atualizar o
 # frete
 #TODO: Remover o botão "adicionar ao orçamento". O "Atualizar" já serviria
@@ -47,6 +48,8 @@ from . import res_config
 #TODO: Na Ordem de Entrega, o campo peso deve ficar como obrigatorio e movido
 # para a visão principal.
 #TODO: Anexar xml da PLP da view da PLP
+#TODO: Ajustar view da PLP trocando os page do notebook de posicao. A page
+# com as ordens de entrega deve ser a primeira. 
 #TODO: Inserir campos de dimensao do objeto em cada Ordem de Entrega (PLP e
 # etiqueta)
 #TODO: Numero da etiqueta na Ordem de Entrega como readonly no state Entregue
