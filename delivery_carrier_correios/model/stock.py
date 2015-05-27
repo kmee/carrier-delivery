@@ -73,10 +73,14 @@ class StockPickingOut(orm.Model):
 
                     #FIXME: Adicionar company_id.cnpj_cpf no lugar do cnpj do
                     #  correio
+
+                    if company_id.sigepweb_username == 'sigep':
+                        company_id.cnpj_cpf = '34.028.316/0001-03'
+
                     cliente = Cliente(company_id.name,
                                       company_id.sigepweb_username,
                                       company_id.sigepweb_password,
-                                      '34.028.316/0001-03')
+                                      company_id.cnpj_cpf)
 
                     servico_postagem_id = \
                         stock.carrier_id.sigepweb_post_service_id
