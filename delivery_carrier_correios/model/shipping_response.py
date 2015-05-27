@@ -233,7 +233,7 @@ class ShippingResponse(orm.Model):
                 print u'[INFO] Id PLP: ', plp.id_plp_cliente
 
                 vals = {
-                    'name': 'SP' + str(plp.id_plp_cliente),
+                    'name': 'PLP/' + str(plp.id_plp_cliente),
                     'carrier_tracking_ref': plp.id_plp_cliente,
                 }
 
