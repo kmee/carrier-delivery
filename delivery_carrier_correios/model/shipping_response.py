@@ -81,6 +81,24 @@ class ShippingResponse(orm.Model):
 
         return res
 
+    def action_shipment_draft(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'draft'}, context=context)
+        return True
+
+    def action_shipment_confirm(self, cr, uid, ids, context=None):
+        if self.shipment_confirm(cr, uid, ids):
+            self.write(cr, uid, ids, {'state': 'confirmed'}, context=context)
+            return True
+        return False
+
+    def action_shipment_cancel(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'cancel'}, context=context)
+        return True
+
+    def action_shipment_done(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'done'}, context=context)
+        return True
+
     def shipment_confirm(self, cr, uid, ids, context=None):
 
         for ship in self.browse(cr, uid, ids):
@@ -135,7 +153,7 @@ class ShippingResponse(orm.Model):
 
                 obj_endereco = Endereco(logradouro=partner_id.street,
                                         numero=int(numero),
-                                        bairro=partner_id.district,
+                                    bairro=partner_id.district,
                                         cep=partner_id.zip.replace('-', ''),
                                         cidade=partner_id.l10n_br_city_id.name,
                                         uf=partner_id.state_id.code,
@@ -150,10 +168,21 @@ class ShippingResponse(orm.Model):
                 #                                    102030, '1')
                 #TODO: Implementar para PAC41068.
                 #TODO: Buscar numero e serie da fatura a partir da invoice
-                obj_nacional = TagNacional(obj_endereco)
 
                 if picking.carrier_id.sigepweb_post_service_id.code == '41068':
-                    print "[Warnig] service PAC41068 need nfe number and serie"
+                    nfe_number = picking.invoice_id.internal_number
+                    nfe_serie = picking.invoice_id.document_serie_id.code
+
+                    if nfe_number == '':
+                        msg = "A ordem de entrega deve estar faturada antes " \
+                              "de entrar na PLP!"
+                        raise osv.except_osv(_('Error!'), msg)
+
+                    obj_nacional = TagNacionalPAC41068(obj_endereco,
+                                                       nfe_number,
+                                                       nfe_serie)
+                else:
+                    obj_nacional = TagNacional(obj_endereco)
 
                 obj_servico_adicional = TagServicoAdicional()
 
@@ -198,7 +227,7 @@ class ShippingResponse(orm.Model):
                     'carrier_tracking_ref': plp.id_plp_cliente,
                 }
 
-                self.write(cr, uid, ship.id, vals, context=context)
+                return self.write(cr, uid, ship.id, vals, context=context)
 
             except ErroConexaoComServidor as e:
                 print e.message
@@ -206,6 +235,8 @@ class ShippingResponse(orm.Model):
             except ErroValidacaoXML as e:
                 print e.message
                 raise osv.except_osv(_('Error!'), e.message)
+
+        return False
 
     _columns = {
         'user_id': fields.many2one('res.users',
@@ -255,13 +286,6 @@ class ShippingResponse(orm.Model):
                                         domain="[('contract_id', '=', "
                                                "contract_id)]"),
 
-        'state': fields.selection([('draft', 'Draft'),
-                                   ('confirmed', 'Confirmed'),
-                                   ('in_transit', 'In Transit'),
-                                   ('done', 'Done'),
-                                   ('cancel', 'Cancel'),
-                                   ], required=True, ),
-
         'picking_line': fields.one2many('stock.picking.out',
                                         'shipping_response_id',
                                         string='Pickings',
@@ -286,6 +310,12 @@ class ShippingResponse(orm.Model):
                                       string=u'Net Weight',
                                       readonly=True, store=True,
                                       method=True),
+
+        'state': fields.selection([('draft', 'Draft'),
+                                   ('confirmed', 'Confirmed'),
+                                   ('done', 'Done'),
+                                   ('cancel', 'Cancel'),
+                                   ], required=True, string=u'Situation'),
     }
     _defaults = {
         'user_id': lambda obj, cr, uid, context: uid,

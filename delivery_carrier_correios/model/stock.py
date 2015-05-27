@@ -50,7 +50,23 @@ class StockPickingOut(orm.Model):
 
     _defaults = {
         'idv': '81',
+        'invoice_id': fields.many2one('account.invoice', 'Invoice',
+                                      readonly=True),
     }
+
+    def copy(self, cr, uid, id, default=None, context=None):
+
+        if default is None:
+            default = {}
+
+        vals = {
+            'carrier_tracking_ref': '',
+            'invoice_id': False,
+        }
+
+        default.update(vals)
+        return super(StockPickingOut, self).copy(
+            cr, uid, id, default=default, context=context)
 
     def action_process(self, cr, uid, ids, *args):
         res = super(StockPickingOut, self).action_process(cr, uid, ids, *args)
@@ -67,10 +83,12 @@ class StockPickingOut(orm.Model):
 
                     print u'[INFO] Consultando dados do cliente'
 
+                    #FIXME: Adicionar company_id.cnpj_cpf no lugar do cnpj do
+                    #  correio
                     cliente = Cliente(company_id.name,
                                       company_id.sigepweb_username,
                                       company_id.sigepweb_password,
-                                      company_id.cnpj_cpf)
+                                      '34.028.316/0001-03')
 
                     servico_postagem_id = \
                         stock.carrier_id.sigepweb_post_service_id
@@ -236,6 +254,15 @@ class StockPicking(orm.Model):
         'qr_code_id': fields.many2one('tr.barcode', string=u'Código de Barras'),
         'idv': fields.selection([('51','Encomenda'),('81','Malotes')], string=u'IDV'),
         'image_chancela': fields.binary('Chancela Correios', filters='*.png, *.jpg', readonly=True),
+        'invoice_id': fields.many2one('account.invoice', 'Invoice', readonly=True),
     }
 
 #TODO: apagar campo carrier_tracking_ref quando duplicamos a ordem de entrega
+
+    def _invoice_hook(self, cursor, user, picking, invoice_id):
+
+        self.write(cursor, user, [picking.id],
+                   {'invoice_id': invoice_id})
+
+        return super(StockPicking, self)._invoice_hook(
+            cursor, user, picking, invoice_id)

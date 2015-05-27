@@ -49,7 +49,8 @@ class SigepWebConfigSettings(orm.TransientModel):
                                        'sigepweb_contract_ids',
                                        string=u'Contratos',
                                        type='one2many',
-                                       relation='sigepweb.contract'),
+                                       relation='sigepweb.contract',
+                                       readonly=True),
 
         'username': fields.related(
             'sigepweb_company_id', 'sigepweb_username',
@@ -58,6 +59,11 @@ class SigepWebConfigSettings(orm.TransientModel):
         'password': fields.related(
             'sigepweb_company_id', 'sigepweb_password',
             string=u'Senha', type='char', required=True),
+
+        'carrier_id': fields.related(
+            'sigepweb_company_id', 'sigepweb_carrier_id',
+            string=u'Correios', type='many2one', required=True,
+            relation='res.partner'),
 
         'contract_number': fields.related(
             'sigepweb_company_id', 'sigepweb_main_contract_number',
@@ -114,6 +120,7 @@ class SigepWebConfigSettings(orm.TransientModel):
             'password': company.sigepweb_password,
             'contract_number': company.sigepweb_main_contract_number,
             'post_card_number': company.sigepweb_main_post_card_number,
+            'carrier_id': company.sigepweb_carrier_id.id,
             'contract_ids': [(4, x) for x in a],
             'environment': company.sigepweb_environment,
         }

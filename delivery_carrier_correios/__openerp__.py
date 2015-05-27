@@ -47,6 +47,7 @@
         'view/shipping_response_view.xml',
         'view/stock_view.xml',
         'report/stock_report.xml',
+        'workflow/plp_workflow.xml',
     ],
     'tests': [],
     'installable': True,

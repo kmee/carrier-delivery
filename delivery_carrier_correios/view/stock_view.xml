@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
+<<<<<<< HEAD
 		<record id="sigep_stock_picking_out_form" model="ir.ui.view">
 			<field name="name">sigep_stock_picking_out.form</field>
 			<field name="model">stock.picking.out</field>
@@ -12,5 +13,18 @@
                 </xpath>
 			</field>
 		</record>
+=======
+
+        <record id="view_sigepweb_stock_picking_out_form" model="ir.ui.view">
+            <field name="model">stock.picking.out</field>
+            <field name="inherit_id" ref="stock.view_picking_out_form"/>
+            <field name="arch" type="xml">
+                <field name="origin" position="after">
+                    <field name="invoice_id"/>
+                </field>
+            </field>
+        </record>
+
+>>>>>>> aee8eff64eece498164c5e750a15a3b945a98a87
     </data>
 </openerp>

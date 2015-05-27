@@ -23,11 +23,6 @@
 #
 ##############################################################################
 
-
-#
-# from . import res_config, contract, directorship, post_card, post_service, \
-#     delivery, stock, sale, shipping_response, company
-
 from . import shipping_response
 from . import contract
 from . import directorship
@@ -35,18 +30,27 @@ from . import post_card
 from . import post_service
 from . import delivery
 from . import stock
-from . import sale
 from . import company
 from . import res_config
 
-#TODO: Adicionar opcao de selecionar os servicos adicionais na Ordem de Entrega
-#TODO: Adicionar field partner_id em res_company para guardamos o partner correio
 #TODO: Adicionar numero e serie da fatura na PLP quando a encomenda for do tipo PAC
-#TODO: Inserir campos de dimensao do objeto em cada Ordem de Entrega (PLP e
-# etiqueta)
-#TODO: Verificar tamanho das caixas usadas
-#TODO: Montar workflow da PLP
 #TODO: Montar ficha de postagem dos correios com chancela, qrcode e cod. barras
 #TODO: Adicionar campos no relatorio do vouncher da PLP
-#TODO: Verificar se PLP não pode mais ser usada depois de gerada.as
+#FIXME: Apagar campo carrier_tracking_ref quando duplicamos a ordem de entrega
+#FIXME: Ao acrescentar mais produtos no Pedido de Venda, o frete continua o
+# mesmo
+#TODO: O botão atualizar do Pedido de Venda pode ser usado para atualizar o
+# frete
+#TODO: Remover o botão "adicionar ao orçamento". O "Atualizar" já serviria
+# pra isso. Só no momento de salvar que o recalculo poderia ser automatico
+# funcionando da mesma maneira que o "Atualizar"
+#TODO: Na Ordem de Entrega, o campo peso deve ficar como obrigatorio e movido
+# para a visão principal.
+#TODO: Anexar xml da PLP da view da PLP
+#TODO: Inserir campos de dimensao do objeto em cada Ordem de Entrega (PLP e
+# etiqueta)
+#TODO: Numero da etiqueta na Ordem de Entrega como readonly no state Entregue
+#TODO: Adicionar opcao de selecionar os servicos adicionais na Ordem de Entrega
+#TODO: Verificar se PLP não pode mais ser usada depois de gerada
 #TODO: Pesquisar o que é id_plp_master
+#TODO: Verificar tamanho das caixas usadas
