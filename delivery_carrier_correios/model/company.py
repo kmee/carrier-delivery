@@ -41,6 +41,7 @@ class ResCompany(orm.Model):
                                                'Partner Carrier'),
         'sigepweb_main_contract_number': fields.char('Main Contract'),
         'sigepweb_main_post_card_number': fields.char('Main Post Card'),
+        'sigepweb_plp_xml_path': fields.char('PLP XML Path'),
         'sigepweb_contract_ids': fields.one2many('sigepweb.contract',
                                                  'company_id',
                                                  string='Contract',
