@@ -51,3 +51,4 @@ from . import res_config
 #TODO: Pesquisar o que é id_plp_master
 #TODO: Verificar tamanho das caixas usadas
 #TODO: Unidade usada para peso: gramas ou kilos?
+#TODO: Criar path para armazenar o xml das PLP geradas de homologacao e producao
