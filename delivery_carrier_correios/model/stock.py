@@ -32,6 +32,7 @@ from pysigep_web.pysigepweb.endereco import Endereco
 from PIL import Image, ImageDraw, ImageFont
 from StringIO import StringIO
 import io
+import os
 
 
 class StockPickingOut(orm.Model):
@@ -46,12 +47,11 @@ class StockPickingOut(orm.Model):
         'qr_code_id': fields.many2one('tr.barcode', string=u'Código de Barras'),
         'idv': fields.selection([('51','Encomenda'),('81','Malotes')], string=u'IDV'),
         'image_chancela': fields.binary('Chancela Correios', filters='*.png, *.jpg', readonly=True),
+        'invoice_id': fields.many2one('account.invoice', 'Invoice', readonly=True),
     }
 
     _defaults = {
         'idv': '81',
-        'invoice_id': fields.many2one('account.invoice', 'Invoice',
-                                      readonly=True),
     }
 
     def copy(self, cr, uid, id, default=None, context=None):
@@ -143,6 +143,7 @@ class StockPickingOut(orm.Model):
         img = imagem.convert("RGB")
         write = Image.new("RGB", (img.size[0], img.size[1]))
         draw = ImageDraw.ImageDraw(img)
+        os.system("pwd")
 
         FONT = "/home/bertozo/Documentos/odoo/odoo_eurotel_v7/parts/oca/carrier-delivery/delivery_carrier_correios/static/src/fonts/arial.ttf"
         font = ImageFont.truetype(FONT, 8)
