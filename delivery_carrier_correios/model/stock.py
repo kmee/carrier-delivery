@@ -99,13 +99,6 @@ class StockPickingOut(orm.Model):
                     sv.gera_digito_verificador_etiquetas(etiquetas,
                                                          cliente,
                                                          online=False)
-                    # Adicionamos a etiqueta no campo carrier_tracking_ref
-                    # if etiquetas:
-                    #     etq_str = etiquetas[0].com_digito_verificador()
-                    #
-                    #     # Montamos o intervalo da etiqueta
-                    #     if len(etiquetas) > 1:
-                    #         etq_str += ',' + etiquetas[len(etiquetas)-1].com_digito_verificador()
 
                     etq_str = ''
                     for etq in etiquetas:

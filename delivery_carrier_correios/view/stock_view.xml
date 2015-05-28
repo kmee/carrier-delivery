@@ -9,8 +9,9 @@
                 <field name="origin" position="after">
                     <field name="invoice_id"/>
                 </field>
+                <field name="carrier_tracking_ref" position="replace"/>
                 <field name="vehicle_id" position="after">
-                    <field name="carrier_tracking_ref" position="replace"/>
+                    <field name="carrier_tracking_ref"/>
                 </field>
             </field>
         </record>
