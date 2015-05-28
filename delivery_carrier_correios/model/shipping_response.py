@@ -153,17 +153,15 @@ class ShippingResponse(orm.Model):
 
             for picking in ship.picking_line:
 
+                partner_id = picking.partner_id
+                numero = ''.join(reg.findall(partner_id.number))
+
                 weight += picking.weight
                 weight_net += picking.weight_net
 
-                partner_id = picking.partner_id
-
-                reg = re.compile('[0-9]*')
-                numero = ''.join(reg.findall(partner_id.number))
-
                 obj_endereco = Endereco(logradouro=partner_id.street,
                                         numero=int(numero),
-                                    bairro=partner_id.district,
+                                        bairro=partner_id.district,
                                         cep=partner_id.zip.replace('-', ''),
                                         cidade=partner_id.l10n_br_city_id.name,
                                         uf=partner_id.state_id.code,
@@ -173,11 +171,6 @@ class ShippingResponse(orm.Model):
                                                    obj_endereco,
                                                    telefone=partner_id.phone
                                                             or False)
-
-                # obj_nacional = TagNacionalPAC41068(obj_endereco,
-                #                                    102030, '1')
-                #TODO: Implementar para PAC41068.
-                #TODO: Buscar numero e serie da fatura a partir da invoice
 
                 if picking.carrier_id.sigepweb_post_service_id.code == '41068':
                     nfe_number = picking.invoice_id.internal_number
@@ -203,19 +196,22 @@ class ShippingResponse(orm.Model):
                 sv_postagem = ServicoPostagem(
                     picking.carrier_id.sigepweb_post_service_id.code)
 
-                etq = Etiqueta(picking.carrier_tracking_ref)
-                lista_etiqueta.append(etq)
+                etiquetas = picking.carrier_tracking_ref.split(', ')
+                etiquetas = [Etiqueta(etq) for etq in etiquetas]
+                lista_etiqueta += etiquetas
 
-                obj_postal = TagObjetoPostal(obj_destinatario=obj_destinatario,
-                                             obj_nacional=obj_nacional,
-                                             obj_dimensao_objeto=obj_dimensao_objeto,
-                                             obj_servico_adicional=obj_servico_adicional,
-                                             obj_servico_postagem=sv_postagem,
-                                             ob_etiqueta=etq,
-                                             peso=picking.weight,
-                                             status_processamento=0)
+                for etq in etiquetas:
 
-                lista_obj_postal.append(obj_postal)
+                    obj_postal = TagObjetoPostal(obj_destinatario=obj_destinatario,
+                                                 obj_nacional=obj_nacional,
+                                                 obj_dimensao_objeto=obj_dimensao_objeto,
+                                                 obj_servico_adicional=obj_servico_adicional,
+                                                 obj_servico_postagem=sv_postagem,
+                                                 ob_etiqueta=etq,
+                                                 peso=picking.weight,
+                                                 status_processamento=0)
+
+                    lista_obj_postal.append(obj_postal)
 
             obj_correios_log = TagCorreiosLog('2.3', obj_tag_plp,
                                               obj_remetente, lista_obj_postal)

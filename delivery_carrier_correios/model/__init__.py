@@ -37,7 +37,6 @@ from . import res_config
 #TODO: Adicionar campos no relatorio do vouncher da PLP
 #FIXME: Ao acrescentar mais produtos no Pedido de Venda, o frete continua o
 # mesmo
-#FIXME: Na Ordem de Entrega, cada volume deve possuir uma etiqueta
 #TODO: O botão atualizar do Pedido de Venda pode ser usado para atualizar o
 # frete
 #TODO: Remover o botão "adicionar ao orçamento". O "Atualizar" já serviria
@@ -55,3 +54,4 @@ from . import res_config
 #TODO: Verificar se PLP não pode mais ser usada depois de gerada
 #TODO: Pesquisar o que é id_plp_master
 #TODO: Verificar tamanho das caixas usadas
+#TODO: Unidade usada para peso: gramas ou kilos?

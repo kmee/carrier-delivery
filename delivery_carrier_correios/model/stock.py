@@ -101,8 +101,11 @@ class StockPickingOut(orm.Model):
                                                          online=False)
 
                     etq_str = ''
-                    for etq in etiquetas:
-                        etq_str += etq.com_digito_verificador() + ', '
+                    last_index = len(etiquetas) - 1
+
+                    for index, etq in enumerate(etiquetas):
+                        dig = '' if index == last_index else ', '
+                        etq_str += etq.com_digito_verificador() + dig
 
                     vals = {
                         'carrier_tracking_ref': etq_str,
