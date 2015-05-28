@@ -207,7 +207,7 @@ class ShippingResponse(orm.Model):
                                                  obj_dimensao_objeto=obj_dimensao_objeto,
                                                  obj_servico_adicional=obj_servico_adicional,
                                                  obj_servico_postagem=sv_postagem,
-                                                 ob_etiqueta=etq,
+                                                 obj_etiqueta=etq,
                                                  peso=picking.weight,
                                                  status_processamento=0)
 
