@@ -4,7 +4,7 @@
 		<report id="stock.plp_report"
 				name="plp.report.webkit"
 				auto="False"
-				model="stock.picking.out"
+				model="shipping.response"
 				file="delivery_carrier_correios/report/plp_report.mako"
 				string="PLP Report"
 				report_type="webkit"
