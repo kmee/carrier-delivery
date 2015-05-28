@@ -143,8 +143,7 @@ class StockPicking(orm.Model):
 
     def _invoice_hook(self, cursor, user, picking, invoice_id):
 
-        self.write(cursor, user, [picking.id],
-                   {'invoice_id': invoice_id})
+        self.write(cursor, user, [picking.id], {'invoice_id': invoice_id})
 
         return super(StockPicking, self)._invoice_hook(
             cursor, user, picking, invoice_id)
