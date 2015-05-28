@@ -102,7 +102,7 @@ class StockPickingOut(orm.Model):
 
                     etq_str = ''
                     for etq in etiquetas:
-                        etq_str += etq.com_digito_verificador() + ','
+                        etq_str += etq.com_digito_verificador() + ', '
 
                     vals = {
                         'carrier_tracking_ref': etq_str,
