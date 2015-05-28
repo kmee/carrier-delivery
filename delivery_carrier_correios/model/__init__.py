@@ -45,8 +45,6 @@ from . import res_config
 #TODO: Na Ordem de Entrega, o campo peso deve ficar como obrigatorio e movido
 # para a visão principal.
 #TODO: Anexar xml da PLP da view da PLP
-#TODO: Ajustar view da PLP trocando os page do notebook de posicao. A page
-# com as ordens de entrega deve ser a primeira.
 #TODO: Inserir campos de dimensao do objeto em cada Ordem de Entrega (PLP e
 # etiqueta)
 #TODO: Numero da etiqueta na Ordem de Entrega como readonly no state Entregue

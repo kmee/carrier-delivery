@@ -57,27 +57,6 @@
                             </group>
                         </group>
                         <notebook>
-                            <page string="Details">
-                                <group>
-                                    <group>
-                                        <field name="carrier_tracking_ref"/>
-                                    </group>
-                                </group>
-                                <group>
-                                    <group>
-                                        <field name="volume"/>
-                                    </group>
-                                    <group>
-                                        <field name="weight"/>
-                                        <field name="weight_net"/>
-                                    </group>
-                                </group>
-                                <div class="oe_clear">
-                                    <label for="note"/>
-                                </div>
-                                <field name="note" colspan="4" class="oe_inline"
-                                       placeholder="Additional notes..."/>
-                            </page>
                             <page string="Entregas">
                                 <field name="picking_line" widget="many2many"
                                        domain="[('company_id.id', '=', company_id),('carrier_id.sigepweb_post_card_id.id','=', post_card_id),('invoice_id.state','=','sefaz_export')]">
@@ -91,6 +70,23 @@
 
                                     </tree>
                                 </field>
+                            </page>
+                            <page string="Details">
+                                <group>
+                                    <group>
+                                        <field name="carrier_tracking_ref"/>
+                                    </group>
+                                    <group>
+                                        <field name="volume"/>
+                                        <field name="weight"/>
+                                        <field name="weight_net"/>
+                                    </group>
+                                </group>
+                                <div class="oe_clear">
+                                    <label for="note"/>
+                                </div>
+                                <field name="note" colspan="4" class="oe_inline"
+                                       placeholder="Additional notes..."/>
                             </page>
                         </notebook>
                     </sheet>
