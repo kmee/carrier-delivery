@@ -32,7 +32,7 @@ from pysigep_web.pysigepweb.endereco import Endereco
 from PIL import Image, ImageDraw, ImageFont
 from StringIO import StringIO
 import io
-import os
+import base64
 
 
 class StockPickingOut(orm.Model):
@@ -143,9 +143,8 @@ class StockPickingOut(orm.Model):
         img = imagem.convert("RGB")
         write = Image.new("RGB", (img.size[0], img.size[1]))
         draw = ImageDraw.ImageDraw(img)
-        os.system("pwd")
 
-        FONT = "/home/bertozo/Documentos/odoo/odoo_eurotel_v7/parts/oca/carrier-delivery/delivery_carrier_correios/static/src/fonts/arial.ttf"
+        FONT = "/home/bertozo/Documentos/odoo/odoo_europestars_v7/parts/oca/carrier-delivery/delivery_carrier_correios/static/src/fonts/arial.ttf"
         font = ImageFont.truetype(FONT, 8)
         draw.setfont(font)
         tamanho_texto = draw.textsize(texto1)
@@ -153,13 +152,18 @@ class StockPickingOut(orm.Model):
         v_position = img.size[1]/2
         draw.text((h_position, v_position), texto1, fill=(0, 0, 0))
 
-        FONT = "/home/bertozo/Documentos/odoo/odoo_eurotel_v7/parts/oca/carrier-delivery/delivery_carrier_correios/static/src/fonts/arial_negrito.ttf"
+
+        FONT = "/home/bertozo/Documentos/odoo/odoo_europestars_v7/parts/oca/carrier-delivery/delivery_carrier_correios/static/src/fonts/arial_negrito.ttf"
         font = ImageFont.truetype(FONT, 11)
         draw.setfont(font)
         tamanho_texto = draw.textsize(texto2)
         h_position = (img.size[0] - tamanho_texto[0])/2
         v_position = img.size[1]/2 + 8
         draw.text((h_position, v_position), texto2, fill=(0, 0, 0))
+        tmp = io.BytesIO()
+        img.save(tmp, 'png')
+        img = base64.b64encode(tmp.getvalue())
+        # Image.open(StringIO(img.decode('base64'))).convert('RGB').show()
 
         return img
 
