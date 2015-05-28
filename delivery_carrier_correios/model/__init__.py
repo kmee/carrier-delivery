@@ -42,8 +42,6 @@ from . import res_config
 #TODO: Remover o botão "adicionar ao orçamento". O "Atualizar" já serviria
 # pra isso. Só no momento de salvar que o recalculo poderia ser automatico
 # funcionando da mesma maneira que o "Atualizar"
-#TODO: Na Ordem de Entrega, o campo peso deve ficar como obrigatorio e movido
-# para a visão principal.
 #TODO: Anexar xml da PLP da view da PLP
 #TODO: Inserir campos de dimensao do objeto em cada Ordem de Entrega (PLP e
 # etiqueta)
