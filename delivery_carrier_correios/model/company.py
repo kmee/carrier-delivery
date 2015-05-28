@@ -41,7 +41,6 @@ class ResCompany(orm.Model):
                                                'Partner Carrier'),
         'sigepweb_main_contract_number': fields.char('Main Contract'),
         'sigepweb_main_post_card_number': fields.char('Main Post Card'),
-        'sigepweb_plp_xml_path': fields.char('PLP XML Path'),
         'sigepweb_contract_ids': fields.one2many('sigepweb.contract',
                                                  'company_id',
                                                  string='Contract',
@@ -51,7 +50,8 @@ class ResCompany(orm.Model):
                                                  required=True),
         'shipping_response_ids': fields.one2many('shipping.response',
                                                  'company_id',
-                                                 string='Shipping Response')
+                                                 string='Shipping Response'),
+        'sigepweb_plp_xml_path': fields.char('PLP XML Path'),
     }
 
     _defaults = {
