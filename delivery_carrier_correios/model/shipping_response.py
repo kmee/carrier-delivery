@@ -53,6 +53,8 @@ class ShippingResponse(orm.Model):
 
         vals = {
             'picking_line': False,
+            'carrier_tracking_ref': '',
+            'name': '/',
         }
 
         default.update(vals)
