@@ -26,6 +26,7 @@ from openerp.osv import fields, orm, osv
 from openerp.tools.translate import _
 
 import re
+import os
 
 from pysigep_web.pysigepweb.webservice_atende_cliente import \
     WebserviceAtendeCliente
@@ -233,8 +234,23 @@ class ShippingResponse(orm.Model):
                     'carrier_tracking_ref': plp.id_plp_cliente,
                 }
 
+                path = company_id.sigepweb_plp_xml_path + \
+                    company_id.sigepweb_environment + '/'
+
+                if not os.path.exists(path):
+                    #Criando diretorio homlogacao ou producao
+                    os.mkdir(path)
+
+                path += 'PLP' + str(plp.id_plp_cliente)
+
+                # Salvando xml da PLP em disco
+                plp.salvar_xml(path)
+
                 return self.write(cr, uid, ship.id, vals, context=context)
 
+            except IOError as e:
+                print e.message
+                raise osv.except_osv(_('Error!'), e.strerror)
             except ErroConexaoComServidor as e:
                 print e.message
                 raise osv.except_osv(_('Error!'), e.message)

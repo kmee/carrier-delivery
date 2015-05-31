@@ -59,7 +59,7 @@ class TagObjetoPostal(TagBase):
 
         xml = u'<objeto_postal>'
         xml += u'<numero_etiqueta>%s</numero_etiqueta>' % \
-               self.etiqueta.valor
+               self.etiqueta.com_digito_verificador()
         xml += u'<codigo_objeto_cliente>%s</codigo_objeto_cliente>' % \
                self.codigo_objeto_cliente
         xml += u'<codigo_servico_postagem>%s</codigo_servico_postagem>' % \
