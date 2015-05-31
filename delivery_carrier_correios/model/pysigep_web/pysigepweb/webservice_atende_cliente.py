@@ -231,12 +231,6 @@ class WebserviceAtendeCliente(WebserviceInterface):
         etiquetas_sem_digito = [etq.valor.replace(' ', '') for etq in
                                 lista_obj_etiquetas]
 
-        # for i in range(len(obj_correios_log.lista_objeto_postal)):
-        #     # As etiquetas tem de ser enviadas sem o digito verificador
-        #     # e sem o espaco em branco antes do sufixo da etiqueta
-        #     etq = lista_obj_etiquetas[i].valor
-        #     etiquetas_sem_digito.append(etq.replace(' ', ''))
-
         xml = obj_correios_log.get_xml()
 
         if xml:
