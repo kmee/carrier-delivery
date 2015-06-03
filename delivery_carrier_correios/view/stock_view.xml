@@ -21,6 +21,7 @@
                     <field name="weight"/>
                     <field name="weight_net"/>
                     <field name="carrier_tracking_ref"/>
+                    <field name="shipping_response_id"/>
                 </field>
             </field>
         </record>
