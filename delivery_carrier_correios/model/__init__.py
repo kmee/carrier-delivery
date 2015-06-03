@@ -45,10 +45,10 @@ from . import res_config
 #TODO: Anexar xml da PLP da view da PLP
 #TODO: Inserir campos de dimensao do objeto em cada Ordem de Entrega (PLP e
 # etiqueta)
-#TODO: Numero da etiqueta na Ordem de Entrega como readonly no state Entregue
 #TODO: Adicionar opcao de selecionar os servicos adicionais na Ordem de Entrega
 #TODO: Verificar se PLP não pode mais ser usada depois de gerada
 #TODO: Pesquisar o que é id_plp_master
 #TODO: Verificar tamanho das caixas usadas
 #TODO: Unidade usada para peso: gramas ou kilos?
-#TODO: Criar path para armazenar o xml das PLP geradas de homologacao e producao
+#TODO: O peso presente na ordem de entrega corresponde ao peso de uma unidade
+#  ou se trata do peso total de todos os volumes
