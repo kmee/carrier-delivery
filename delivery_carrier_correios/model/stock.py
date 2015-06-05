@@ -138,7 +138,7 @@ class StockPickingOut(orm.Model):
         company = self.pool.get('res.company').browse(cr, uid, obj_stock.company_id.id, context)
         imagem = obj_stock.carrier_id.image_chancela
         texto1 = "0000/2002 - DR/XX/YY"
-        texto2 = company.legal_name
+        texto2 = company.name
         imagem = Image.open(StringIO(imagem.decode('base64')))
         img = imagem.convert("RGB")
         write = Image.new("RGB", (img.size[0], img.size[1]))
@@ -190,7 +190,10 @@ class StockPickingOut(orm.Model):
         digito_validador_cep = str(Endereco.digito_validador_cep(zip_dest))
         qr_string += digito_validador_cep # validador
         qr_string += stock_obj.idv # idv
-        qr_string += stock_obj.carrier_tracking_ref # Código da etiqueta
+        if stock_obj.carrier_tracking_ref:
+            qr_string += stock_obj.carrier_tracking_ref # Código da etiqueta
+        else:
+            qr_string += '0'*13
         # TODO: Implementar serviços adicionais, enquanto isso completar a string com 12 zeros
         qr_string += '000000000000' #Serviçoes adicionais
         qr_string += stock_obj.carrier_id.sigepweb_post_card_id.number # cartão de postagem

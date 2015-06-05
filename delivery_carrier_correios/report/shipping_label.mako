@@ -22,7 +22,7 @@
                                     %endif
                                 </td>
                                 <td>
-                                    %if label.x_barcode_id.image:
+                                    %if label.x_barcode_id:
                                         <img style="height: 114px; width: 114px" src='data:image/png;base64,${label.qr_code_id.image}'/>
                                     %else:
                                         &nbsp;
@@ -43,10 +43,10 @@
                 </tr>
                 <tr>
                     <th>
-                        %if label.x_barcode_id.image:
+                        %if label.x_barcode_id:
                             <img src='data:image/png;base64,${label.x_barcode_id.image}'/>
                         %else:
-                            &nbsp;
+                            ' '
                         %endif
                     </th>
                 </tr>
@@ -97,7 +97,7 @@
                                                             %if label.x_barcode_id.image:
                                                                 <img src='data:image/png;base64,${label.barcode_id.image}'/>
                                                             %else:
-                                                                &nbsp;
+                                                                ' '
                                                             %endif
                                                         </td>
                                                         <td>&nbsp;</td>
