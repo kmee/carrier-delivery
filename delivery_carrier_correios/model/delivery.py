@@ -174,17 +174,6 @@ class DeliveryGrid(orm.Model):
 
             service_post = {fields['cod']: ServicoPostagem(fields['cod'])}
 
-            vals = {}
-
-            if fields['largura'] != 0:
-                vals['largura'] = fields['largura']
-
-            if fields['altura'] != 0:
-                vals['altura'] = fields['altura']
-
-            if fields['comprimento'] != 0:
-                vals['comprimento'] = fields['comprimento']
-
             dimensao = Dimensao(Caixa(fields['altura'],
                                       fields['largura'],
                                       fields['comprimento']))
