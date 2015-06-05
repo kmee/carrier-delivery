@@ -27,6 +27,7 @@ from openerp.tools.translate import _
 
 import re
 import os
+import math
 
 from pysigep_web.pysigepweb.webservice_atende_cliente import \
     WebserviceAtendeCliente
@@ -199,8 +200,29 @@ class ShippingResponse(orm.Model):
 
                 #TODO: Inserir campos de dimensao do objeto em cada
                 #TODO: Ordem de Entrega
+                # Calculamos dimensoes do pacote a partir do seu volume
+                weight = 0
+                volume = 0
+
+                for line in picking.move_lines:
+                    if not line.product_id:
+                        continue
+                    weight += (line.product_id.weight or 0.0) * line.product_uom_qty
+                    volume += (line.product_id.volume or 0.0) * line.product_uom_qty
+
+                volume_cm = volume * 100000
+                peso_volumetrico = 0
+
+                if volume_cm > 60000:
+                    peso_volumetrico = math.ceil(volume_cm / 6000)
+
+                # Calculamos o peso considerado
+                peso_considerado = max(weight, peso_volumetrico)
+                aresta = int(math.ceil(volume_cm ** (1 / 3.0)))
+
                 # Criamos um objeto dimensao
-                obj_dimensao_objeto = TagDimensaoObjeto(Caixa())
+                obj_dimensao_objeto = TagDimensaoObjeto(Caixa(aresta, aresta,
+                                                              aresta))
 
                 # Criamos um servico postagem que representa o servico a ser
                 # utilizado
@@ -222,7 +244,7 @@ class ShippingResponse(orm.Model):
                         obj_servico_adicional=obj_servico_adicional,
                         obj_servico_postagem=sv_postagem,
                         obj_etiqueta=etq,
-                        peso=float(picking.weight/1000.0),
+                        peso=float(peso_considerado/1000.0),
                         status_processamento=0)
 
                     lista_obj_postal.append(obj_postal)
