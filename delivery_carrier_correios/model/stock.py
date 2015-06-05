@@ -53,6 +53,7 @@ class StockPickingOut(orm.Model):
         vals = {
             'carrier_tracking_ref': '',
             'invoice_id': False,
+            'shipping_response_id': False,
         }
 
         default.update(vals)
@@ -73,9 +74,6 @@ class StockPickingOut(orm.Model):
                     sv = WebserviceAtendeCliente(company_id.sigepweb_environment)
 
                     print u'[INFO] Consultando dados do cliente'
-
-                    #FIXME: Adicionar company_id.cnpj_cpf no lugar do cnpj do
-                    #  correio
 
                     if company_id.sigepweb_username == 'sigep':
                         company_id.cnpj_cpf = '34.028.316/0001-03'

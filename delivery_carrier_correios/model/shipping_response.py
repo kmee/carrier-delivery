@@ -79,7 +79,7 @@ class ShippingResponse(orm.Model):
 
             obj_ship = self.browse(cr, uid, obj, context=context)
             for picking in obj_ship.picking_line:
-                res[obj] += picking.weight
+                res[obj] += picking.weight * int(picking.quantity_of_volumes)
 
         return res
 
@@ -90,7 +90,7 @@ class ShippingResponse(orm.Model):
 
             obj_ship = self.browse(cr, uid, obj, context=context)
             for picking in obj_ship.picking_line:
-                res[obj] += picking.weight_net
+                res[obj] += picking.weight_net * int(picking.quantity_of_volumes)
 
         return res
 
@@ -116,16 +116,15 @@ class ShippingResponse(orm.Model):
 
         for ship in self.browse(cr, uid, ids):
 
-            weight = 0.0
-            weight_net = 0.0
-
             company_id = ship.company_id
             contract_id = ship.contract_id
             post_card_id = ship.post_card_id
 
+            # Expressao regular para buscar apenas numeros no numero de endereco
             reg = re.compile('[0-9]*')
             numero = ''.join(reg.findall(company_id.number))
 
+            # Endereco do remetente
             obj_endereco = Endereco(logradouro=company_id.street,
                                     numero=int(numero),
                                     bairro=company_id.district,
@@ -134,13 +133,16 @@ class ShippingResponse(orm.Model):
                                     uf=company_id.state_id.code,
                                     complemento=company_id.street2)
 
+            # Primeira tag do XML
             obj_tag_plp = TagPLP(post_card_id.number)
 
+            # Criamos o cliente que sera usado para consultar o webservice
             cliente = Cliente(company_id.name,
                               company_id.sigepweb_username,
                               company_id.sigepweb_password,
                               company_id.cnpj_cpf)
 
+            # Criamos a tag remetente do xml
             obj_remetente = TagRemetente(cliente.nome,
                                          contract_id.number,
                                          post_card_id.admin_code,
@@ -159,9 +161,7 @@ class ShippingResponse(orm.Model):
                 partner_id = picking.partner_id
                 numero = ''.join(reg.findall(partner_id.number))
 
-                weight += picking.weight
-                weight_net += picking.weight_net
-
+                # Endereco do destinatario
                 obj_endereco = Endereco(logradouro=partner_id.street,
                                         numero=int(numero),
                                         bairro=partner_id.district,
@@ -170,12 +170,16 @@ class ShippingResponse(orm.Model):
                                         uf=partner_id.state_id.code,
                                         complemento=partner_id.street2)
 
+                # Criamos a tag com os dados do destinatario
                 obj_destinatario = TagDestinatario(partner_id.name,
                                                    obj_endereco,
                                                    telefone=partner_id.phone
                                                             or False)
 
+                # Para encomendas do tip PAC41068, devemos fornecer a série
+                # e o numero da fatura
                 if picking.carrier_id.sigepweb_post_service_id.code == '41068':
+
                     nfe_number = picking.invoice_id.internal_number
                     nfe_serie = picking.invoice_id.document_serie_id.code
 
@@ -190,12 +194,16 @@ class ShippingResponse(orm.Model):
                 else:
                     obj_nacional = TagNacional(obj_endereco)
 
+                # Criamos a tag de servico adicional
                 obj_servico_adicional = TagServicoAdicional()
 
                 #TODO: Inserir campos de dimensao do objeto em cada
                 #TODO: Ordem de Entrega
+                # Criamos um objeto dimensao
                 obj_dimensao_objeto = TagDimensaoObjeto(Caixa())
 
+                # Criamos um servico postagem que representa o servico a ser
+                # utilizado
                 sv_postagem = ServicoPostagem(
                     picking.carrier_id.sigepweb_post_service_id.code)
 
@@ -203,19 +211,23 @@ class ShippingResponse(orm.Model):
                 etiquetas = [Etiqueta(etq) for etq in etiquetas]
                 lista_etiqueta += etiquetas
 
+                # Cada volume tera sua propria etiqueta, mesmo que sejam
+                # provenientes da mesma Ordem de Entrega
                 for etq in etiquetas:
 
-                    obj_postal = TagObjetoPostal(obj_destinatario=obj_destinatario,
-                                                 obj_nacional=obj_nacional,
-                                                 obj_dimensao_objeto=obj_dimensao_objeto,
-                                                 obj_servico_adicional=obj_servico_adicional,
-                                                 obj_servico_postagem=sv_postagem,
-                                                 obj_etiqueta=etq,
-                                                 peso=picking.weight,
-                                                 status_processamento=0)
+                    obj_postal = TagObjetoPostal(
+                        obj_destinatario=obj_destinatario,
+                        obj_nacional=obj_nacional,
+                        obj_dimensao_objeto=obj_dimensao_objeto,
+                        obj_servico_adicional=obj_servico_adicional,
+                        obj_servico_postagem=sv_postagem,
+                        obj_etiqueta=etq,
+                        peso=float(picking.weight/1000.0),
+                        status_processamento=0)
 
                     lista_obj_postal.append(obj_postal)
 
+            # Finalmente criamos a tag root do xml
             obj_correios_log = TagCorreiosLog('2.3', obj_tag_plp,
                                               obj_remetente, lista_obj_postal)
 
@@ -236,6 +248,7 @@ class ShippingResponse(orm.Model):
                     'carrier_tracking_ref': plp.id_plp_cliente,
                 }
 
+                # Definimos o path para salvar o xml da PLP
                 path = company_id.sigepweb_plp_xml_path + \
                     company_id.sigepweb_environment + '/'
 
