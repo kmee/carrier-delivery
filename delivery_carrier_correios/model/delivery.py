@@ -222,4 +222,4 @@ class DeliveryGrid(orm.Model):
 
         except ErroConexaoComServidor as e:
             raise osv.except_osv(('Erro no calculo do frete!'),
-                                 ('Nao foi possivel conectar.\n' + e.message))
+                                 'Nao foi possivel conectar.\n' + e.message)
