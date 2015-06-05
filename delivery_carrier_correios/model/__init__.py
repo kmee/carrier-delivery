@@ -35,12 +35,8 @@ from . import res_config
 
 #TODO: Montar ficha de postagem dos correios com chancela, qrcode e cod. barras
 #TODO: Adicionar campos no relatorio do vouncher da PLP
-#FIXME: Ao acrescentar mais produtos no Pedido de Venda, o frete continua o
-# mesmo
 #TODO: O botão atualizar do Pedido de Venda pode ser usado para atualizar o
 # frete
-#FIXME: Verificar unidade de peso e dimesões para calculo preço e prazo e
-# para serviçoes normais. Acredito que sejam diferentes
 #TODO: Remover o botão "adicionar ao orçamento". O "Atualizar" já serviria
 # pra isso. Só no momento de salvar que o recalculo poderia ser automatico
 # funcionando da mesma maneira que o "Atualizar"
