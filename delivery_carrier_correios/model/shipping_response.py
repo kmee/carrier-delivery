@@ -296,7 +296,28 @@ class ShippingResponse(orm.Model):
 
         return False
 
+    def onchange_company_id(self, cr, uid, ids, sigepweb_company_id, context=None):
+
+        res = {'value': {}}
+
+        if sigepweb_company_id:
+            company = self.pool.get('res.company').browse(
+                cr, uid, sigepweb_company_id, context=context)
+
+            values = {'carrier_id': company.sigepweb_carrier_id.id}
+
+            res['value'].update(values)
+
+        return res
+
     _columns = {
+
+        'company_id': fields.many2one('res.company',
+                                      string='Company',
+                                      required=True,
+                                      readonly=True,
+                                      states={'draft': [('readonly', False)]}),
+
         'user_id': fields.many2one('res.users',
                                    'Responsible',
                                    readonly=True,
@@ -306,9 +327,12 @@ class ShippingResponse(orm.Model):
 
         'carrier_tracking_ref': fields.char('Tracking Ref.', readonly=True),
 
-        'carrier_id': fields.many2one('res.partner', string='Carrier',
-                                      required=True, readonly=True,
-                                      states={'draft': [('readonly', False)]}),
+        'carrier_id': fields.related('company_id',
+                                     'sigepweb_carrier_id',
+                                     string='Carrier',
+                                     type='many2one',
+                                     relation='res.partner',
+                                     readonly=True),
 
         'carrier_responsible': fields.many2one('res.partner',
                                                string='Carrier Responsible',
@@ -320,12 +344,6 @@ class ShippingResponse(orm.Model):
 
         'note': fields.text('Description / Remarks', readonly=True,
                             states={'draft': [('readonly', False)]}),
-
-        'company_id': fields.many2one('res.company',
-                                      string='Company',
-                                      required=True,
-                                      readonly=True,
-                                      states={'draft': [('readonly', False)]}),
 
         'contract_id': fields.many2one('sigepweb.contract',
                                        string='Contract',
