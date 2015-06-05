@@ -33,21 +33,27 @@ from . import stock
 from . import company
 from . import res_config
 
-#TODO: Montar ficha de postagem dos correios com chancela, qrcode e cod. barras
-#TODO: Adicionar campos no relatorio do vouncher da PLP
+#DOING: Montar ficha de postagem dos correios com chancela, qrcode e cod. barras
+#DOING: Adicionar campos no relatorio do vouncher da PLP
+
 #TODO: O botão atualizar do Pedido de Venda pode ser usado para atualizar o
 # frete
 #TODO: Remover o botão "adicionar ao orçamento". O "Atualizar" já serviria
 # pra isso. Só no momento de salvar que o recalculo poderia ser automatico
 # funcionando da mesma maneira que o "Atualizar"
+
 #TODO: Anexar xml da PLP da view da PLP
 #TODO: Inserir campos de dimensao do objeto em cada Ordem de Entrega (PLP e
-# etiqueta)
+# etiqueta)?
+#TODO: Melhor modo de exibir erros nas dimensões ao calcular frete?
+
 #TODO: Adicionar opcao de selecionar os servicos adicionais na Ordem de Entrega
+
 #TODO: Verificar se PLP não pode mais ser usada depois de gerada
 #TODO: Pesquisar o que é id_plp_master
-#TODO: Verificar tamanho das caixas usadas
+
 #TODO: Unidade usada para peso: kilos
 #TODO: Unidade usada para volume: m3
 #TODO: Unidade usada para comprimento: m
+
 
