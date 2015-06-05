@@ -79,7 +79,7 @@ class ShippingResponse(orm.Model):
 
             obj_ship = self.browse(cr, uid, obj, context=context)
             for picking in obj_ship.picking_line:
-                res[obj] += picking.weight
+                res[obj] += picking.weight * int(picking.quantity_of_volumes)
 
         return res
 
@@ -90,7 +90,7 @@ class ShippingResponse(orm.Model):
 
             obj_ship = self.browse(cr, uid, obj, context=context)
             for picking in obj_ship.picking_line:
-                res[obj] += picking.weight_net
+                res[obj] += picking.weight_net * int(picking.quantity_of_volumes)
 
         return res
 
@@ -115,10 +115,6 @@ class ShippingResponse(orm.Model):
     def generate_tracking_no(self, cr, uid, ids, context=None):
 
         for ship in self.browse(cr, uid, ids):
-
-            #TODO: O Openerp fornece peso em gramas ou kilos
-            weight = 0.0
-            weight_net = 0.0
 
             company_id = ship.company_id
             contract_id = ship.contract_id
@@ -159,9 +155,6 @@ class ShippingResponse(orm.Model):
 
                 partner_id = picking.partner_id
                 numero = ''.join(reg.findall(partner_id.number))
-
-                weight += picking.weight
-                weight_net += picking.weight_net
 
                 obj_endereco = Endereco(logradouro=partner_id.street,
                                         numero=int(numero),
@@ -212,7 +205,8 @@ class ShippingResponse(orm.Model):
                                                  obj_servico_adicional=obj_servico_adicional,
                                                  obj_servico_postagem=sv_postagem,
                                                  obj_etiqueta=etq,
-                                                 peso=picking.weight,
+                                                 peso=float(
+                                                     picking.weight/1000.0),
                                                  status_processamento=0)
 
                     lista_obj_postal.append(obj_postal)
