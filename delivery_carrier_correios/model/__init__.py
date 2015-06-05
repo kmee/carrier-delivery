@@ -39,6 +39,8 @@ from . import res_config
 # mesmo
 #TODO: O botão atualizar do Pedido de Venda pode ser usado para atualizar o
 # frete
+#FIXME: Verificar unidade de peso e dimesões para calculo preço e prazo e
+# para serviçoes normais. Acredito que sejam diferentes
 #TODO: Remover o botão "adicionar ao orçamento". O "Atualizar" já serviria
 # pra isso. Só no momento de salvar que o recalculo poderia ser automatico
 # funcionando da mesma maneira que o "Atualizar"
@@ -49,6 +51,8 @@ from . import res_config
 #TODO: Verificar se PLP não pode mais ser usada depois de gerada
 #TODO: Pesquisar o que é id_plp_master
 #TODO: Verificar tamanho das caixas usadas
-#TODO: Unidade usada para peso: gramas ou kilos?
+#TODO: Unidade usada para peso: kilos
+#TODO: Unidade usada para volume: m3
+#TODO: Unidade usada para comprimento: m
 #TODO: O peso presente na ordem de entrega corresponde ao peso de uma unidade
 #  ou se trata do peso total de todos os volumes
