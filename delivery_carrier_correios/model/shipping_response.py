@@ -198,8 +198,6 @@ class ShippingResponse(orm.Model):
                 # Criamos a tag de servico adicional
                 obj_servico_adicional = TagServicoAdicional()
 
-                #TODO: Inserir campos de dimensao do objeto em cada
-                #TODO: Ordem de Entrega
                 # Calculamos dimensoes do pacote a partir do seu volume
                 weight = 0
                 volume = 0
@@ -216,8 +214,9 @@ class ShippingResponse(orm.Model):
                 if volume_cm > 60000:
                     peso_volumetrico = math.ceil(volume_cm / 6000)
 
-                # Calculamos o peso considerado
-                peso_considerado = max(weight, peso_volumetrico)
+                # Calculamos o peso considerado. O OpenERP fornece peso em
+                # kilogramas
+                peso_considerado = max(weight, peso_volumetrico) * 1000
                 aresta = int(math.ceil(volume_cm ** (1 / 3.0)))
 
                 # Criamos um objeto dimensao
@@ -244,7 +243,7 @@ class ShippingResponse(orm.Model):
                         obj_servico_adicional=obj_servico_adicional,
                         obj_servico_postagem=sv_postagem,
                         obj_etiqueta=etq,
-                        peso=float(peso_considerado/1000.0),
+                        peso=float(peso_considerado),
                         status_processamento=0)
 
                     lista_obj_postal.append(obj_postal)

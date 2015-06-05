@@ -50,5 +50,4 @@ from . import res_config
 #TODO: Unidade usada para peso: kilos
 #TODO: Unidade usada para volume: m3
 #TODO: Unidade usada para comprimento: m
-#TODO: O peso presente na ordem de entrega corresponde ao peso de uma unidade
-#  ou se trata do peso total de todos os volumes
+

@@ -123,6 +123,7 @@ class DeliveryGrid(orm.Model):
     _inherit = "delivery.grid"
 
     def get_price_term(self, cr, uid, grid, order, context):
+
         total = 0
         weight = 0
         volume = 0
