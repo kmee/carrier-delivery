@@ -45,15 +45,16 @@
                         </div>
                         <group>
                             <group>
+                                <field name="company_id"/>
                                 <field name="user_id"/>
-                                <field name="carrier_id"/>
                                 <field name="carrier_responsible"/>
-                                <field name="date"/>
                             </group>
                             <group>
-                                <field name="company_id"/>
+                                <field name="carrier_id"
+                                       domain="[('company_id.id', '=', company_id)]"/>
                                 <field name="contract_id"/>
                                 <field name="post_card_id"/>
+                                <field name="date"/>
                             </group>
                         </group>
                         <notebook>
