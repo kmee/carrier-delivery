@@ -144,12 +144,8 @@ class DeliveryGrid(orm.Model):
         if volume_cm > 60000:
             peso_volumetrico = math.ceil(volume_cm / 6000)
 
-        #TODO: Verificar se o peso esta em kilos
         peso_considerado = max(weight, peso_volumetrico)
         aresta = int(math.ceil(volume_cm ** (1 / 3.0)))
-
-        print peso_considerado
-        print aresta
 
         fields = {
             "cod": int(grid.service_type),
@@ -217,15 +213,13 @@ class DeliveryGrid(orm.Model):
                 }
 
                 if data['MsgErro'] is not None:
-                    raise osv.except_osv(('Erro no calculo do frete!'),
-                                         ('Produto: ' + data['MsgErro']))
+                    res = ('ERROR', data['MsgErro'])
+                    print data['MsgErro']
+                else:
+                    res = (float(data['Valor']), data['PrazoEntrega'] or 0.00)
 
-                res = (float(data['Valor']), data['PrazoEntrega'] or 0.00)
                 return res
 
         except ErroConexaoComServidor as e:
             raise osv.except_osv(('Erro no calculo do frete!'),
                                  ('Nao foi possivel conectar.\n' + e.message))
-            return (0.00, 0.00)
-
-

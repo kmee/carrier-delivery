@@ -116,6 +116,7 @@ class ShippingResponse(orm.Model):
 
         for ship in self.browse(cr, uid, ids):
 
+            #TODO: O Openerp fornece peso em gramas ou kilos
             weight = 0.0
             weight_net = 0.0
 
