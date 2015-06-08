@@ -114,7 +114,7 @@ class StockPickingOut(orm.Model):
                     tracking_packs = []
                     for line in stock.move_lines:
 
-                        if line.tracking_id.name not in tracking_packs:
+                        if line.tracking_id.id not in tracking_packs:
                             tracking_packs.append(line.tracking_id.id)
 
                     etiquetas = sv.solicita_etiquetas(serv_post,
