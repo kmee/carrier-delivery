@@ -205,8 +205,8 @@ class ShippingResponse(orm.Model):
                 for line in picking.move_lines:
                     if not line.product_id:
                         continue
-                    weight += (line.product_id.weight or 0.0) * line.product_uom_qty
-                    volume += (line.product_id.volume or 0.0) * line.product_uom_qty
+                    weight += (line.product_id.weight or 0.0) * line.product_qty
+                    volume += (line.product_id.volume or 0.0) * line.product_qty
 
                 volume_cm = volume * 100000
                 peso_volumetrico = 0

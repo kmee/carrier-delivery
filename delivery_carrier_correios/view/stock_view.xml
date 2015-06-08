@@ -23,6 +23,10 @@
                     <field name="carrier_tracking_ref"/>
                     <field name="shipping_response_id"/>
                 </field>
+                <xpath expr="//field[@name='move_type']" position="after">
+                    <field name="idv"/>
+					<field name="image_chancela" widget="image"/>
+                </xpath>
             </field>
         </record>
 
