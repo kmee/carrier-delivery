@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_sigepweb_stock_picking_out_form" model="ir.ui.view">
+            <field name="model">stock.picking.out</field>
+            <field name="inherit_id" ref="stock.view_picking_out_form"/>
+            <field name="arch" type="xml">
+                <field name="origin" position="after">
+                    <field name="invoice_id"/>
+                </field>
+                <xpath expr="//field[@name='move_type']" position="after">
+                    <field name="idv"/>
+					<field name="image_chancela" widget="image"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</openerp>

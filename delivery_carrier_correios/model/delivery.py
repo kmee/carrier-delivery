@@ -2,7 +2,7 @@
 # #############################################################################
 #
 # Brazillian Carrier Correios Sigep WEB
-#    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
+# Copyright (C) 2015 KMEE (http://www.kmee.com.br)
 #    @author Luis Felipe Mileo <mileo@kmee.com.br>
 #    @author: Michell Stuttgart <michell.stuttgart@kmee.com.br>
 #
@@ -44,16 +44,16 @@ class DeliveryCarrier(orm.Model):
         res.append(('sigepweb', 'Correios SigepWeb'))
         return res
 
-    def onchange_sigepweb_post_service_ids(self, cr, uid, ids,
-                                           sigepweb_post_service_ids,
-                                           context=None):
+    def onchange_sigepweb_post_service_id(self, cr, uid, ids,
+                                          sigepweb_post_service_id,
+                                          context=None):
         res = {'value': {}}
 
-        if not sigepweb_post_service_ids:
+        if not sigepweb_post_service_id:
             return res
 
         post_service = self.pool.get('sigepweb.post.service').browse(
-            cr, uid, sigepweb_post_service_ids, context=context)
+            cr, uid, sigepweb_post_service_id, context=context)
 
         values = {
             'code': post_service.code,
@@ -68,11 +68,12 @@ class DeliveryCarrier(orm.Model):
 
         for delivery in self.browse(cr, uid, ids):
 
-            record_post_card = delivery.sigepweb_contract_ids.post_card_ids
+            if delivery.type == 'sigepweb':
+                record_post_card = delivery.sigepweb_contract_id.post_card_ids
 
-            a = delivery.sigepweb_post_card_ids
-            if a.id not in [c.id for c in record_post_card]:
-                return False
+                a = delivery.sigepweb_post_card_id
+                if a.id not in [c.id for c in record_post_card]:
+                    return False
 
         return True
 
@@ -82,37 +83,40 @@ class DeliveryCarrier(orm.Model):
         # cartao de postagem selecionado
         for delivery in self.browse(cr, uid, ids):
 
-            post_service_ids = \
-                delivery.sigepweb_post_card_ids.post_service_ids
+            if delivery.type == 'sigepweb':
 
-            post_service = delivery.sigepweb_post_service_ids
+                post_service_ids = \
+                    delivery.sigepweb_post_card_id.post_service_ids
 
-            if post_service.id not in [s.id for s in post_service_ids]:
-                return False
+                post_service = delivery.sigepweb_post_service_id
+
+                if post_service.id not in [s.id for s in post_service_ids]:
+                    return False
 
         return True
 
     _columns = {
-        'sigepweb_contract_ids': fields.many2one('sigepweb.contract',
-                                                 'Contract'),
-        'sigepweb_post_card_ids': fields.many2one(
+        'sigepweb_contract_id': fields.many2one('sigepweb.contract',
+                                                'Contract'),
+        'sigepweb_post_card_id': fields.many2one(
             'sigepweb.post.card', string='Post Cards',
-            domain="[('contract_id', '=', sigepweb_contract_ids)]"),
+            domain="[('contract_id', '=', sigepweb_contract_id)]"),
 
-        'sigepweb_post_service_ids': fields.many2one(
+        'sigepweb_post_service_id': fields.many2one(
             'sigepweb.post.service', string='Post Services',
-            domain="[('post_card_id', '=', sigepweb_post_card_ids)]"),
+            domain="[('post_card_id', '=', sigepweb_post_card_id)]"),
+        'image_chancela': fields.binary('Chancela Correios', filters='*.png, *.jpg'),
     }
 
     _constraints = [
         (_check_post_card,
          u'O numero de Cartão de Postagem fornecido não '
          u'esta presente no Contrato selecionado.',
-         ['sigepweb_post_card_ids']),
+         ['sigepweb_post_card_id']),
         (_check_service_card,
          u'O numero de Servico de Postagem fornecido não '
          u'esta presente no Cartão de Postagem selecionado.',
-         ['sigepweb_post_service_ids']),
+         ['sigepweb_post_service_id']),
     ]
 
 
@@ -137,32 +141,26 @@ class DeliveryGrid(orm.Model):
             peso_volumetrico = math.ceil(volume_cm / 6000)
 
         peso_considerado = max(weight, peso_volumetrico)
-        aresta = int(math.ceil(volume_cm**(1/3.0)))
+        aresta = int(math.ceil(volume_cm ** (1 / 3.0)))
 
-        if order.carrier_id:
+        fields = {
+            "cod": int(grid.service_type),
+            "GOCEP": order.partner_shipping_id.zip,
+            "HERECEP": order.shop_id.company_id.partner_id.zip,
+            "peso": peso_considerado,
+            "formato": "1",
+            "comprimento": aresta,
+            "altura": aresta,
+            "largura": aresta,
+            "diametro": "0",
+            "nome": order.company_id.name,
+            "login": order.company_id.sigepweb_username,
+            "senha": order.company_id.sigepweb_password,
+            "cnpj": order.company_id.cnpj_cpf,
+            "cod_admin": grid.carrier_id.sigepweb_post_card_id.admin_code,
+        }
 
-            print 'TSTSTSTS'
-
-            fields = {
-                "cod": int(grid.service_type),
-                "GOCEP": order.partner_shipping_id.zip,
-                "HERECEP": order.shop_id.company_id.partner_id.zip,
-                "peso": peso_considerado,
-                "formato": "1",
-                "comprimento": aresta,
-                "altura": aresta,
-                "largura": aresta,
-                "diametro": "0",
-                "nome": order.company_id.name,
-                "login": order.company_id.sigepweb_username,
-                "senha": order.company_id.sigepweb_password,
-                "cnpj": order.company_id.cnpj_cpf,
-                "cod_admin": order.carrier_id.sigepweb_post_card_ids.admin_code,
-            }
-
-            return self._frete(fields)
-
-        return (0.00, 0.00)
+        return self._frete(fields)
 
     def _frete(self, fields):
 
@@ -188,13 +186,14 @@ class DeliveryGrid(orm.Model):
             cliente = Cliente(fields['nome'], fields['login'],
                               fields['senha'], fields['cnpj'])
 
-            retorno = calc.calcula_preco_prazo(service_post, fields['cod_admin'],
-                                               fields['HERECEP'], fields['GOCEP'],
+            retorno = calc.calcula_preco_prazo(service_post,
+                                               fields['cod_admin'],
+                                               fields['HERECEP'],
+                                               fields['GOCEP'],
                                                fields['peso'], dimensao,
                                                False, 0, False, cliente)
 
             if retorno:
-
                 data = {
                     'MsgErro': retorno[0].msg_erro,
                     'Erro': retorno[0].erro,

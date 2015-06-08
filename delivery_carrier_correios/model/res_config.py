@@ -36,6 +36,7 @@ _logger = logging.getLogger(__name__)
 
 
 class SigepWebConfigSettings(orm.TransientModel):
+
     _name = 'sigepweb.config.settings'
     _inherit = 'res.config.settings'
 
@@ -48,7 +49,8 @@ class SigepWebConfigSettings(orm.TransientModel):
                                        'sigepweb_contract_ids',
                                        string=u'Contratos',
                                        type='one2many',
-                                       relation='sigepweb.contract'),
+                                       relation='sigepweb.contract',
+                                       readonly=True),
 
         'username': fields.related(
             'sigepweb_company_id', 'sigepweb_username',
@@ -57,6 +59,11 @@ class SigepWebConfigSettings(orm.TransientModel):
         'password': fields.related(
             'sigepweb_company_id', 'sigepweb_password',
             string=u'Senha', type='char', required=True),
+
+        'carrier_id': fields.related(
+            'sigepweb_company_id', 'sigepweb_carrier_id',
+            string=u'Correios', type='many2one', required=True,
+            relation='res.partner'),
 
         'contract_number': fields.related(
             'sigepweb_company_id', 'sigepweb_main_contract_number',
@@ -113,6 +120,7 @@ class SigepWebConfigSettings(orm.TransientModel):
             'password': company.sigepweb_password,
             'contract_number': company.sigepweb_main_contract_number,
             'post_card_number': company.sigepweb_main_post_card_number,
+            'carrier_id': company.sigepweb_carrier_id.id,
             'contract_ids': [(4, x) for x in a],
             'environment': company.sigepweb_environment,
         }
@@ -130,7 +138,7 @@ class SigepWebConfigSettings(orm.TransientModel):
                 config.sigepweb_company_id.sigepweb_main_post_card_number
 
             try:
-                print u'[INFO] Iniciando Serviço de Atendimento ao  Cliente'
+                print u'[INFO] Iniciando Serviço de Atendimento ao Cliente'
                 sv = WebserviceAtendeCliente(config.environment)
 
                 print u'[INFO] Consultando dados do cliente'
@@ -240,7 +248,7 @@ class SigepWebConfigSettings(orm.TransientModel):
                 'number': contract.id_contrato,
                 'post_card_ids': post_card_ids,
                 'directorship_id': directorship_id,
-                'rescompany_id': company_id,
+                'company_id': company_id,
             }
 
             if not contract_id:

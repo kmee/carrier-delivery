@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+		<record id="view_sigepweb_plp_tree" model="ir.ui.view">
+			<field name="name">sigepweb.plp.tree.view</field>
+			<field name="model">sigepweb.plp</field>
+			<field name="arch" type="xml">
+				<tree string="Sygep PLP" version="7.0">
+					<field name="contract"/>
+					<field name="client_id"/>
+					<field name="plp_number"/>
+					<field name="delivery_date"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="view_sigepweb_plp_form" model="ir.ui.view">
+			<field name="name">sigepweb.plp.form.view</field>
+			<field name="model">sigepweb.plp</field>
+			<field name="arch" type="xml">
+				<form string="Sygep PLP" version="7.0">
+					<group>
+						<field name="contract"/>
+						<field name="client_id"/>
+						<field name="plp_number"/>
+						<field name="delivery_date"/>
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_sigepweb_plp" model="ir.actions.act_window">
+			<field name="name">SygepWeb PLP</field>
+			<field name="res_model">sigepweb.plp</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+
+		<menuitem id="menu_sigepweb_plp"
+				  name="Sygep PLP"
+				  parent="stock.menu_stock_warehouse_mgmt"
+				  sequence="5"
+				  action="action_sigepweb_plp"/>
+	</data>
+</openerp>
