@@ -59,19 +59,20 @@
                         </group>
                         <notebook>
                             <page string="Entregas">
-                                <field name="picking_line" widget="many2many"
-                                       domain="[('company_id.id', '=', company_id),('carrier_id.sigepweb_post_card_id.id','=', post_card_id),('shipping_response_id','=',False),('invoice_id.state','=','sefaz_export')]">
-                                    <tree>
+                                <!--<field name="picking_line" widget="many2many"-->
+                                       <!--domain="[('company_id.id', '=', company_id),('carrier_id.sigepweb_post_card_id.id','=', post_card_id),('shipping_response_id','=',False),('invoice_id.state','=','sefaz_export')]">-->
+                                    <!--<tree>-->
 
-                                        <field name="name"/>
-                                        <field name="partner_id"/>
-                                        <field name="date"/>
-                                        <field name="carrier_id"/>
-                                        <field name="state"/>
-                                        <field name="shipping_response_id"/>
+                                        <!--<field name="name"/>-->
+                                        <!--<field name="partner_id"/>-->
+                                        <!--<field name="date"/>-->
+                                        <!--<field name="carrier_id"/>-->
+                                        <!--<field name="state"/>-->
+                                        <!--<field name="shipping_response_id"/>-->
 
-                                    </tree>
-                                </field>
+                                    <!--</tree>-->
+                                <!--</field>-->
+                                <field name="tracking_pack_line" widget="many2many"/>
                             </page>
                             <page string="Details">
                                 <group>

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-# Brazillian Carrier Correios Sigep WEB
-# Copyright (C) 2015 KMEE (http://www.kmee.com.br)
+#    Brazillian Carrier Correios Sigep WEB
+#    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
 #    @author Luis Felipe Mileo <mileo@kmee.com.br>
 #
 #    Sponsored by Europestar www.europestar.com.br
@@ -228,8 +228,16 @@ class ShippingResponse(orm.Model):
                 sv_postagem = ServicoPostagem(
                     picking.carrier_id.sigepweb_post_service_id.code)
 
-                etiquetas = picking.carrier_tracking_ref.split(', ')
-                etiquetas = [Etiqueta(etq) for etq in etiquetas]
+                tracking_packs = []
+                etiquetas = []
+                for line in picking.move_lines:
+
+                    if line.tracking_id.id not in tracking_packs:
+                        tracking_packs.append(line.tracking_id.id)
+                        etiquetas.append(Etiqueta(line.tracking_id.serial))
+
+                # etiquetas = picking.carrier_tracking_ref.split(', ')
+                # etiquetas = [Etiqueta(etq) for etq in etiquetas]
                 lista_etiqueta += etiquetas
 
                 # Cada volume tera sua propria etiqueta, mesmo que sejam
@@ -372,6 +380,14 @@ class ShippingResponse(orm.Model):
                                             ('type', '=', 'out'),
                                             ('state', '=', 'done'),
                                         ]),
+
+        'tracking_pack_line': fields.one2many('stock.tracking',
+                                              'shipping_response_id',
+                                              string='Tracking Packs',
+                                              readonly=True,
+                                              states={
+                                                  'draft': [('readonly', False)]
+                                              }),
 
         'volume': fields.function(_compute_volume,
                                   type='float',
