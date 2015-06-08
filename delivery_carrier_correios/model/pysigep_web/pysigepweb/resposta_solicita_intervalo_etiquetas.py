@@ -3,7 +3,7 @@
 #
 #    Brazillian Carrier Correios Sigep WEB
 #    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
-#    @author: Michell Stuttgart <michell.stuttgart@kmee.com.br>
+#    @author: Michell Stuttgart <michell.stuttgarst@kmee.com.br>
 #
 #    Sponsored by Europestar www.europestar.com.br
 #
@@ -21,23 +21,39 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from xml.etree.ElementTree import ElementTree, fromstring
+
+from etiqueta import Etiqueta
 
 
-class RespostaFechaPLPVariosServicos(object):
+class RespostaSolicitaIntervaloEtiquetas(object):
 
-    def __init__(self, xml, id_plp_cliente):
-        self._xml = xml
-        self.id_plp_cliente = id_plp_cliente
-
-    def salvar_xml(self, file_name):
-        # tag raiz do xml
-        root = fromstring(self.xml.encode('utf8'))
-        # Cria backup do xml retornado
-        ElementTree(root).write(file_name + '.xml')
-        return True
-
+    def __init__(self, faixa_etiquetas, qtd_etiquetas):
+        self._qtd_etiquetas = qtd_etiquetas
+        self._faixa_etiquetas = faixa_etiquetas
 
     @property
-    def xml(self):
-        return self._xml
+    def faixa_etiquetas(self):
+        return self._faixa_etiquetas
+
+    @property
+    def qtd_etiquetas(self):
+        return self._qtd_etiquetas
+
+    def gera_etiquetas(self):
+
+        faixa_etiquetas = self._faixa_etiquetas
+
+        etiqueta_inicial = faixa_etiquetas.split(',')[0]
+        etiqueta_numero = int(etiqueta_inicial[2:10])
+        etiqueta_prefixo = etiqueta_inicial[0:2]
+        etiqueta_sufixo = etiqueta_inicial[11:]
+
+        etiquetas = []
+
+        for i in range(self._qtd_etiquetas):
+            valor = etiqueta_prefixo + str(etiqueta_numero + i).zfill(8) + ' ' \
+                                                                        + etiqueta_sufixo
+
+            etiquetas.append(Etiqueta(valor))
+
+        return etiquetas

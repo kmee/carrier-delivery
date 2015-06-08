@@ -81,6 +81,12 @@ class SigepWebConfigSettings(orm.TransientModel):
                                       selection=[PRODUCAO, HOMOLOGACAO],
                                       store=True,
                                       required=True),
+
+        'plp_xml_path': fields.related('sigepweb_company_id',
+                                       'sigepweb_plp_xml_path',
+                                       string='PLP XML Path',
+                                       type='char',
+                                       required=True),
     }
 
     def _default_company(self, cr, uid, context=None):
@@ -123,6 +129,7 @@ class SigepWebConfigSettings(orm.TransientModel):
             'carrier_id': company.sigepweb_carrier_id.id,
             'contract_ids': [(4, x) for x in a],
             'environment': company.sigepweb_environment,
+            'plp_xml_path': company.sigepweb_plp_xml_path,
         }
         return {'value': values}
 

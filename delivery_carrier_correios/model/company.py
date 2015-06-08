@@ -50,7 +50,8 @@ class ResCompany(orm.Model):
                                                  required=True),
         'shipping_response_ids': fields.one2many('shipping.response',
                                                  'company_id',
-                                                 string='Shipping Response')
+                                                 string='Shipping Response'),
+        'sigepweb_plp_xml_path': fields.char('PLP XML Path'),
     }
 
     _defaults = {

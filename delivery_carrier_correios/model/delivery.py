@@ -3,7 +3,7 @@
 #
 # Brazillian Carrier Correios Sigep WEB
 # Copyright (C) 2015 KMEE (http://www.kmee.com.br)
-#    @author Luis Felipe Mileo <mileo@kmee.com.br>
+# @author Luis Felipe Mileo <mileo@kmee.com.br>
 #    @author: Michell Stuttgart <michell.stuttgart@kmee.com.br>
 #
 #    Sponsored by Europestar www.europestar.com.br
@@ -105,7 +105,8 @@ class DeliveryCarrier(orm.Model):
         'sigepweb_post_service_id': fields.many2one(
             'sigepweb.post.service', string='Post Services',
             domain="[('post_card_id', '=', sigepweb_post_card_id)]"),
-        'image_chancela': fields.binary('Chancela Correios', filters='*.png, *.jpg'),
+        'image_chancela': fields.binary(string='Chancela Correios',
+                                        filters='*.png, *.jpg'),
     }
 
     _constraints = [
@@ -124,15 +125,21 @@ class DeliveryGrid(orm.Model):
     _inherit = "delivery.grid"
 
     def get_price_term(self, cr, uid, grid, order, context):
+
         total = 0
         weight = 0
         volume = 0
+
         for line in order.order_line:
             if not line.product_id:
                 continue
             total += line.price_subtotal or 0.0
             weight += (line.product_id.weight or 0.0) * line.product_uom_qty
             volume += (line.product_id.volume or 0.0) * line.product_uom_qty
+
+        if not order.order_line:
+            res = (0.00, 0.00)
+            return res
 
         volume_cm = volume * 100000
         peso_volumetrico = 0
@@ -170,18 +177,9 @@ class DeliveryGrid(orm.Model):
 
             service_post = {fields['cod']: ServicoPostagem(fields['cod'])}
 
-            vals = {}
-
-            if fields['largura'] != 0:
-                vals['largura'] = fields['largura']
-
-            if fields['altura'] != 0:
-                vals['altura'] = fields['altura']
-
-            if fields['comprimento'] != 0:
-                vals['comprimento'] = fields['comprimento']
-
-            dimensao = Dimensao(Caixa(**vals))
+            dimensao = Dimensao(Caixa(fields['altura'],
+                                      fields['largura'],
+                                      fields['comprimento']))
 
             cliente = Cliente(fields['nome'], fields['login'],
                               fields['senha'], fields['cnpj'])
@@ -206,11 +204,14 @@ class DeliveryGrid(orm.Model):
                     'EntregaSabado': retorno[0].entrega_sabado
                 }
 
-                return (float(data['Valor']), data['PrazoEntrega'] or 0.00)
+                if data['MsgErro'] is not None:
+                    res = ('ERROR', data['MsgErro'])
+                    print data['MsgErro']
+                else:
+                    res = (float(data['Valor']), data['PrazoEntrega'] or 0.00)
+
+                return res
 
         except ErroConexaoComServidor as e:
-            raise osv.except_osv(_('Erro no calculo do frete!'),
-                                 _('Nao foi possivel conectar.\n' + e.message))
-            return (0.00, 0.00)
-
-
+            raise osv.except_osv(('Erro no calculo do frete!'),
+                                 'Nao foi possivel conectar.\n' + e.message)

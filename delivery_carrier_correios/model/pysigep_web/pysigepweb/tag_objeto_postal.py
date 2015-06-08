@@ -34,8 +34,8 @@ from tag_base import TagBase
 class TagObjetoPostal(TagBase):
 
     def __init__(self, obj_destinatario, obj_nacional, obj_dimensao_objeto,
-                 obj_servico_postagem, obj_servico_adicional, ob_etiqueta, peso,
-                 status_processamento, codigo_objeto_cliente='',
+                 obj_servico_postagem, obj_servico_adicional, obj_etiqueta,
+                 peso, status_processamento, codigo_objeto_cliente='',
                  cubagem=0.0000, numero_comprovante_de_postagem=0,
                  valor_cobrado=0.0, rt1='', rt2=''):
 
@@ -44,7 +44,7 @@ class TagObjetoPostal(TagBase):
         self.dimensao_objeto = obj_dimensao_objeto
         self.servico_postagem = obj_servico_postagem
         self.servico_adicional = obj_servico_adicional
-        self.etiqueta = ob_etiqueta
+        self.etiqueta = obj_etiqueta
         self.codigo_objeto_cliente = codigo_objeto_cliente
         self.cubagem = cubagem
         self.peso = peso
@@ -57,37 +57,37 @@ class TagObjetoPostal(TagBase):
 
     def get_xml(self):
 
-        xml = u'<objeto_postal>'
-        xml += u'<numero_etiqueta>%s</numero_etiqueta>' % \
-               self.etiqueta.valor
-        xml += u'<codigo_objeto_cliente>%s</codigo_objeto_cliente>' % \
+        xml = u'<objeto_postal>\n'
+        xml += u'<numero_etiqueta>%s</numero_etiqueta>\n' % \
+               self.etiqueta.com_digito_verificador()
+        xml += u'<codigo_objeto_cliente>%s</codigo_objeto_cliente>\n' % \
                self.codigo_objeto_cliente
-        xml += u'<codigo_servico_postagem>%s</codigo_servico_postagem>' % \
+        xml += u'<codigo_servico_postagem>%s</codigo_servico_postagem>\n' % \
                self.servico_postagem.codigo
 
         aux = str(self.cubagem) if self.cubagem else ''
-        xml += u'<cubagem>%s</cubagem>' % aux
+        xml += u'<cubagem>%s</cubagem>\n' % aux
 
-        xml += u'<peso>%d</peso>' % self.peso
-        xml += u'<rt1>%s</rt1>' % self.rt1
-        xml += u'<rt2>%s</rt2>' % self.rt2
+        xml += u'<peso>%d</peso>\n' % self.peso
+        xml += u'<rt1>%s</rt1>\n' % self.rt1
+        xml += u'<rt2>%s</rt2>\n' % self.rt2
         xml += self.destinatario.get_xml()
         xml += self.nacional.get_xml()
         xml += self.servico_adicional.get_xml()
         xml += self.dimensao_objeto.get_xml()
-        xml += u'<data_postagem_sara></data_postagem_sara>'
-        xml += u'<status_processamento>%s</status_processamento>' % \
+        xml += u'<data_postagem_sara></data_postagem_sara>\n'
+        xml += u'<status_processamento>%s</status_processamento>\n' % \
                self.status_processamento
 
         aux = str(self.numero_comprovante_de_postagem) if \
             self.numero_comprovante_de_postagem else ''
         xml += u'<numero_comprovante_postagem>%s</numero_comprovante_postagem' \
-               u'>' % aux
+               u'>\n' % aux
 
         aux = str(self.valor_cobrado) if self.valor_cobrado else ''
-        xml += u'<valor_cobrado>%s</valor_cobrado>' % aux
+        xml += u'<valor_cobrado>%s</valor_cobrado>\n' % aux
 
-        xml += u'</objeto_postal>'
+        xml += u'</objeto_postal>\n'
 
         self._validar_xml(xml)
         return xml

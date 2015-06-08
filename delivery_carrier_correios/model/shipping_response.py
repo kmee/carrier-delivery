@@ -26,6 +26,8 @@ from openerp.osv import fields, orm, osv
 from openerp.tools.translate import _
 
 import re
+import os
+import math
 
 from pysigep_web.pysigepweb.webservice_atende_cliente import \
     WebserviceAtendeCliente
@@ -45,8 +47,20 @@ from pysigep_web.pysigepweb.resposta_busca_cliente import Cliente
 class ShippingResponse(orm.Model):
     _name = 'shipping.response'
 
-    def generate_tracking_no(self, cr, uid, ids, context={}, error=True):
-        pass
+    def copy(self, cr, uid, ids, default=None, context=None):
+
+        if default is None:
+            default = {}
+
+        vals = {
+            'picking_line': False,
+            'carrier_tracking_ref': '',
+            'name': '/',
+        }
+
+        default.update(vals)
+        return super(ShippingResponse, self).copy(
+            cr, uid, ids, default=default, context=context)
 
     def _compute_volume(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
@@ -66,7 +80,7 @@ class ShippingResponse(orm.Model):
 
             obj_ship = self.browse(cr, uid, obj, context=context)
             for picking in obj_ship.picking_line:
-                res[obj] += picking.weight
+                res[obj] += picking.weight * int(picking.quantity_of_volumes)
 
         return res
 
@@ -77,7 +91,7 @@ class ShippingResponse(orm.Model):
 
             obj_ship = self.browse(cr, uid, obj, context=context)
             for picking in obj_ship.picking_line:
-                res[obj] += picking.weight_net
+                res[obj] += picking.weight_net * int(picking.quantity_of_volumes)
 
         return res
 
@@ -86,7 +100,7 @@ class ShippingResponse(orm.Model):
         return True
 
     def action_shipment_confirm(self, cr, uid, ids, context=None):
-        if self.shipment_confirm(cr, uid, ids):
+        if self.generate_tracking_no(cr, uid, ids, context=context):
             self.write(cr, uid, ids, {'state': 'confirmed'}, context=context)
             return True
         return False
@@ -99,20 +113,19 @@ class ShippingResponse(orm.Model):
         self.write(cr, uid, ids, {'state': 'done'}, context=context)
         return True
 
-    def shipment_confirm(self, cr, uid, ids, context=None):
+    def generate_tracking_no(self, cr, uid, ids, context=None):
 
         for ship in self.browse(cr, uid, ids):
-
-            weight = 0.0
-            weight_net = 0.0
 
             company_id = ship.company_id
             contract_id = ship.contract_id
             post_card_id = ship.post_card_id
 
+            # Expressao regular para buscar apenas numeros no numero de endereco
             reg = re.compile('[0-9]*')
             numero = ''.join(reg.findall(company_id.number))
 
+            # Endereco do remetente
             obj_endereco = Endereco(logradouro=company_id.street,
                                     numero=int(numero),
                                     bairro=company_id.district,
@@ -121,13 +134,16 @@ class ShippingResponse(orm.Model):
                                     uf=company_id.state_id.code,
                                     complemento=company_id.street2)
 
+            # Primeira tag do XML
             obj_tag_plp = TagPLP(post_card_id.number)
 
+            # Criamos o cliente que sera usado para consultar o webservice
             cliente = Cliente(company_id.name,
                               company_id.sigepweb_username,
                               company_id.sigepweb_password,
                               company_id.cnpj_cpf)
 
+            # Criamos a tag remetente do xml
             obj_remetente = TagRemetente(cliente.nome,
                                          contract_id.number,
                                          post_card_id.admin_code,
@@ -143,33 +159,28 @@ class ShippingResponse(orm.Model):
 
             for picking in ship.picking_line:
 
-                weight += picking.weight
-                weight_net += picking.weight_net
-
                 partner_id = picking.partner_id
-
-                reg = re.compile('[0-9]*')
                 numero = ''.join(reg.findall(partner_id.number))
 
+                # Endereco do destinatario
                 obj_endereco = Endereco(logradouro=partner_id.street,
                                         numero=int(numero),
-                                    bairro=partner_id.district,
+                                        bairro=partner_id.district,
                                         cep=partner_id.zip.replace('-', ''),
                                         cidade=partner_id.l10n_br_city_id.name,
                                         uf=partner_id.state_id.code,
                                         complemento=partner_id.street2)
 
+                # Criamos a tag com os dados do destinatario
                 obj_destinatario = TagDestinatario(partner_id.name,
                                                    obj_endereco,
                                                    telefone=partner_id.phone
                                                             or False)
 
-                # obj_nacional = TagNacionalPAC41068(obj_endereco,
-                #                                    102030, '1')
-                #TODO: Implementar para PAC41068.
-                #TODO: Buscar numero e serie da fatura a partir da invoice
-
+                # Para encomendas do tip PAC41068, devemos fornecer a série
+                # e o numero da fatura
                 if picking.carrier_id.sigepweb_post_service_id.code == '41068':
+
                     nfe_number = picking.invoice_id.internal_number
                     nfe_serie = picking.invoice_id.document_serie_id.code
 
@@ -184,29 +195,60 @@ class ShippingResponse(orm.Model):
                 else:
                     obj_nacional = TagNacional(obj_endereco)
 
+                # Criamos a tag de servico adicional
                 obj_servico_adicional = TagServicoAdicional()
 
-                #TODO: Inserir campos de dimensao do objeto em cada
-                #TODO: Ordem de Entrega
-                obj_dimensao_objeto = TagDimensaoObjeto(Caixa())
+                # Calculamos dimensoes do pacote a partir do seu volume
+                weight = 0
+                volume = 0
 
+                for line in picking.move_lines:
+                    if not line.product_id:
+                        continue
+                    weight += (line.product_id.weight or 0.0) * line.product_qty
+                    volume += (line.product_id.volume or 0.0) * line.product_qty
+
+                volume_cm = volume * 100000
+                peso_volumetrico = 0
+
+                if volume_cm > 60000:
+                    peso_volumetrico = math.ceil(volume_cm / 6000)
+
+                # Calculamos o peso considerado. O OpenERP fornece peso em
+                # kilogramas
+                peso_considerado = max(weight, peso_volumetrico) * 1000
+                aresta = int(math.ceil(volume_cm ** (1 / 3.0)))
+
+                # Criamos um objeto dimensao
+                obj_dimensao_objeto = TagDimensaoObjeto(Caixa(aresta, aresta,
+                                                              aresta))
+
+                # Criamos um servico postagem que representa o servico a ser
+                # utilizado
                 sv_postagem = ServicoPostagem(
                     picking.carrier_id.sigepweb_post_service_id.code)
 
-                etq = Etiqueta(picking.carrier_tracking_ref)
-                lista_etiqueta.append(etq)
+                etiquetas = picking.carrier_tracking_ref.split(', ')
+                etiquetas = [Etiqueta(etq) for etq in etiquetas]
+                lista_etiqueta += etiquetas
 
-                obj_postal = TagObjetoPostal(obj_destinatario=obj_destinatario,
-                                             obj_nacional=obj_nacional,
-                                             obj_dimensao_objeto=obj_dimensao_objeto,
-                                             obj_servico_adicional=obj_servico_adicional,
-                                             obj_servico_postagem=sv_postagem,
-                                             ob_etiqueta=etq,
-                                             peso=picking.weight,
-                                             status_processamento=0)
+                # Cada volume tera sua propria etiqueta, mesmo que sejam
+                # provenientes da mesma Ordem de Entrega
+                for etq in etiquetas:
 
-                lista_obj_postal.append(obj_postal)
+                    obj_postal = TagObjetoPostal(
+                        obj_destinatario=obj_destinatario,
+                        obj_nacional=obj_nacional,
+                        obj_dimensao_objeto=obj_dimensao_objeto,
+                        obj_servico_adicional=obj_servico_adicional,
+                        obj_servico_postagem=sv_postagem,
+                        obj_etiqueta=etq,
+                        peso=float(peso_considerado),
+                        status_processamento=0)
 
+                    lista_obj_postal.append(obj_postal)
+
+            # Finalmente criamos a tag root do xml
             obj_correios_log = TagCorreiosLog('2.3', obj_tag_plp,
                                               obj_remetente, lista_obj_postal)
 
@@ -223,12 +265,28 @@ class ShippingResponse(orm.Model):
                 print u'[INFO] Id PLP: ', plp.id_plp_cliente
 
                 vals = {
-                    'name': 'SP' + str(plp.id_plp_cliente),
+                    'name': 'PLP/' + str(plp.id_plp_cliente),
                     'carrier_tracking_ref': plp.id_plp_cliente,
                 }
 
+                # Definimos o path para salvar o xml da PLP
+                path = company_id.sigepweb_plp_xml_path + \
+                    company_id.sigepweb_environment + '/'
+
+                if not os.path.exists(path):
+                    #Criando diretorio homlogacao ou producao
+                    os.mkdir(path)
+
+                path += 'PLP' + str(plp.id_plp_cliente)
+
+                # Salvando xml da PLP em disco
+                plp.salvar_xml(path)
+
                 return self.write(cr, uid, ship.id, vals, context=context)
 
+            except IOError as e:
+                print e.message
+                raise osv.except_osv(_('Error!'), e.strerror)
             except ErroConexaoComServidor as e:
                 print e.message
                 raise osv.except_osv(_('Error!'), e.message)
@@ -238,7 +296,28 @@ class ShippingResponse(orm.Model):
 
         return False
 
+    def onchange_company_id(self, cr, uid, ids, sigepweb_company_id, context=None):
+
+        res = {'value': {}}
+
+        if sigepweb_company_id:
+            company = self.pool.get('res.company').browse(
+                cr, uid, sigepweb_company_id, context=context)
+
+            values = {'carrier_id': company.sigepweb_carrier_id.id}
+
+            res['value'].update(values)
+
+        return res
+
     _columns = {
+
+        'company_id': fields.many2one('res.company',
+                                      string='Company',
+                                      required=True,
+                                      readonly=True,
+                                      states={'draft': [('readonly', False)]}),
+
         'user_id': fields.many2one('res.users',
                                    'Responsible',
                                    readonly=True,
@@ -248,12 +327,16 @@ class ShippingResponse(orm.Model):
 
         'carrier_tracking_ref': fields.char('Tracking Ref.', readonly=True),
 
-        'carrier_id': fields.many2one('res.partner', string='Carrier',
-                                      required=True, readonly=True,
-                                      states={'draft': [('readonly', False)]}),
+        'carrier_id': fields.related('company_id',
+                                     'sigepweb_carrier_id',
+                                     string='Carrier',
+                                     type='many2one',
+                                     relation='res.partner',
+                                     readonly=True),
 
         'carrier_responsible': fields.many2one('res.partner',
                                                string='Carrier Responsible',
+                                               readonly=True,
                                                states={'draft': [('readonly', False)]}),
 
         'date': fields.date('Date', require=True, readonly=True,
@@ -261,12 +344,6 @@ class ShippingResponse(orm.Model):
 
         'note': fields.text('Description / Remarks', readonly=True,
                             states={'draft': [('readonly', False)]}),
-
-        'company_id': fields.many2one('res.company',
-                                      string='Company',
-                                      required=True,
-                                      readonly=True,
-                                      states={'draft': [('readonly', False)]}),
 
         'contract_id': fields.many2one('sigepweb.contract',
                                        string='Contract',

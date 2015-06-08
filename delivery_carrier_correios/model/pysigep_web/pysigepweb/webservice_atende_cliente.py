@@ -25,8 +25,9 @@
 from webservice_interface import *
 from ambiente import FabricaAmbiente
 from resposta_busca_cliente import *
-from resposta_fecha_plp_varios_servicos import RespostaFechaPLPVariosServicos
 from etiqueta import Etiqueta
+from resposta_fecha_plp_varios_servicos import RespostaFechaPLPVariosServicos
+from resposta_solicita_intervalo_etiquetas import RespostaSolicitaIntervaloEtiquetas
 
 
 class WebserviceAtendeCliente(WebserviceInterface):
@@ -154,6 +155,20 @@ class WebserviceAtendeCliente(WebserviceInterface):
 
         return etiquetas
 
+    def solicita_intervalo_etiquetas(self, servico_postagem, qtd_etiquetas,
+                                     cliente,  tipo_destinatario='C'):
+
+        try:
+            faixa_etiquetas = self._service.solicitaEtiquetas(
+                tipo_destinatario, cliente.cnpj, servico_postagem.identificador,
+                qtd_etiquetas, cliente.login, cliente.senha)
+        except WebFault as e:
+            raise ErroConexaoComServidor(e.message)
+
+        res = RespostaSolicitaIntervaloEtiquetas(faixa_etiquetas, qtd_etiquetas)
+
+        return res
+
     def gera_digito_verificador_etiquetas(self, lista_etiquetas, cliente,
                                           online=True):
 
@@ -213,20 +228,15 @@ class WebserviceAtendeCliente(WebserviceInterface):
                                   lista_obj_etiquetas, num_cartao_postagem,
                                   cliente):
 
-        etiquetas_sem_digito = []
-
-        for i in range(len(obj_correios_log.lista_objeto_postal)):
-            # As etiquetas tem de ser enviadas sem o digito verificador
-            # e sem o espaco em branco antes do sufixo da etiqueta
-            etq = lista_obj_etiquetas[i].valor
-            etiquetas_sem_digito.append(etq.replace(' ', ''))
+        etiquetas_sem_digito = [etq.valor.replace(' ', '') for etq in
+                                lista_obj_etiquetas]
 
         xml = obj_correios_log.get_xml()
 
         if xml:
             try:
                 id_plp_cliente = self._service.fechaPlpVariosServicos(
-                    xml, id_plp_cliente, num_cartao_postagem,
+                    xml.replace('\n',''), id_plp_cliente, num_cartao_postagem,
                     etiquetas_sem_digito, cliente.login, cliente.senha)
 
                 return RespostaFechaPLPVariosServicos(xml, id_plp_cliente)
