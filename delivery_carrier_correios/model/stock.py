@@ -111,26 +111,42 @@ class StockPickingOut(orm.Model):
                                                 servico_postagem_id.details,
                                                 servico_postagem_id.identifier)
 
+                    tracking_packs = []
+                    for line in stock.move_lines:
+
+                        if line.tracking_id.name not in tracking_packs:
+                            tracking_packs.append(line.tracking_id.id)
+
                     etiquetas = sv.solicita_etiquetas(serv_post,
-                                                      int(
-                                                          stock.quantity_of_volumes),
+                                                      len(tracking_packs),
                                                       cliente)
 
                     sv.gera_digito_verificador_etiquetas(etiquetas,
                                                          cliente,
                                                          online=False)
 
-                    etq_str = ''
-                    last_index = len(etiquetas) - 1
-
                     for index, etq in enumerate(etiquetas):
-                        dig = '' if index == last_index else ', '
-                        etq_str += etq.com_digito_verificador() + dig
+                        vals = {
+                            'serial': etq.com_digito_verificador()
+                        }
+                        obj_pack = self.pool.get('stock.tracking')
+                        obj_pack.write(cr, uid, tracking_packs[index], vals)
 
-                    vals = {
-                        'carrier_tracking_ref': etq_str,
-                    }
-                    self.write(cr, uid, stock.id, vals, context=None)
+                        #
+                        # if line.tracking_id.name in tracking_packs:
+                        #     tracking_packs += 1
+
+                    # etq_str = ''
+                    # last_index = len(etiquetas) - 1
+                    #
+                    # for index, etq in enumerate(etiquetas):
+                    #     dig = '' if index == last_index else ', '
+                    #     etq_str += etq.com_digito_verificador() + dig
+                    #
+                    # vals = {
+                    #     'carrier_tracking_ref': etq_str,
+                    # }
+                    # self.write(cr, uid, stock.id, vals, context=None)
 
                 except ErroConexaoComServidor as e:
                     print e.message
