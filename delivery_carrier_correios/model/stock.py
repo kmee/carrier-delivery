@@ -126,9 +126,7 @@ class StockPickingOut(orm.Model):
                                                          online=False)
 
                     for index, etq in enumerate(etiquetas):
-                        vals = {
-                            'serial': etq.com_digito_verificador()
-                        }
+                        vals = {'serial': etq.com_digito_verificador()}
                         obj_pack = self.pool.get('stock.tracking')
                         obj_pack.write(cr, uid, tracking_packs[index], vals)
 
@@ -324,3 +322,15 @@ class StockPicking(orm.Model):
 
         return super(StockPicking, self)._invoice_hook(
             cursor, user, picking, invoice_id)
+
+
+class StockTracking(orm.Model):
+
+    _inherit = "stock.tracking"
+
+    _columns = {
+        'shipping_response_id': fields.many2one('shipping.response',
+                                                string='Shipping Group',
+                                                readonly=True),
+    }
+
