@@ -157,8 +157,9 @@ class ShippingResponse(orm.Model):
             lista_obj_postal = []
             lista_etiqueta = []
 
-            for picking in ship.picking_line:
+            for tracking_pack in ship.tracking_pack_line:
 
+                picking = tracking_pack.move_ids[0].picking_id
                 partner_id = picking.partner_id
                 numero = ''.join(reg.findall(partner_id.number))
 
@@ -202,7 +203,7 @@ class ShippingResponse(orm.Model):
                 weight = 0
                 volume = 0
 
-                for line in picking.move_lines:
+                for line in tracking_pack.move_ids:
                     if not line.product_id:
                         continue
                     weight += (line.product_id.weight or 0.0) * line.product_qty
@@ -228,33 +229,20 @@ class ShippingResponse(orm.Model):
                 sv_postagem = ServicoPostagem(
                     picking.carrier_id.sigepweb_post_service_id.code)
 
-                tracking_packs = []
-                etiquetas = []
-                for line in picking.move_lines:
+                etq = Etiqueta(tracking_pack.serial)
+                lista_etiqueta += [Etiqueta(tracking_pack.serial)]
 
-                    if line.tracking_id.id not in tracking_packs:
-                        tracking_packs.append(line.tracking_id.id)
-                        etiquetas.append(Etiqueta(line.tracking_id.serial))
+                obj_postal = TagObjetoPostal(
+                    obj_destinatario=obj_destinatario,
+                    obj_nacional=obj_nacional,
+                    obj_dimensao_objeto=obj_dimensao_objeto,
+                    obj_servico_adicional=obj_servico_adicional,
+                    obj_servico_postagem=sv_postagem,
+                    obj_etiqueta=etq,
+                    peso=float(peso_considerado),
+                    status_processamento=0)
 
-                # etiquetas = picking.carrier_tracking_ref.split(', ')
-                # etiquetas = [Etiqueta(etq) for etq in etiquetas]
-                lista_etiqueta += etiquetas
-
-                # Cada volume tera sua propria etiqueta, mesmo que sejam
-                # provenientes da mesma Ordem de Entrega
-                for etq in etiquetas:
-
-                    obj_postal = TagObjetoPostal(
-                        obj_destinatario=obj_destinatario,
-                        obj_nacional=obj_nacional,
-                        obj_dimensao_objeto=obj_dimensao_objeto,
-                        obj_servico_adicional=obj_servico_adicional,
-                        obj_servico_postagem=sv_postagem,
-                        obj_etiqueta=etq,
-                        peso=float(peso_considerado),
-                        status_processamento=0)
-
-                    lista_obj_postal.append(obj_postal)
+                lista_obj_postal.append(obj_postal)
 
             # Finalmente criamos a tag root do xml
             obj_correios_log = TagCorreiosLog('2.3', obj_tag_plp,
@@ -301,6 +289,152 @@ class ShippingResponse(orm.Model):
             except ErroValidacaoXML as e:
                 print e.message
                 raise osv.except_osv(_('Error!'), e.message)
+
+
+            # for picking in ship.picking_line:
+            #
+            #     partner_id = picking.partner_id
+            #     numero = ''.join(reg.findall(partner_id.number))
+            #
+            #     # Endereco do destinatario
+            #     obj_endereco = Endereco(logradouro=partner_id.street,
+            #                             numero=int(numero),
+            #                             bairro=partner_id.district,
+            #                             cep=partner_id.zip.replace('-', ''),
+            #                             cidade=partner_id.l10n_br_city_id.name,
+            #                             uf=partner_id.state_id.code,
+            #                             complemento=partner_id.street2)
+            #
+            #     # Criamos a tag com os dados do destinatario
+            #     obj_destinatario = TagDestinatario(partner_id.name,
+            #                                        obj_endereco,
+            #                                        telefone=partner_id.phone
+            #                                                 or False)
+            #
+            #     # Para encomendas do tip PAC41068, devemos fornecer a série
+            #     # e o numero da fatura
+            #     if picking.carrier_id.sigepweb_post_service_id.code == '41068':
+            #
+            #         nfe_number = picking.invoice_id.internal_number
+            #         nfe_serie = picking.invoice_id.document_serie_id.code
+            #
+            #         if nfe_number == '':
+            #             msg = "A ordem de entrega deve estar faturada antes " \
+            #                   "de entrar na PLP!"
+            #             raise osv.except_osv(_('Error!'), msg)
+            #
+            #         obj_nacional = TagNacionalPAC41068(obj_endereco,
+            #                                            nfe_number,
+            #                                            nfe_serie)
+            #     else:
+            #         obj_nacional = TagNacional(obj_endereco)
+            #
+            #     # Criamos a tag de servico adicional
+            #     obj_servico_adicional = TagServicoAdicional()
+            #
+            #     # Calculamos dimensoes do pacote a partir do seu volume
+            #     weight = 0
+            #     volume = 0
+            #
+            #     for line in picking.move_lines:
+            #         if not line.product_id:
+            #             continue
+            #         weight += (line.product_id.weight or 0.0) * line.product_qty
+            #         volume += (line.product_id.volume or 0.0) * line.product_qty
+            #
+            #     volume_cm = volume * 100000
+            #     peso_volumetrico = 0
+            #
+            #     if volume_cm > 60000:
+            #         peso_volumetrico = math.ceil(volume_cm / 6000)
+            #
+            #     # Calculamos o peso considerado. O OpenERP fornece peso em
+            #     # kilogramas
+            #     peso_considerado = max(weight, peso_volumetrico) * 1000
+            #     aresta = int(math.ceil(volume_cm ** (1 / 3.0)))
+            #
+            #     # Criamos um objeto dimensao
+            #     obj_dimensao_objeto = TagDimensaoObjeto(Caixa(aresta, aresta,
+            #                                                   aresta))
+            #
+            #     # Criamos um servico postagem que representa o servico a ser
+            #     # utilizado
+            #     sv_postagem = ServicoPostagem(
+            #         picking.carrier_id.sigepweb_post_service_id.code)
+            #
+            #     tracking_packs = []
+            #     etiquetas = []
+            #     for line in picking.move_lines:
+            #
+            #         if line.tracking_id.id not in tracking_packs:
+            #             tracking_packs.append(line.tracking_id.id)
+            #             etiquetas.append(Etiqueta(line.tracking_id.serial))
+            #
+            #     # etiquetas = picking.carrier_tracking_ref.split(', ')
+            #     # etiquetas = [Etiqueta(etq) for etq in etiquetas]
+            #     lista_etiqueta += etiquetas
+            #
+            #     # Cada volume tera sua propria etiqueta, mesmo que sejam
+            #     # provenientes da mesma Ordem de Entrega
+            #     for etq in etiquetas:
+            #
+            #         obj_postal = TagObjetoPostal(
+            #             obj_destinatario=obj_destinatario,
+            #             obj_nacional=obj_nacional,
+            #             obj_dimensao_objeto=obj_dimensao_objeto,
+            #             obj_servico_adicional=obj_servico_adicional,
+            #             obj_servico_postagem=sv_postagem,
+            #             obj_etiqueta=etq,
+            #             peso=float(peso_considerado),
+            #             status_processamento=0)
+            #
+            #         lista_obj_postal.append(obj_postal)
+            #
+            # # Finalmente criamos a tag root do xml
+            # obj_correios_log = TagCorreiosLog('2.3', obj_tag_plp,
+            #                                   obj_remetente, lista_obj_postal)
+            #
+            # try:
+            #     print u'[INFO] Iniciando Serviço de Atendimento ao  Cliente'
+            #     sv = WebserviceAtendeCliente(company_id.sigepweb_environment)
+            #
+            #     plp = sv.fecha_plp_varios_servicos(obj_correios_log,
+            #                                        long(ship.id),
+            #                                        lista_etiqueta,
+            #                                        post_card_id.number,
+            #                                        cliente)
+            #
+            #     print u'[INFO] Id PLP: ', plp.id_plp_cliente
+            #
+            #     vals = {
+            #         'name': 'PLP/' + str(plp.id_plp_cliente),
+            #         'carrier_tracking_ref': plp.id_plp_cliente,
+            #     }
+            #
+            #     # Definimos o path para salvar o xml da PLP
+            #     path = company_id.sigepweb_plp_xml_path + \
+            #         company_id.sigepweb_environment + '/'
+            #
+            #     if not os.path.exists(path):
+            #         #Criando diretorio homlogacao ou producao
+            #         os.mkdir(path)
+            #
+            #     path += 'PLP' + str(plp.id_plp_cliente)
+            #
+            #     # Salvando xml da PLP em disco
+            #     plp.salvar_xml(path)
+            #
+            #     return self.write(cr, uid, ship.id, vals, context=context)
+            #
+            # except IOError as e:
+            #     print e.message
+            #     raise osv.except_osv(_('Error!'), e.strerror)
+            # except ErroConexaoComServidor as e:
+            #     print e.message
+            #     raise osv.except_osv(_('Error!'), e.message)
+            # except ErroValidacaoXML as e:
+            #     print e.message
+            #     raise osv.except_osv(_('Error!'), e.message)
 
         return False
 
@@ -361,7 +495,7 @@ class ShippingResponse(orm.Model):
                                        domain="[('company_id', '=',"
                                               "company_id)]",
                                        ),
-        # postagem fornecido
+
         'post_card_id': fields.many2one('sigepweb.post.card',
                                         string='Post Cards',
                                         required=True,
