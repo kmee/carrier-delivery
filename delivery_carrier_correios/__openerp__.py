@@ -30,6 +30,7 @@
     'complexity': 'normal',
     'depends': [
         'tr_barcode_on_picking',
+        'tr_barcode_on_tracking',
         'base_delivery_carrier_label',
         'base_headers_webkit',
         'kmee_delivery_webservice_correios',
