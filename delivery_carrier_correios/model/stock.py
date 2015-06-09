@@ -35,6 +35,8 @@ from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor
 from pysigep_web.pysigepweb.resposta_busca_cliente import Cliente
 from pysigep_web.pysigepweb.servico_postagem import ServicoPostagem
 from pysigep_web.pysigepweb.endereco import Endereco
+from pysigep_web.pysigepweb.chancela import Chancela
+
 
 
 class StockPickingOut(orm.Model):
@@ -134,6 +136,8 @@ class StockPickingOut(orm.Model):
                         obj_pack = self.pool.get('stock.tracking')
                         obj_pack.write(cr, uid, [tracking_packs[index]], vals)
 
+                    self.action_generate_carrier_label(cr, uid, ids)
+
                 except ErroConexaoComServidor as e:
                     print e.message
                     raise osv.except_osv(_('Error!'), e.message)
@@ -148,9 +152,9 @@ class StockPickingOut(orm.Model):
         qr_code_id = self.create_qr_code(cr, uid, ids, context)
         barcode_id = self.create_barcode(cr, uid, ids, context)
         image_chancela = self.create_chancela(cr, uid, ids, context)
-        self.write(cr, uid, ids,
-                   {'barcode_id': barcode_id, 'qr_code_id': qr_code_id,
-                    'image_chancela': image_chancela})
+        self.write(cr, uid, ids, {'barcode_id': barcode_id,
+                                  'qr_code_id': qr_code_id,
+                                  'image_chancela': image_chancela})
 
         id_barcode_default = self.browse(cr, uid, ids, context)[
             0].x_barcode_id.id
@@ -160,40 +164,58 @@ class StockPickingOut(orm.Model):
         return result
 
     def create_chancela(self, cr, uid, ids, context):
+
         obj_stock = self.browse(cr, uid, ids[0], context)
-        # company = self.pool('res.company').browse(cr, uid, ids[0], context)
-        company = self.pool.get('res.company').browse(cr, uid,
-                                                      obj_stock.company_id.id,
-                                                      context)
-        imagem = obj_stock.carrier_id.image_chancela
-        texto1 = "0000/2002 - DR/XX/YY"
-        texto2 = company.name
-        imagem = Image.open(StringIO(imagem.decode('base64')))
-        img = imagem.convert("RGB")
-        write = Image.new("RGB", (img.size[0], img.size[1]))
-        draw = ImageDraw.ImageDraw(img)
 
-        FONT = "../static/src/fonts/arial.ttf"
-        font = ImageFont.truetype(FONT, 8)
-        draw.setfont(font)
-        tamanho_texto = draw.textsize(texto1)
-        h_position = (img.size[0] - tamanho_texto[0]) / 2
-        v_position = img.size[1] / 2
-        draw.text((h_position, v_position), texto1, fill=(0, 0, 0))
+        chancela = Chancela(Chancela.SEDEX)
+        chancela.nome_cliente = obj_stock.company_id.name
+        chancela.num_contrato = \
+            obj_stock.carrier_id.sigepweb_contract_id.number
+        chancela.ano_assinatura = '2015'
+        chancela.dr_origem = obj_stock.company_id.state_id.code
+        chancela.dr_postagem = obj_stock.partner_id.state_id.code
 
-        FONT = "../static/src/fonts/arial_negrito.ttf"
-        font = ImageFont.truetype(FONT, 11)
-        draw.setfont(font)
-        tamanho_texto = draw.textsize(texto2)
-        h_position = (img.size[0] - tamanho_texto[0]) / 2
-        v_position = img.size[1] / 2 + 8
-        draw.text((h_position, v_position), texto2, fill=(0, 0, 0))
-        tmp = io.BytesIO()
-        img.save(tmp, 'png')
-        img = base64.b64encode(tmp.getvalue())
-        # Image.open(StringIO(img.decode('base64'))).convert('RGB').show()
-
+        img = chancela.get_image_chancela()
+        print "BATUQUE"
         return img
+
+
+        # company = self.pool.get('res.company').browse(cr, uid,
+        #                                               obj_stock.company_id.id,
+        #                                               context)
+        # imagem = obj_stock.carrier_id.image_chancela
+        # texto1 = "0000/2002 - DR/XX/YY"
+        # texto2 = company.name
+        # imagem = Image.open(StringIO(imagem.decode('base64')))
+        # img = imagem.convert("RGB")
+        # write = Image.new("RGB", (img.size[0], img.size[1]))
+        # draw = ImageDraw.ImageDraw(img)
+        #
+        # FONT = "../parts/oca" \
+        #        "/carrier-delivery/delivery_carrier_correios/static/src/fonts" \
+        #        "/arial.ttf"
+        # font = ImageFont.truetype(FONT, 8)
+        # draw.setfont(font)
+        # tamanho_texto = draw.textsize(texto1)
+        # h_position = (img.size[0] - tamanho_texto[0]) / 2
+        # v_position = img.size[1] / 2
+        # draw.text((h_position, v_position), texto1, fill=(0, 0, 0))
+        #
+        # FONT = "../parts/oca" \
+        #        "/carrier-delivery/delivery_carrier_correios/static/src/fonts" \
+        #        "/arial_negrito.ttf"
+        # font = ImageFont.truetype(FONT, 11)
+        # draw.setfont(font)
+        # tamanho_texto = draw.textsize(texto2)
+        # h_position = (img.size[0] - tamanho_texto[0]) / 2
+        # v_position = img.size[1] / 2 + 8
+        # draw.text((h_position, v_position), texto2, fill=(0, 0, 0))
+        # tmp = io.BytesIO()
+        # img.save(tmp, 'png')
+        # img = base64.b64encode(tmp.getvalue())
+        # # Image.open(StringIO(img.decode('base64'))).convert('RGB').show()
+
+        # return img
 
     def get_qr_string(self, cr, uid, id, context):
         qr_string = ''
@@ -234,7 +256,9 @@ class StockPickingOut(orm.Model):
         qr_string += stock_obj.partner_id.street2 or ' ' * 20  # Complemento do logradouro
         qr_string += '00000'  # valor declarado
         if stock_obj.partner_id.phone:  # Telefone do destinatario
-            phone = ''.join(reg.findall(stock_obj.partner_id.phone.zfill(12)))
+            phone = ''.join(reg.findall(stock_obj.partner_id.phone))
+            phone = phone.zfill(12)
+            print phone
             if len(phone) != 12:
                 raise osv.except_osv(_('Error!'),
                                      _(u'O Telefone do destinatário incorreto'))
