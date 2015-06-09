@@ -118,8 +118,8 @@ class StockPickingOut(orm.Model):
                             tracking_packs.append(line.tracking_id.id)
 
                     if not tracking_packs:
-                        raise osv.except_osv(_('Error!'), u'Embalagens sem '
-                                                          u'código de referência')
+                        raise osv.except_osv(
+                            _('Error!'), u'Embalagens sem código de referência')
 
                     etiquetas = sv.solicita_etiquetas(serv_post,
                                                       len(tracking_packs),
