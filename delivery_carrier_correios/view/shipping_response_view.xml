@@ -74,8 +74,7 @@
                                 <!--</field>-->
                                 <field name="tracking_pack_line"
                                        widget="many2many"
-                                       domain="[('move_ids.picking_id.company_id.id', '=', company_id),('move_ids.picking_id.carrier_id.sigepweb_post_card_id.id','=', post_card_id),('shipping_response_id','=',False),('move_ids.picking_id.invoice_id.state','=','sefaz_export'),('serial','!=',''),('move_ids.picking_id.type', '=', 'out'),
-                                            ('move_ids.picking_id.state', '=', 'done')]"/>
+                                       domain="[('move_ids.picking_id.company_id.id', '=', company_id),('move_ids.picking_id.carrier_id.sigepweb_post_card_id.id','=', post_card_id),('shipping_response_id','=',False),('move_ids.picking_id.invoice_id.state','=','sefaz_export'),('serial','!=','')]"/>
                             </page>
                             <page string="Details">
                                 <group>
