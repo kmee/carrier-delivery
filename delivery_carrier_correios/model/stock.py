@@ -117,6 +117,10 @@ class StockPickingOut(orm.Model):
                         if line.tracking_id.id not in tracking_packs:
                             tracking_packs.append(line.tracking_id.id)
 
+                    if not tracking_packs:
+                        raise osv.except_osv(_('Error!'), u'Embalagens sem '
+                                                          u'código de referência')
+
                     etiquetas = sv.solicita_etiquetas(serv_post,
                                                       len(tracking_packs),
                                                       cliente)
@@ -128,23 +132,7 @@ class StockPickingOut(orm.Model):
                     for index, etq in enumerate(etiquetas):
                         vals = {'serial': etq.com_digito_verificador()}
                         obj_pack = self.pool.get('stock.tracking')
-                        obj_pack.write(cr, uid, tracking_packs[index], vals)
-
-                        #
-                        # if line.tracking_id.name in tracking_packs:
-                        #     tracking_packs += 1
-
-                    # etq_str = ''
-                    # last_index = len(etiquetas) - 1
-                    #
-                    # for index, etq in enumerate(etiquetas):
-                    #     dig = '' if index == last_index else ', '
-                    #     etq_str += etq.com_digito_verificador() + dig
-                    #
-                    # vals = {
-                    #     'carrier_tracking_ref': etq_str,
-                    # }
-                    # self.write(cr, uid, stock.id, vals, context=None)
+                        obj_pack.write(cr, uid, [tracking_packs[index]], vals)
 
                 except ErroConexaoComServidor as e:
                     print e.message
@@ -299,7 +287,7 @@ class StockPicking(orm.Model):
     _inherit = 'stock.picking'
 
     _columns = {
-        "x_barcode_id": fields.many2one('tr.barcode', string=u'BarCode'),
+        'x_barcode_id': fields.many2one('tr.barcode', string=u'BarCode'),
         'shipping_response_id': fields.many2one('shipping.response',
                                                 string='Shipping Group',
                                                 readonly=True),
@@ -332,5 +320,7 @@ class StockTracking(orm.Model):
         'shipping_response_id': fields.many2one('shipping.response',
                                                 string='Shipping Group',
                                                 readonly=True),
+        'x_barcode_id': fields.many2one('tr.barcode',
+                                        string=u'BarCode'),
     }
 
