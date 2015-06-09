@@ -159,6 +159,7 @@ class ShippingResponse(orm.Model):
 
             for tracking_pack in ship.tracking_pack_line:
 
+                # O stock.picking e o mesmo para todas as linhas
                 picking = tracking_pack.move_ids[0].picking_id
                 partner_id = picking.partner_id
                 numero = ''.join(reg.findall(partner_id.number))
