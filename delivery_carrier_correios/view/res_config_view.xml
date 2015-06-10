@@ -33,7 +33,7 @@
                     <group string="Web Service Authentification">
                         <group>
                             <field name="username"/>
-                            <field name="password"/>
+                            <field name="password" password="True"/>
                         </group>
                         <group>
                             <field name="contract_number"/>

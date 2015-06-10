@@ -58,7 +58,7 @@ class SigepWebConfigSettings(orm.TransientModel):
 
         'password': fields.related(
             'sigepweb_company_id', 'sigepweb_password',
-            string=u'Senha', type='char', required=True, password=True),
+            string=u'Senha', type='char', required=True),
 
         'carrier_id': fields.related(
             'sigepweb_company_id', 'sigepweb_carrier_id',
