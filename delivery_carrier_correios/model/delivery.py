@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-# Brazillian Carrier Correios Sigep WEB
-# Copyright (C) 2015 KMEE (http://www.kmee.com.br)
-# @author Luis Felipe Mileo <mileo@kmee.com.br>
+#    Brazillian Carrier Correios Sigep WEB
+#    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
+#    @author Luis Felipe Mileo <mileo@kmee.com.br>
 #    @author: Michell Stuttgart <michell.stuttgart@kmee.com.br>
 #
 #    Sponsored by Europestar www.europestar.com.br
@@ -204,11 +204,13 @@ class DeliveryGrid(orm.Model):
                     'EntregaSabado': retorno[0].entrega_sabado
                 }
 
-                if data['MsgErro'] is not None:
-                    res = ('ERROR', data['MsgErro'])
-                    print data['MsgErro']
-                else:
-                    res = (float(data['Valor']), data['PrazoEntrega'] or 0.00)
+                # if data['MsgErro'] is not None:
+                #     res = ('ERROR', data['MsgErro'])
+                #     print data['MsgErro']
+                # else:
+                #     res = (float(data['Valor']), data['PrazoEntrega'] or 0.00)
+
+                res = (float(data['Valor']), data['PrazoEntrega'] or 0.00)
 
                 return res
 
