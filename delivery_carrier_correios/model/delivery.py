@@ -105,7 +105,8 @@ class DeliveryCarrier(orm.Model):
         'sigepweb_post_service_id': fields.many2one(
             'sigepweb.post.service', string='Post Services',
             domain="[('post_card_id', '=', sigepweb_post_card_id)]"),
-        'image_chancela': fields.binary(string='Chancela Correios',
+        'image_chancela': fields.binary(string='Chancela',
+                                        readonly=True,
                                         filters='*.png, *.jpg'),
     }
 

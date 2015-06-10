@@ -15,11 +15,6 @@
                 packs.append(line.tracking_id)
     %>
 
-##        <%
-##    x = db.get_resource('foo')
-##    y = [z.element for z in x if x.frobnizzle==5]
-##%>
-
         %for label in packs:
         <table style="width: 300px;">
             <tbody>

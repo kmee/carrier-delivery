@@ -35,6 +35,8 @@ class PostService(orm.Model):
         'code': fields.char(u'Código'),
         'identifier': fields.char(u'Identificador'),
         'details': fields.text(u'Detalhes'),
+        'image_chancela': fields.binary(string='Chancela Correios',
+                                        filters='*.png, *.jpg'),
         'post_card_id':  fields.many2many('sigepweb.post.card',
                                           'sigepweb_post_card_service_rel',
                                           'post_service_id', 'post_card_id',
