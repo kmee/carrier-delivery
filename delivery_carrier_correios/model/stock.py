@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-# Copyright (C) 2015 KMEE (http://www.kmee.com.br)
+#    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
 #    @author: Rodolfo Bertozo <rodolfo.bertozo@kmee.com.br
-#
+#    @author: Michell Stuttgart <michell.stuttgart@kmee.com.br>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -43,7 +43,6 @@ class StockPickingOut(orm.Model):
         'shipping_response_id': fields.many2one('shipping.response',
                                                 string=u'Shipping Group',
                                                 readonly=True),
-        'barcode_id': fields.many2one('tr.barcode', string=u'QR Code'),
         'qr_code_id': fields.many2one('tr.barcode', string=u'QR Code'),
         'idv': fields.selection([('51', 'Encomenda'),
                                  ('81', 'Malotes')],
@@ -54,8 +53,6 @@ class StockPickingOut(orm.Model):
         'invoice_id': fields.many2one('account.invoice',
                                       string='Invoice',
                                       readonly=True),
-        'carrier_tracking_ref': fields.text('Ref Rastreamento de Carga',
-                                            readonly=True),
     }
 
     _defaults = {
@@ -68,7 +65,6 @@ class StockPickingOut(orm.Model):
             default = {}
 
         vals = {
-            'carrier_tracking_ref': '',
             'invoice_id': False,
             'shipping_response_id': False,
             'image_chancela': False,
@@ -146,10 +142,9 @@ class StockPickingOut(orm.Model):
             'report_name': 'shipping.label.webkit'
         }
         qr_code_id = self.create_qr_code(cr, uid, ids, context)
-        barcode_id = self.create_barcode(cr, uid, ids, context)
+        # barcode_id = self.create_barcode(cr, uid, ids, context)
         image_chancela = self.create_chancela(cr, uid, ids, context)
-        self.write(cr, uid, ids, {'barcode_id': barcode_id,
-                                  'qr_code_id': qr_code_id,
+        self.write(cr, uid, ids, {'qr_code_id': qr_code_id,
                                   'image_chancela': image_chancela})
 
         id_barcode_default = \
@@ -260,20 +255,20 @@ class StockPickingOut(orm.Model):
 
         return barcode_id
 
-    def create_barcode(self, cr, uid, id, context):
-
-        barcode_vals = {
-            'code': self.browse(cr, uid, id, context)[0].name,
-            'res_id': id[0],
-            'barcode_type': 'Code128',
-            'width': 125,
-        }
-
-        barcode_obj = self.pool.get('tr.barcode')
-        barcode_id = barcode_obj.create(cr, uid, barcode_vals, context=context)
-        barcode_obj.generate_image(cr, uid, [barcode_id], context=context)
-
-        return barcode_id
+    # def create_barcode(self, cr, uid, id, context):
+    #
+    #     barcode_vals = {
+    #         'code': self.browse(cr, uid, id, context)[0].name,
+    #         'res_id': id[0],
+    #         'barcode_type': 'Code128',
+    #         'width': 125,
+    #     }
+    #
+    #     barcode_obj = self.pool.get('tr.barcode')
+    #     barcode_id = barcode_obj.create(cr, uid, barcode_vals, context=context)
+    #     barcode_obj.generate_image(cr, uid, [barcode_id], context=context)
+    #
+    #     return barcode_id
 
 
 class StockPicking(orm.Model):
@@ -284,7 +279,6 @@ class StockPicking(orm.Model):
         'shipping_response_id': fields.many2one('shipping.response',
                                                 string='Shipping Group',
                                                 readonly=True),
-        'barcode_id': fields.many2one('tr.barcode', string=u'QR Code'),
         'qr_code_id': fields.many2one('tr.barcode', string=u'Código de Barras'),
         'idv': fields.selection([('51', 'Encomenda'), ('81', 'Malotes')],
                                 string=u'IDV'),
@@ -294,8 +288,7 @@ class StockPicking(orm.Model):
         'invoice_id': fields.many2one('account.invoice',
                                       string='Invoice',
                                       readonly=True),
-        'carrier_tracking_ref': fields.text(string='Ref Rastreamento de Carga',
-                                            readonly=True),
+
     }
 
     def _invoice_hook(self, cursor, user, picking, invoice_id):
