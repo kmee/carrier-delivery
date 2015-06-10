@@ -252,6 +252,7 @@ class SigepWebConfigSettings(orm.TransientModel):
                 cr, uid, contract.cartoes_postagem)
 
             vals = {
+                'year': contract.data_inicio.year,
                 'number': contract.id_contrato,
                 'post_card_ids': post_card_ids,
                 'directorship_id': directorship_id,

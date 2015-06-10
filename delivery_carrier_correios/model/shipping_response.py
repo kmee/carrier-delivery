@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-# Brazillian Carrier Correios Sigep WEB
-# Copyright (C) 2015 KMEE (http://www.kmee.com.br)
+#    Brazillian Carrier Correios Sigep WEB
+#    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
 #    @author Luis Felipe Mileo <mileo@kmee.com.br>
 #
 #    Sponsored by Europestar www.europestar.com.br
@@ -65,11 +65,8 @@ class ShippingResponse(orm.Model):
     def _compute_volume(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         for obj in ids:
-            res[obj] = 0
-
             obj_ship = self.browse(cr, uid, obj, context=context)
-            for picking in obj_ship.picking_line:
-                res[obj] += int(picking.quantity_of_volumes)
+            res[obj] = len(obj_ship.picking_line)
 
         return res
 
@@ -157,8 +154,15 @@ class ShippingResponse(orm.Model):
             lista_obj_postal = []
             lista_etiqueta = []
 
-            for picking in ship.picking_line:
+            if not ship.tracking_pack_line:
+                msg = "A PLP deve possuir pelo menos uma Ordem de Entrega. " \
+                      "Por favor adicione uma Ordem de Entrega!"
+                raise osv.except_osv(_('Error!'), msg)
 
+            for tracking_pack in ship.tracking_pack_line:
+
+                # O stock.picking e o mesmo para todas as linhas
+                picking = tracking_pack.move_ids[0].picking_id
                 partner_id = picking.partner_id
                 numero = ''.join(reg.findall(partner_id.number))
 
@@ -202,7 +206,7 @@ class ShippingResponse(orm.Model):
                 weight = 0
                 volume = 0
 
-                for line in picking.move_lines:
+                for line in tracking_pack.move_ids:
                     if not line.product_id:
                         continue
                     weight += (line.product_id.weight or 0.0) * line.product_qty
@@ -228,25 +232,20 @@ class ShippingResponse(orm.Model):
                 sv_postagem = ServicoPostagem(
                     picking.carrier_id.sigepweb_post_service_id.code)
 
-                etiquetas = picking.carrier_tracking_ref.split(', ')
-                etiquetas = [Etiqueta(etq) for etq in etiquetas]
-                lista_etiqueta += etiquetas
+                etq = Etiqueta(tracking_pack.serial)
+                lista_etiqueta += [Etiqueta(tracking_pack.serial)]
 
-                # Cada volume tera sua propria etiqueta, mesmo que sejam
-                # provenientes da mesma Ordem de Entrega
-                for etq in etiquetas:
+                obj_postal = TagObjetoPostal(
+                    obj_destinatario=obj_destinatario,
+                    obj_nacional=obj_nacional,
+                    obj_dimensao_objeto=obj_dimensao_objeto,
+                    obj_servico_adicional=obj_servico_adicional,
+                    obj_servico_postagem=sv_postagem,
+                    obj_etiqueta=etq,
+                    peso=float(peso_considerado),
+                    status_processamento=0)
 
-                    obj_postal = TagObjetoPostal(
-                        obj_destinatario=obj_destinatario,
-                        obj_nacional=obj_nacional,
-                        obj_dimensao_objeto=obj_dimensao_objeto,
-                        obj_servico_adicional=obj_servico_adicional,
-                        obj_servico_postagem=sv_postagem,
-                        obj_etiqueta=etq,
-                        peso=float(peso_considerado),
-                        status_processamento=0)
-
-                    lista_obj_postal.append(obj_postal)
+                lista_obj_postal.append(obj_postal)
 
             # Finalmente criamos a tag root do xml
             obj_correios_log = TagCorreiosLog('2.3', obj_tag_plp,
@@ -353,7 +352,7 @@ class ShippingResponse(orm.Model):
                                        domain="[('company_id', '=',"
                                               "company_id)]",
                                        ),
-        # postagem fornecido
+
         'post_card_id': fields.many2one('sigepweb.post.card',
                                         string='Post Cards',
                                         required=True,
@@ -372,6 +371,15 @@ class ShippingResponse(orm.Model):
                                             ('type', '=', 'out'),
                                             ('state', '=', 'done'),
                                         ]),
+
+        'tracking_pack_line': fields.one2many('stock.tracking',
+                                              'shipping_response_id',
+                                              string='Tracking Packs',
+                                              readonly=True,
+                                              required=True,
+                                              states={
+                                                  'draft': [('readonly', False)]
+                                              }),
 
         'volume': fields.function(_compute_volume,
                                   type='float',

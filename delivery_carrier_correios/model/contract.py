@@ -31,6 +31,7 @@ class Contract(orm.Model):
 
     _columns = {
         'number': fields.char(u'Número'),
+        'year': fields.char('Ano de assinatura'),
         'post_card_ids': fields.one2many('sigepweb.post.card',
                                          'contract_id',
                                          u'Cartão de Postagem'),

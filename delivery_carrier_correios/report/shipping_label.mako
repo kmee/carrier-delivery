@@ -6,7 +6,21 @@
     </style>
 </head>
 <body>
-    %for label in objects:
+    %for stock in objects:
+
+    <%
+        packs = []
+        for line in stock.move_lines:
+            if line.tracking_id not in packs:
+                packs.append(line.tracking_id)
+    %>
+
+##        <%
+##    x = db.get_resource('foo')
+##    y = [z.element for z in x if x.frobnizzle==5]
+##%>
+
+        %for label in packs:
         <table style="width: 300px;">
             <tbody>
                 <tr>
@@ -15,15 +29,15 @@
                         <tbody>
                             <tr>
                                 <td>
-                                    %if label.image_chancela:
-                                        <img style="height: 114px; width: 114px" src='data:image/png;base64,${label.image_chancela}'/>
+                                    %if stock.image_chancela:
+                                        <img style="height: 114px; width: 114px" src='data:image/png;base64,${stock.image_chancela}'/>
                                     %else:
                                         &nbsp;
                                     %endif
                                 </td>
                                 <td>
-                                    %if label.x_barcode_id:
-                                        <img style="height: 114px; width: 114px" src='data:image/png;base64,${label.qr_code_id.image}'/>
+                                    %if stock.qr_code_id:
+                                        <img style="height: 114px; width: 114px" src='data:image/png;base64,${stock.qr_code_id.image}'/>
                                     %else:
                                         &nbsp;
                                     %endif
@@ -35,7 +49,7 @@
                             <tr style="text-align: left">
                                 <td>NF:</td>
                                 <td>Pedido: </td>
-                                <td>Peso(g): ${label.weight}</td>
+                                <td>Peso(g): ${stock.weight}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -44,7 +58,8 @@
                 <tr>
                     <th>
                         %if label.x_barcode_id:
-                            <img src='data:image/png;base64,${label.x_barcode_id.image}'/>
+                            <img src='data:image/png;base64,
+                            ${label.x_barcode_id.image}'/>
                         %else:
                             ' '
                         %endif
@@ -73,29 +88,30 @@
                                                         <td style="white-space: nowrap;">Volume: 1/1</td>
                                                     </tr>
                                                     <tr>
-                                                        <td>${label.partner_id.legal_name or ' '}</td>
+                                                        <td>${stock.partner_id.legal_name or ' '}</td>
                                                         <td>&nbsp;</td>
                                                     </tr>
                                                     <tr>
-                                                        <td>${label.partner_id.street or ' '} , ${label.partner_id.number or ' '}</td>
+                                                        <td>${stock.partner_id.street or ' '} , ${stock.partner_id.number or ' '}</td>
                                                         <td>&nbsp;</td>
                                                     </tr>
                                                     <tr>
-                                                        <td>${label.partner_id.street2 or ' '}</td>
+                                                        <td>${stock.partner_id.street2 or ' '}</td>
                                                         <td>&nbsp;</td>
                                                     </tr>
                                                     <tr>
-                                                        <td>${label.partner_id.district or ' '}</td>
+                                                        <td>${stock.partner_id.district or ' '}</td>
                                                         <td>&nbsp;</td>
                                                     </tr>
                                                     <tr>
-                                                        <td>${label.partner_id.zip or ' '} ${label.partner_id.l10n_br_city_id.name or ' '} , ${label.partner_id.l10n_br_city_id.state_id.code or ' '}</td>
+                                                        <td>${stock.partner_id.zip or ' '} ${stock.partner_id.l10n_br_city_id.name or ' '} , ${stock.partner_id.l10n_br_city_id.state_id.code or ' '}</td>
                                                         <td>&nbsp;</td>
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            %if label.x_barcode_id.image:
-                                                                <img src='data:image/png;base64,${label.barcode_id.image}'/>
+                                                            %if stock.x_barcode_id.image:
+                                                                <img
+                                                                        src='data:image/png;base64,${stock.barcode_id.image}'/>
                                                             %else:
                                                                 ' '
                                                             %endif
@@ -140,6 +156,13 @@
                 </tr>
             </tbody>
         </table>
+
+        %if packs.index(label) < len(packs) - 1:
+            <p style="page-break-after:always"/>
+            <br/>
+        %endif
+
+        %endfor
     %endfor
 </body>
 </html>
