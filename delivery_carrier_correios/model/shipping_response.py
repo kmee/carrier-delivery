@@ -53,7 +53,7 @@ class ShippingResponse(orm.Model):
             default = {}
 
         vals = {
-            'picking_line': False,
+            'tracking_pack_line': False,
             'carrier_tracking_ref': '',
             'name': '/',
         }
@@ -66,7 +66,7 @@ class ShippingResponse(orm.Model):
         res = {}
         for obj in ids:
             obj_ship = self.browse(cr, uid, obj, context=context)
-            res[obj] = len(obj_ship.picking_line)
+            res[obj] = len(obj_ship.tracking_pack_line)
 
         return res
 
@@ -75,9 +75,9 @@ class ShippingResponse(orm.Model):
         for obj in ids:
             res[obj] = 0.00
 
-            obj_ship = self.browse(cr, uid, obj, context=context)
-            for picking in obj_ship.picking_line:
-                res[obj] += picking.weight * int(picking.quantity_of_volumes)
+            # obj_ship = self.browse(cr, uid, obj, context=context)
+            # for picking in obj_ship.picking_line:
+            #     res[obj] += picking.weight * int(picking.quantity_of_volumes)
 
         return res
 
@@ -86,9 +86,9 @@ class ShippingResponse(orm.Model):
         for obj in ids:
             res[obj] = 0.00
 
-            obj_ship = self.browse(cr, uid, obj, context=context)
-            for picking in obj_ship.picking_line:
-                res[obj] += picking.weight_net * int(picking.quantity_of_volumes)
+            # obj_ship = self.browse(cr, uid, obj, context=context)
+            # for picking in obj_ship.picking_line:
+            #     res[obj] += picking.weight_net * int(picking.quantity_of_volumes)
 
         return res
 
@@ -361,16 +361,6 @@ class ShippingResponse(orm.Model):
                                                            False)]},
                                         domain="[('contract_id', '=', "
                                                "contract_id)]"),
-
-        'picking_line': fields.one2many('stock.picking.out',
-                                        'shipping_response_id',
-                                        string='Pickings',
-                                        readonly=True,
-                                        states={'draft': [('readonly', False)]},
-                                        domain=[
-                                            ('type', '=', 'out'),
-                                            ('state', '=', 'done'),
-                                        ]),
 
         'tracking_pack_line': fields.one2many('stock.tracking',
                                               'shipping_response_id',
