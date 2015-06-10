@@ -71,6 +71,7 @@ class StockPickingOut(orm.Model):
             'carrier_tracking_ref': '',
             'invoice_id': False,
             'shipping_response_id': False,
+            'image_chancela': False,
         }
 
         default.update(vals)
@@ -105,8 +106,8 @@ class StockPickingOut(orm.Model):
                         stock.carrier_id.sigepweb_post_service_id
 
                     serv_post = ServicoPostagem(servico_postagem_id.code,
-                                                servico_postagem_id.details,
-                                                servico_postagem_id.identifier)
+                                                descricao=servico_postagem_id.details,
+                                                servico_id=servico_postagem_id.identifier)
 
                     tracking_packs = []
                     for line in stock.move_lines:
@@ -162,20 +163,12 @@ class StockPickingOut(orm.Model):
 
         obj_stock = self.browse(cr, uid, ids[0], context)
 
-        service_number = obj_stock.carrier_id.code
+        carrier = obj_stock.carrier_id
 
-        #TODO: Verificar as chancelas para cada tipo de servico
-        serv = {
-            '40436': Chancela.SEDEX,
-            '81019': Chancela.E_SEDEX,
-            '41068': Chancela.PAC,
-            '40215': Chancela.SEDEX_10,
-        }
-
-        chancela = Chancela(serv[service_number])
+        chancela = Chancela(carrier.sigepweb_post_service_id.image_chancela, '')
 
         company = obj_stock.company_id
-        contract = obj_stock.carrier_id.sigepweb_contract_id
+        contract = carrier.sigepweb_contract_id
 
         chancela.nome_cliente = company.name
         chancela.num_contrato = contract.number
@@ -184,9 +177,9 @@ class StockPickingOut(orm.Model):
         chancela.dr_postagem = obj_stock.partner_id.state_id.code
 
         try:
-            img = chancela.get_image_chancela()
+            img = chancela.get_image_base64()
         except IOError as excp:
-            raise osv.except_osv(_('Error!'), _(excp.strerror))
+            raise osv.except_osv(_('Error!'), _(excp.message))
 
         return img
 

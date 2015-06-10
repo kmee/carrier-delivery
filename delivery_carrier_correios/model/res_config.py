@@ -184,6 +184,7 @@ class SigepWebConfigSettings(orm.TransientModel):
                 'code': serv.codigo,
                 'identifier': serv.identificador,
                 'details': serv.descricao,
+                'image_chancela': serv.chancela.base_64_str_imagem
             }
 
             if not post_service_id:
