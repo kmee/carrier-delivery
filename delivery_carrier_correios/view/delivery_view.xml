@@ -19,7 +19,7 @@
                     <field name="sigepweb_post_service_id"
                            attrs="{'invisible': [('type', '!=', 'sigepweb')], 'required': [('type', '=', 'sigepweb')]}"
                            on_change="onchange_sigepweb_post_service_id(sigepweb_post_service_id)"/>
-                    <field name="image_chancela" widget="image"/>
+                    <!--<field name="image_chancela" widget="image"/>-->
                 </field>
                 <!--<field name="code" position="attributes">-->
                     <!--<attribute name="attrs">{'readonly': [('type', '=',-->
