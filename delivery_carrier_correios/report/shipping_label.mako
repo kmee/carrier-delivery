@@ -105,8 +105,7 @@
                                                     <tr>
                                                         <td>
                                                             %if stock.x_barcode_id.image:
-                                                                <img
-                                                                        src='data:image/png;base64,${stock.barcode_id.image}'/>
+                                                                <img src='data:image/png;base64,${stock.x_barcode_id.image}'/>
                                                             %else:
                                                                 ' '
                                                             %endif

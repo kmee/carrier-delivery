@@ -279,7 +279,7 @@ class StockPicking(orm.Model):
         'shipping_response_id': fields.many2one('shipping.response',
                                                 string='Shipping Group',
                                                 readonly=True),
-        'qr_code_id': fields.many2one('tr.barcode', string=u'Código de Barras'),
+        'qr_code_id': fields.many2one('tr.barcode', string=u'QR Code'),
         'idv': fields.selection([('51', 'Encomenda'), ('81', 'Malotes')],
                                 string=u'IDV'),
         'image_chancela': fields.binary('Chancela Correios',
