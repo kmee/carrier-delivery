@@ -65,11 +65,8 @@ class ShippingResponse(orm.Model):
     def _compute_volume(self, cr, uid, ids, field_name, arg, context=None):
         res = {}
         for obj in ids:
-            res[obj] = 0
-
             obj_ship = self.browse(cr, uid, obj, context=context)
-            for picking in obj_ship.picking_line:
-                res[obj] += int(picking.quantity_of_volumes)
+            res[obj] = len(obj_ship.picking_line)
 
         return res
 
@@ -156,6 +153,11 @@ class ShippingResponse(orm.Model):
 
             lista_obj_postal = []
             lista_etiqueta = []
+
+            if not ship.tracking_pack_line:
+                msg = "A PLP deve possuir pelo menos uma Ordem de Entrega. " \
+                      "Por favor adicione uma Ordem de Entrega!"
+                raise osv.except_osv(_('Error!'), msg)
 
             for tracking_pack in ship.tracking_pack_line:
 
@@ -374,6 +376,7 @@ class ShippingResponse(orm.Model):
                                               'shipping_response_id',
                                               string='Tracking Packs',
                                               readonly=True,
+                                              required=True,
                                               states={
                                                   'draft': [('readonly', False)]
                                               }),
