@@ -6,20 +6,17 @@
             <field name="model">stock.picking.out</field>
             <field name="inherit_id" ref="stock.view_picking_out_form"/>
             <field name="arch" type="xml">
-                <!--<field name="origin" position="after">-->
-                    <!--<field name="invoice_id"/>-->
-                <!--</field>-->
                 <field name="origin" position="replace"/>
                 <field name="carrier_tracking_ref" position="replace"/>
-                <field name="weight" position="replace"/>
-                <field name="weight_net" position="replace"/>
+                <!--<field name="weight" position="replace"/>-->
+                <!--<field name="weight_net" position="replace"/>-->
 
                 <field name="stock_journal_id" position="after">
                     <field name="origin"/>
                 </field>
                 <field name="quantity_of_volumes" position="after">
-                    <field name="weight"/>
-                    <field name="weight_net"/>
+                    <!--<field name="weight"/>-->
+                    <!--<field name="weight_net"/>-->
                     <field name="carrier_tracking_ref"/>
                     <field name="shipping_response_id"/>
                 </field>
