@@ -16,6 +16,12 @@
     %>
 
         %for label in packs:
+
+        <%
+            peso = 0
+            for line in label.move_ids:
+                peso += line.weight
+        %>
         <table style="width: 300px;">
             <tbody>
                 <tr>
@@ -44,7 +50,7 @@
                             <tr style="text-align: left">
                                 <td>NF:</td>
                                 <td>Pedido: </td>
-                                <td>Peso(g): ${stock.weight}</td>
+                                <td>Peso(g): ${peso * 1000}</td>
                             </tr>
                         </tbody>
                     </table>
