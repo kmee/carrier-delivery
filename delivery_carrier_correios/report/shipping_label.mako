@@ -36,9 +36,8 @@
                                     %endif
                                 </td>
                                 <td>
-                                    %if stock.x_barcode_id:
-                                        <img style="height: 114px; width: 114px" src='data:image/png;
-                                        base64,${stock.qr_code_id.image}'/>
+                                    %if stock.qr_code_id:
+                                        <img style="height: 114px; width: 114px" src='data:image/png;base64,${stock.qr_code_id.image}'/>
                                     %else:
                                         &nbsp;
                                     %endif
