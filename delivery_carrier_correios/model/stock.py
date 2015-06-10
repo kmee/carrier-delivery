@@ -177,7 +177,7 @@ class StockPickingOut(orm.Model):
         chancela.dr_postagem = obj_stock.partner_id.state_id.code
 
         try:
-            img = chancela.get_image_base64()
+            img = chancela.get_image_base64
         except IOError as excp:
             raise osv.except_osv(_('Error!'), _(excp.message))
 
