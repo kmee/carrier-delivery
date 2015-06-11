@@ -29,6 +29,7 @@
     'category': 'version',
     'complexity': 'normal',
     'depends': [
+        'kmee_delivery',
         'tr_barcode_on_picking',
         'tr_barcode_on_tracking',
         'base_delivery_carrier_label',
