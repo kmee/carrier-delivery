@@ -145,10 +145,8 @@ class SigepWebConfigSettings(orm.TransientModel):
                 config.sigepweb_company_id.sigepweb_main_post_card_number
 
             try:
-                print u'[INFO] Iniciando Serviço de Atendimento ao Cliente'
                 sv = WebserviceAtendeCliente(config.environment)
 
-                print u'[INFO] Consultando dados do cliente'
                 cliente = sv.busca_cliente(contract_number, post_card_number,
                                            username, password)
 
@@ -164,10 +162,7 @@ class SigepWebConfigSettings(orm.TransientModel):
                 pool.write(cr, uid, config.sigepweb_company_id.id, vals,
                            context=context)
 
-                print u'[INFO] Consulta realizada com sucesso!'
-
             except ErroConexaoComServidor as e:
-                print e.message
                 raise osv.except_osv(_('Error!'), e.message)
 
     def _update_post_services(self, cr, uid, services):

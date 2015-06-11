@@ -173,7 +173,6 @@ class DeliveryGrid(orm.Model):
     def _frete(self, fields):
 
         try:
-            print '[INFO] Conectanco com webservice de calculo de prazo e preco'
             calc = WebserviceCalculaPrecoPrazo()
 
             service_post = {fields['cod']: ServicoPostagem(fields['cod'])}

@@ -252,7 +252,6 @@ class ShippingResponse(orm.Model):
                                               obj_remetente, lista_obj_postal)
 
             try:
-                print u'[INFO] Iniciando Serviço de Atendimento ao  Cliente'
                 sv = WebserviceAtendeCliente(company_id.sigepweb_environment)
 
                 plp = sv.fecha_plp_varios_servicos(obj_correios_log,
@@ -260,8 +259,6 @@ class ShippingResponse(orm.Model):
                                                    lista_etiqueta,
                                                    post_card_id.number,
                                                    cliente)
-
-                print u'[INFO] Id PLP: ', plp.id_plp_cliente
 
                 vals = {
                     'name': 'PLP/' + str(plp.id_plp_cliente),
@@ -284,13 +281,10 @@ class ShippingResponse(orm.Model):
                 return self.write(cr, uid, ship.id, vals, context=context)
 
             except IOError as e:
-                print e.message
                 raise osv.except_osv(_('Error!'), e.strerror)
             except ErroConexaoComServidor as e:
-                print e.message
                 raise osv.except_osv(_('Error!'), e.message)
             except ErroValidacaoXML as e:
-                print e.message
                 raise osv.except_osv(_('Error!'), e.message)
 
         return False
