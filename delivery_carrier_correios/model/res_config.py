@@ -43,31 +43,31 @@ class SigepWebConfigSettings(orm.TransientModel):
 
         'contract_ids': fields.related('sigepweb_company_id',
                                        'sigepweb_contract_ids',
-                                       string=u'Contratos',
+                                       string='Contracts',
                                        type='one2many',
                                        relation='sigepweb.contract',
                                        readonly=True),
 
         'username': fields.related(
             'sigepweb_company_id', 'sigepweb_username',
-            string=u'Login', type='char', required=True),
+            string='Login', type='char', required=True),
 
         'password': fields.related(
             'sigepweb_company_id', 'sigepweb_password',
-            string=u'Senha', type='char', required=True),
+            string='Password', type='char', required=True),
 
         'carrier_id': fields.related(
             'sigepweb_company_id', 'sigepweb_carrier_id',
-            string=u'Correios', type='many2one', required=True,
+            string='Carrier correios', type='many2one', required=True,
             relation='res.partner'),
 
         'contract_number': fields.related(
             'sigepweb_company_id', 'sigepweb_main_contract_number',
-            string=u'Número do Contrato', type='char', required=True, size=10),
+            string='Contract Number', type='char', required=True, size=10),
 
         'post_card_number': fields.related(
             'sigepweb_company_id', 'sigepweb_main_post_card_number',
-            string=u'Número do Cartão de Postagem', type='char',
+            string='Post Card Number', type='char',
             required=True, size=10),
 
         'environment': fields.related('sigepweb_company_id',
@@ -82,18 +82,54 @@ class SigepWebConfigSettings(orm.TransientModel):
                                        'sigepweb_plp_xml_path',
                                        string='PLP XML Path',
                                        type='char'),
-        'package_width': fields.integer('Package width'),
-        'package_height': fields.integer('Package height'),
-        'package_length': fields.integer('Package length'),
+        'package_width': fields.integer('Package width',
+                                        help='Min value: 11 cm\n'
+                                             'Max value: 105 cm'),
+        'package_height': fields.integer('Package height',
+                                         help='Min value: 2 cm\n'
+                                              'Max value: 105 cm'),
+        'package_length': fields.integer('Package length',
+                                         help='Min value: 16 cm\n'
+                                              'Max value: 105 cm'),
     }
 
     def _default_company(self, cr, uid, context=None):
         user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
         return user.company_id.id
 
+    def _check_package_width(self, cr, uid, ids):
+        for config in self.browse(cr, uid, ids):
+            if config.package_width not in xrange(11, 105):
+                return False
+        return True
+
+    def _check_package_height(self, cr, uid, ids):
+        for config in self.browse(cr, uid, ids):
+            if config.package_height not in xrange(2, 105):
+                return False
+        return True
+
+    def _check_package_length(self, cr, uid, ids):
+        for config in self.browse(cr, uid, ids):
+            if config.package_length not in xrange(16, 105):
+                return False
+        return True
+
     _defaults = {
         'sigepweb_company_id': _default_company,
     }
+
+    _constraints = [
+        (_check_package_width,
+         'Package width out of range. Value must be between 11 cm to 105 cm.',
+         ['package_width']),
+        (_check_package_height,
+         'Package height out of range. Value must be between 2 cm to 105 cm.',
+         ['package_height']),
+        (_check_package_length,
+         'Package lenght out of range. Value must be between 16 cm to 105 cm.',
+         ['package_length']),
+    ]
 
     def create(self, cr, uid, values, context=None):
         rec_id = super(SigepWebConfigSettings, self).create(
