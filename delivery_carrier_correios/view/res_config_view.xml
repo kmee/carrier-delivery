@@ -42,7 +42,7 @@
                         </group>
                     </group>
 
-                    <group string="Default configs">
+                    <group string="SigepWeb Configurations">
                         <group>
                             <field name="environment"/>
                             <field name="plp_xml_path"/>
@@ -56,8 +56,15 @@
                     </group>
 
                     <notebook>
-                        <page string="Contratos">
+                        <page string="Contracts">
                             <field name="contract_ids" nolabel="1"/>
+                        </page>
+                        <page string="Others configuration">
+                            <group string="Default Pack Dimension">
+                                <field name="package_width"/>
+                                <field name="package_height"/>
+                                <field name="package_length"/>
+                            </group>
                         </page>
                     </notebook>
 

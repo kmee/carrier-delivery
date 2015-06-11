@@ -46,14 +46,20 @@ class ResCompany(orm.Model):
                                                  string='Contract',
                                                  readonly=True),
         'sigepweb_environment': fields.selection((HOMOLOGACAO, PRODUCAO),
-                                                 string='Ambiente',
+                                                 string='Environment',
                                                  required=True),
         'shipping_response_ids': fields.one2many('shipping.response',
                                                  'company_id',
                                                  string='Shipping Response'),
         'sigepweb_plp_xml_path': fields.char('PLP XML Path'),
+        'sigepweb_package_width': fields.integer('Package width'),
+        'sigepweb_package_height': fields.integer('Package height'),
+        'sigepweb_package_length': fields.integer('Package length'),
     }
 
     _defaults = {
         'sigepweb_environment': WebserviceAtendeCliente.AMBIENTE_HOMOLOGACAO,
+        'sigepweb_package_width': 20,
+        'sigepweb_package_height': 20,
+        'sigepweb_package_length': 20,
     }

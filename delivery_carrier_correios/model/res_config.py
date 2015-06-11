@@ -22,8 +22,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import logging
-
 from openerp.osv import orm, fields, osv
 from openerp.tools.translate import _
 
@@ -85,6 +83,9 @@ class SigepWebConfigSettings(orm.TransientModel):
                                        string='PLP XML Path',
                                        type='char',
                                        required=True),
+        'package_width': fields.integer('Package width'),
+        'package_height': fields.integer('Package height'),
+        'package_length': fields.integer('Package length'),
     }
 
     def _default_company(self, cr, uid, context=None):
@@ -128,6 +129,9 @@ class SigepWebConfigSettings(orm.TransientModel):
             'contract_ids': [(4, x) for x in a],
             'environment': company.sigepweb_environment,
             'plp_xml_path': company.sigepweb_plp_xml_path,
+            'package_width': company.sigepweb_package_width,
+            'package_height': company.sigepweb_package_height,
+            'package_length': company.sigepweb_package_length,
         }
         return {'value': values}
 
