@@ -78,11 +78,8 @@ class StockPickingOut(orm.Model):
                 company_id = stock.company_id
 
                 try:
-                    print u'[INFO] Iniciando Serviço de Atendimento ao  Cliente'
                     sv = WebserviceAtendeCliente(
                         company_id.sigepweb_environment)
-
-                    print u'[INFO] Consultando dados do cliente'
 
                     if company_id.sigepweb_username == 'sigep':
                         company_id.cnpj_cpf = '34.028.316/0001-03'
@@ -137,7 +134,6 @@ class StockPickingOut(orm.Model):
                     self.action_generate_carrier_label(cr, uid, ids)
 
                 except ErroConexaoComServidor as e:
-                    print e.message
                     raise osv.except_osv(_('Error!'), e.message)
 
         return res
@@ -224,10 +220,10 @@ class StockPickingOut(orm.Model):
         if stock_obj.partner_id.phone:  # Telefone do destinatario
             phone = ''.join(reg.findall(stock_obj.partner_id.phone))
             phone = phone.zfill(12)
-            print phone
             if len(phone) != 12:
                 raise osv.except_osv(_('Error!'),
-                                     _(u'O Telefone do destinatário incorreto'))
+                                     _('Size of partner phone number '
+                                       'incorrect'))
             else:
                 qr_string += phone
         else:
@@ -236,8 +232,6 @@ class StockPickingOut(orm.Model):
         qr_string += '-00.000000'  # TODO: pegar a Latitude ou deixar preencido como padrão
         qr_string += '|'
         qr_string += ' ' * 30
-
-        print len(qr_string)
 
         return qr_string
 
