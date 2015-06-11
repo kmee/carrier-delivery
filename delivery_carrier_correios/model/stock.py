@@ -132,7 +132,8 @@ class StockPickingOut(orm.Model):
 
                         obj_pack.write(cr, uid, [obj.id], vals)
 
-                    self.action_generate_carrier_label(cr, uid, ids)
+                    image_chancela = self.create_chancela(cr, uid, ids)
+                    self.write(cr, uid, ids, {'image_chancela': image_chancela})
 
                 except ErroConexaoComServidor as e:
                     print e.message
@@ -140,24 +141,24 @@ class StockPickingOut(orm.Model):
 
         return res
 
-    def action_generate_carrier_label(self, cr, uid, ids, context=None):
-        result = {
-            'type': 'ir.actions.report.xml',
-            'report_name': 'shipping.label.webkit'
-        }
-        # qr_code_id = self.create_qr_code(cr, uid, ids, context)
-        # barcode_id = self.create_barcode(cr, uid, ids, context)
-        image_chancela = self.create_chancela(cr, uid, ids, context)
-        self.write(cr, uid, ids, {'image_chancela': image_chancela})
+    # def action_generate_carrier_label(self, cr, uid, ids, context=None):
+    #     result = {
+    #         'type': 'ir.actions.report.xml',
+    #         'report_name': 'shipping.label.webkit'
+    #     }
+    #     # qr_code_id = self.create_qr_code(cr, uid, ids, context)
+    #     # barcode_id = self.create_barcode(cr, uid, ids, context)
+    #     image_chancela = self.create_chancela(cr, uid, ids, context)
+    #     self.write(cr, uid, ids, {'image_chancela': image_chancela})
+    #
+    #     # id_barcode_default = \
+    #     #     self.browse(cr, uid, ids, context)[0].x_barcode_id.id
+    #     # self.pool.get('tr.barcode').write(cr, uid, id_barcode_default,
+    #     #                                   {'hr_form': True, 'width': 350})
+    #
+    #     return result
 
-        # id_barcode_default = \
-        #     self.browse(cr, uid, ids, context)[0].x_barcode_id.id
-        # self.pool.get('tr.barcode').write(cr, uid, id_barcode_default,
-        #                                   {'hr_form': True, 'width': 350})
-
-        return result
-
-    def create_chancela(self, cr, uid, ids, context):
+    def create_chancela(self, cr, uid, ids, context=None):
 
         obj_stock = self.browse(cr, uid, ids[0], context)
 
