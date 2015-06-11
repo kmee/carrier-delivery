@@ -141,17 +141,21 @@ class StockPickingOut(orm.Model):
             'type': 'ir.actions.report.xml',
             'report_name': 'shipping.label.webkit'
         }
-        qr_code_id = self.create_qr_code(cr, uid, ids, context)
-        barcode_id = self.create_barcode(cr, uid, ids, context)
-        image_chancela = self.create_chancela(cr, uid, ids, context)
-        self.write(cr, uid, ids, {'barcode_id': barcode_id,
-                                  'qr_code_id': qr_code_id,
-                                  'image_chancela': image_chancela})
 
-        id_barcode_default = \
-            self.browse(cr, uid, ids, context)[0].x_barcode_id.id
-        self.pool.get('tr.barcode').write(cr, uid, id_barcode_default,
-                                          {'hr_form': True, 'width': 350})
+        for stock in self.browse(cr, uid, ids):
+
+            if stock.carrier_id.type == 'sigepweb':
+                qr_code_id = self.create_qr_code(cr, uid, ids, context)
+                barcode_id = self.create_barcode(cr, uid, ids, context)
+                image_chancela = self.create_chancela(cr, uid, ids, context)
+                self.write(cr, uid, ids, {'barcode_id': barcode_id,
+                                          'qr_code_id': qr_code_id,
+                                          'image_chancela': image_chancela})
+
+                id_barcode_default = \
+                    self.browse(cr, uid, ids, context)[0].x_barcode_id.id
+                self.pool.get('tr.barcode').write(cr, uid, id_barcode_default,
+                                                  {'hr_form': True, 'width': 350})
 
         return result
 
