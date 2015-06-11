@@ -38,12 +38,6 @@ class StockPickingOut(orm.Model):
     _inherit = 'stock.picking.out'
 
     _columns = {
-        'x_barcode_id': fields.many2one('tr.barcode',
-                                        string=u'BarCode'),
-        'shipping_response_id': fields.many2one('shipping.response',
-                                                string=u'Shipping Group',
-                                                readonly=True),
-        'qr_code_id': fields.many2one('tr.barcode', string=u'QR Code'),
         'idv': fields.selection([('51', 'Encomenda'),
                                  ('81', 'Malotes')],
                                 string=u'IDV'),
@@ -123,10 +117,20 @@ class StockPickingOut(orm.Model):
                                                          cliente,
                                                          online=False)
 
+                    obj_pack = self.pool.get('stock.tracking')
+
                     for index, etq in enumerate(etiquetas):
-                        vals = {'serial': etq.com_digito_verificador()}
-                        obj_pack = self.pool.get('stock.tracking')
-                        obj_pack.write(cr, uid, [tracking_packs[index]], vals)
+                        obj = obj_pack.browse(cr, uid, tracking_packs[index])
+                        qr_code_id = self.create_qr_code(cr, uid, ids, etq)
+                        barcode_id = self.create_barcode(cr, uid, ids, obj.name)
+
+                        vals = {
+                            'serial': etq.com_digito_verificador(),
+                            'barcode_id': barcode_id,
+                            'qr_code_id': qr_code_id
+                        }
+
+                        obj_pack.write(cr, uid, [obj.id], vals)
 
                     self.action_generate_carrier_label(cr, uid, ids)
 
@@ -141,16 +145,15 @@ class StockPickingOut(orm.Model):
             'type': 'ir.actions.report.xml',
             'report_name': 'shipping.label.webkit'
         }
-        qr_code_id = self.create_qr_code(cr, uid, ids, context)
+        # qr_code_id = self.create_qr_code(cr, uid, ids, context)
         # barcode_id = self.create_barcode(cr, uid, ids, context)
         image_chancela = self.create_chancela(cr, uid, ids, context)
-        self.write(cr, uid, ids, {'qr_code_id': qr_code_id,
-                                  'image_chancela': image_chancela})
+        self.write(cr, uid, ids, {'image_chancela': image_chancela})
 
-        id_barcode_default = \
-            self.browse(cr, uid, ids, context)[0].x_barcode_id.id
-        self.pool.get('tr.barcode').write(cr, uid, id_barcode_default,
-                                          {'hr_form': True, 'width': 350})
+        # id_barcode_default = \
+        #     self.browse(cr, uid, ids, context)[0].x_barcode_id.id
+        # self.pool.get('tr.barcode').write(cr, uid, id_barcode_default,
+        #                                   {'hr_form': True, 'width': 350})
 
         return result
 
@@ -178,7 +181,7 @@ class StockPickingOut(orm.Model):
 
         return img
 
-    def get_qr_string(self, cr, uid, id, context):
+    def get_qr_string(self, cr, uid, id, etiqueta, context=None):
         qr_string = ''
         stock_obj = self.browse(cr, uid, id[0], context)
         company_obj = self.pool.get('res.company').browse(
@@ -190,8 +193,8 @@ class StockPickingOut(orm.Model):
             raise osv.except_osv(_('Error!'), _(
                 u'O CEP do destinatário fornecido não contém 8 números!'))
         else:
-            qr_string += zip_dest  # CEP destinatario
-        qr_string += '00000'  #complemente CEP destinatario
+            qr_string += zip_dest   # CEP destinatario
+        qr_string += '00000'        #complemente CEP destinatario
 
         zip_remet = ''.join(reg.findall(company_obj.zip))
         if len(zip_remet) != 8:
@@ -204,10 +207,8 @@ class StockPickingOut(orm.Model):
         digito_validador_cep = str(Endereco.digito_validador_cep(zip_dest))
         qr_string += digito_validador_cep  # validador
         qr_string += stock_obj.idv  # idv
-        if stock_obj.carrier_tracking_ref:
-            qr_string += stock_obj.carrier_tracking_ref  # Código da etiqueta
-        else:
-            qr_string += '0' * 13
+
+        qr_string += etiqueta.com_digito_verificador()  # Código da etiqueta
 
         # TODO: Implementar serviços adicionais, enquanto isso completar a string com 12 zeros
         qr_string += '250000000000'  #Serviçoes adicionais
@@ -238,10 +239,10 @@ class StockPickingOut(orm.Model):
 
         return qr_string
 
-    def create_qr_code(self, cr, uid, id, context):
+    def create_qr_code(self, cr, uid, id, etiqueta, context=None):
 
         barcode_vals = {
-            'code': self.get_qr_string(cr, uid, id, context),
+            'code': self.get_qr_string(cr, uid, id, etiqueta, context=context),
             'res_id': id[0],
             'barcode_type': 'qrcode',
             'hr_form': True,
@@ -255,31 +256,26 @@ class StockPickingOut(orm.Model):
 
         return barcode_id
 
-    # def create_barcode(self, cr, uid, id, context):
-    #
-    #     barcode_vals = {
-    #         'code': self.browse(cr, uid, id, context)[0].name,
-    #         'res_id': id[0],
-    #         'barcode_type': 'Code128',
-    #         'width': 125,
-    #     }
-    #
-    #     barcode_obj = self.pool.get('tr.barcode')
-    #     barcode_id = barcode_obj.create(cr, uid, barcode_vals, context=context)
-    #     barcode_obj.generate_image(cr, uid, [barcode_id], context=context)
-    #
-    #     return barcode_id
+    def create_barcode(self, cr, uid, id, reference, context=None):
+
+        barcode_vals = {
+            'code': reference,
+            'res_id': id[0],
+            'barcode_type': 'Code128',
+            'width': 125,
+        }
+
+        barcode_obj = self.pool.get('tr.barcode')
+        barcode_id = barcode_obj.create(cr, uid, barcode_vals, context=context)
+        barcode_obj.generate_image(cr, uid, [barcode_id], context=context)
+
+        return barcode_id
 
 
 class StockPicking(orm.Model):
     _inherit = 'stock.picking'
 
     _columns = {
-        'x_barcode_id': fields.many2one('tr.barcode', string=u'BarCode'),
-        'shipping_response_id': fields.many2one('shipping.response',
-                                                string='Shipping Group',
-                                                readonly=True),
-        'qr_code_id': fields.many2one('tr.barcode', string=u'QR Code'),
         'idv': fields.selection([('51', 'Encomenda'), ('81', 'Malotes')],
                                 string=u'IDV'),
         'image_chancela': fields.binary('Chancela Correios',
@@ -307,6 +303,8 @@ class StockTracking(orm.Model):
                                                 string='Shipping Group',
                                                 readonly=True),
         'x_barcode_id': fields.many2one('tr.barcode',
-                                        string=u'BarCode'),
+                                        string=u'BarCode Label'),
+        'barcode_id': fields.many2one('tr.barcode', string=u'Reference Code'),
+        'qr_code_id': fields.many2one('tr.barcode', string=u'QR Code'),
     }
 

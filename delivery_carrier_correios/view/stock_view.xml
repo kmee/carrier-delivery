@@ -13,13 +13,14 @@
 
                 <field name="stock_journal_id" position="after">
                     <field name="origin"/>
+                    <!--<field name="shipping_response_id"/>-->
                 </field>
-                <field name="quantity_of_volumes" position="after">
+                <!--<field name="quantity_of_volumes" position="after">-->
                     <!--<field name="weight"/>-->
                     <!--<field name="weight_net"/>-->
                     <!--<field name="carrier_tracking_ref"/>-->
-                    <field name="shipping_response_id"/>
-                </field>
+                    <!--<field name="shipping_response_id"/>-->
+                <!--</field>-->
                 <xpath expr="//field[@name='move_type']" position="after">
                     <field name="idv"/>
 					<field name="image_chancela" widget="image"/>
