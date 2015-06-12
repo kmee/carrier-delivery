@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-#    Brazillian Carrier Correios Sigep WEB
+# Brazillian Carrier Correios Sigep WEB
 #    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
 #    @author Luis Felipe Mileo <mileo@kmee.com.br>
 #
@@ -39,9 +39,11 @@ from pysigep_web.pysigepweb.tag_objeto_postal import *
 from pysigep_web.pysigepweb.tag_correios_log import TagCorreiosLog
 from pysigep_web.pysigepweb.diretoria import Diretoria
 from pysigep_web.pysigepweb.endereco import Endereco
-from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor, ErroValidacaoXML
+from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor, \
+    ErroValidacaoXML
 from pysigep_web.pysigepweb.etiqueta import Etiqueta
 from pysigep_web.pysigepweb.resposta_busca_cliente import Cliente
+from company import LETTER, BOX, CILINDER
 
 
 class ShippingResponse(orm.Model):
@@ -221,11 +223,15 @@ class ShippingResponse(orm.Model):
                 # Calculamos o peso considerado. O OpenERP fornece peso em
                 # kilogramas
                 peso_considerado = max(weight, peso_volumetrico) * 1000
-                aresta = int(math.ceil(volume_cm ** (1 / 3.0)))
+                # aresta = int(math.ceil(volume_cm ** (1 / 3.0)))
 
                 # Criamos um objeto dimensao
-                obj_dimensao_objeto = TagDimensaoObjeto(Caixa(aresta, aresta,
-                                                              aresta))
+                obj_dimensao_objeto = TagDimensaoObjeto(
+                    tracking_pack.package_type,
+                    tracking_pack.package_height,
+                    tracking_pack.package_width,
+                    tracking_pack.package_length,
+                    tracking_pack.package_diameter)
 
                 # Criamos um servico postagem que representa o servico a ser
                 # utilizado
@@ -267,7 +273,7 @@ class ShippingResponse(orm.Model):
 
                 # Definimos o path para salvar o xml da PLP
                 path = company_id.sigepweb_plp_xml_path + \
-                    company_id.sigepweb_environment + '/'
+                       company_id.sigepweb_environment + '/'
 
                 if not os.path.exists(path):
                     #Criando diretorio homlogacao ou producao
@@ -289,7 +295,8 @@ class ShippingResponse(orm.Model):
 
         return False
 
-    def onchange_company_id(self, cr, uid, ids, sigepweb_company_id, context=None):
+    def onchange_company_id(self, cr, uid, ids, sigepweb_company_id,
+                            context=None):
 
         res = {'value': {}}
 
@@ -330,7 +337,8 @@ class ShippingResponse(orm.Model):
         'carrier_responsible': fields.many2one('res.partner',
                                                string='Carrier Responsible',
                                                readonly=True,
-                                               states={'draft': [('readonly', False)]}),
+                                               states={
+                                               'draft': [('readonly', False)]}),
 
         'date': fields.date('Date', require=True, readonly=True,
                             states={'draft': [('readonly', False)]}),
@@ -345,7 +353,7 @@ class ShippingResponse(orm.Model):
                                        states={'draft': [('readonly', False)]},
                                        domain="[('company_id', '=',"
                                               "company_id)]",
-                                       ),
+        ),
 
         'post_card_id': fields.many2one('sigepweb.post.card',
                                         string='Post Cards',
@@ -384,7 +392,7 @@ class ShippingResponse(orm.Model):
                                    ('confirmed', 'Confirmed'),
                                    ('done', 'Done'),
                                    ('cancel', 'Cancel'),
-                                   ], required=True, string=u'Situation'),
+                                  ], required=True, string=u'Situation'),
     }
     _defaults = {
         'user_id': lambda obj, cr, uid, context: uid,
