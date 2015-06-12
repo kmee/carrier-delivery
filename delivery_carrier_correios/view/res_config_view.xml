@@ -62,11 +62,18 @@
                             <group string="PLP consifguration">
                                 <field name="plp_xml_path"/>
                             </group>
-                            <group string="Default Pack Dimension">
+                            <group string="Package type">
                                 <field name="package_type"/>
-                                <field name="package_width"/>
-                                <field name="package_height"/>
-                                <field name="package_length"/>
+                            </group>
+                            <group string="Default Pack Dimension">
+                                <group>
+                                    <field name="package_width"/>
+                                    <field name="package_height"/>
+                                </group>
+                                <group>
+                                    <field name="package_length"/>
+                                    <field name="package_diameter"/>
+                                </group>
                             </group>
                         </page>
                     </notebook>
@@ -88,8 +95,8 @@
                   sequence="20" action="action_sigepweb_config"/>
 
         <!--<menuitem id="menu_sigepweb_config" name="SygepWeb"-->
-                  <!--parent="menu_sigepweb"-->
-                  <!--sequence="5" action="action_sigepweb_config"/>-->
+        <!--parent="menu_sigepweb"-->
+        <!--sequence="5" action="action_sigepweb_config"/>-->
 
     </data>
 </openerp>

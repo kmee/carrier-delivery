@@ -95,6 +95,9 @@ class SigepWebConfigSettings(orm.TransientModel):
         'package_length': fields.integer('Package length',
                                          help='Min value: 16 cm\n'
                                               'Max value: 105 cm'),
+        'package_diameter': fields.integer('Package diameter',
+                                           help='Min value: 5 cm\n'
+                                                'Max value: 105 cm'),
     }
 
     def _default_company(self, cr, uid, context=None):
@@ -115,7 +118,18 @@ class SigepWebConfigSettings(orm.TransientModel):
 
     def _check_package_length(self, cr, uid, ids):
         for config in self.browse(cr, uid, ids):
-            if config.package_length not in xrange(16, 105):
+            if config.package_type != 'cilinder' and config.package_length not\
+                    in xrange(16, 105):
+                return False
+            elif config.package_type == 'cilinder' and config.package_length \
+                    not in xrange(18, 105):
+                return False
+
+        return True
+
+    def _check_package_diameter(self, cr, uid, ids):
+        for config in self.browse(cr, uid, ids):
+            if config.package_diameter not in xrange(5, 105):
                 return False
         return True
 
@@ -131,7 +145,12 @@ class SigepWebConfigSettings(orm.TransientModel):
          'Package height out of range. Value must be between 2 cm to 105 cm.',
          ['package_height']),
         (_check_package_length,
-         'Package lenght out of range. Value must be between 16 cm to 105 cm.',
+         'Package lenght out of range. Value must be between 18 cm to 105 cm '
+         'to cilinder and 16 cm to 105 cm to others packages type.',
+         ['package_length']),
+        (_check_package_diameter,
+         'Package diameter out of range. Value must be between 5 cm to 105 '
+         'cm.',
          ['package_length']),
     ]
 
@@ -172,6 +191,7 @@ class SigepWebConfigSettings(orm.TransientModel):
             'package_width': company.sigepweb_package_width,
             'package_height': company.sigepweb_package_height,
             'package_length': company.sigepweb_package_length,
+            'package_diameter': company.sigepweb_package_diameter,
         }
         return {'value': values}
 
