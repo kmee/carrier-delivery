@@ -16,14 +16,39 @@
                     <!--<field name="shipping_response_id"/>-->
                 </field>
                 <!--<field name="quantity_of_volumes" position="after">-->
-                    <!--<field name="weight"/>-->
-                    <!--<field name="weight_net"/>-->
-                    <!--<field name="carrier_tracking_ref"/>-->
-                    <!--<field name="shipping_response_id"/>-->
+                <!--<field name="weight"/>-->
+                <!--<field name="weight_net"/>-->
+                <!--<field name="carrier_tracking_ref"/>-->
+                <!--<field name="shipping_response_id"/>-->
                 <!--</field>-->
                 <xpath expr="//field[@name='move_type']" position="after">
                     <field name="idv"/>
-					<field name="image_chancela" widget="image"/>
+                    <field name="image_chancela" widget="image"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_sigepweb_stock_tarcking_out_form"
+                model="ir.ui.view">
+            <field name="model">stock.tracking</field>
+            <field name="inherit_id" ref="stock.view_tracking_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='active']" position="after">
+            
+                    <group string="Pack Dimension">
+                        <group>
+                            <field name="package_type"/>
+                            <field name="package_width"
+                                   attrs="{'invisible': [('package_type', '=', 'cilinder')]}"/>
+                            <field name="package_height"
+                                   attrs="{'invisible': [('package_type', '=', 'cilinder')]}"/>
+                            <field name="package_length"/>
+                            <field name="package_diameter"
+                                   attrs="{'invisible': [('package_type', '!=', 'cilinder')]}"/>
+                        </group>
+
+                    </group>
                 </xpath>
             </field>
         </record>

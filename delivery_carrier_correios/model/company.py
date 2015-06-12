@@ -71,5 +71,5 @@ class ResCompany(orm.Model):
         'sigepweb_package_width': 11,
         'sigepweb_package_height': 2,
         'sigepweb_package_length': 16,
-        'sigepweb_package_diameter': 20,
+        'sigepweb_package_diameter': 5,
     }
