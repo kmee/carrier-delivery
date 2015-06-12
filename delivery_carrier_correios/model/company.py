@@ -26,13 +26,15 @@
 from openerp.osv import orm, fields
 from pysigep_web.pysigepweb.webservice_atende_cliente import \
     WebserviceAtendeCliente
+from pysigep_web.pysigepweb.dimensao import Dimensao
 
 PRODUCAO = (WebserviceAtendeCliente.AMBIENTE_PRODUCAO, u'Produçao')
 HOMOLOGACAO = (WebserviceAtendeCliente.AMBIENTE_HOMOLOGACAO, u'Homologação')
 
-LETTER = ('letter', 'Letter')
-BOX = ('box', 'Box')
-CILINDER = ('cilinder', 'Cilinder')
+# Codigo para tipos de pacotes do correio
+LETTER = (Dimensao.TIPO_ENVELOPE, 'Letter')
+BOX = (Dimensao.TIPO_CAIXA, 'Box')
+CILINDER = (Dimensao.TIPO_CILINDRO, 'Cilinder')
 
 
 class ResCompany(orm.Model):

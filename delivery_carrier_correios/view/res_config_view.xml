@@ -68,14 +68,14 @@
                             <group string="Default Pack Dimension">
                                 <group>
                                     <field name="package_width"
-                                           attrs="{'invisible': [('package_type', '=', 'cilinder')]}"/>
+                                           attrs="{'invisible': [('package_type', '=', '003')]}"/>
                                     <field name="package_height"
-                                           attrs="{'invisible': [('package_type', '=', 'cilinder')]}"/>
+                                           attrs="{'invisible': [('package_type', '=', '003')]}"/>
                                 </group>
                                 <group>
                                     <field name="package_length"/>
                                     <field name="package_diameter"
-                                           attrs="{'invisible': [('package_type', '!=', 'cilinder')]}"/>
+                                           attrs="{'invisible': [('package_type', '!=', '003')]}"/>
                                 </group>
                             </group>
                         </page>

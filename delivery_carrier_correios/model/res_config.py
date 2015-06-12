@@ -83,9 +83,13 @@ class SigepWebConfigSettings(orm.TransientModel):
                                        string='PLP XML Path',
                                        type='char'),
 
-        'package_type': fields.selection((LETTER, BOX, CILINDER),
-                                         string='Package type',
-                                         required=True),
+        'package_type': fields.related('sigepweb_company_id',
+                                       'sigepweb_package_type',
+                                       string='Package type',
+                                       type='selection',
+                                       selection=(LETTER, BOX, CILINDER),
+                                       store=True,
+                                       required=True),
         'package_width': fields.integer('Package width',
                                         help='Min value: 11 cm\n'
                                              'Max value: 105 cm'),
