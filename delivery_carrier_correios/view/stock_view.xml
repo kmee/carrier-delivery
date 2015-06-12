@@ -35,17 +35,17 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//field[@name='active']" position="after">
-            
+
                     <group string="Pack Dimension">
                         <group>
                             <field name="package_type"/>
                             <field name="package_width"
-                                   attrs="{'invisible': [('package_type', '=', 'cilinder')]}"/>
+                                   attrs="{'invisible': [('package_type', '=', '003')]}"/>
                             <field name="package_height"
-                                   attrs="{'invisible': [('package_type', '=', 'cilinder')]}"/>
+                                   attrs="{'invisible': [('package_type', '=', '003')]}"/>
                             <field name="package_length"/>
                             <field name="package_diameter"
-                                   attrs="{'invisible': [('package_type', '!=', 'cilinder')]}"/>
+                                   attrs="{'invisible': [('package_type', '!=', '003')]}"/>
                         </group>
 
                     </group>
