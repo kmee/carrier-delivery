@@ -62,17 +62,20 @@
                             <group string="PLP consifguration">
                                 <field name="plp_xml_path"/>
                             </group>
-                            <group string="Package type">
+                            <group string="Default Package type">
                                 <field name="package_type"/>
                             </group>
                             <group string="Default Pack Dimension">
                                 <group>
-                                    <field name="package_width"/>
-                                    <field name="package_height"/>
+                                    <field name="package_width"
+                                           attrs="{'invisible': [('package_type', '=', 'cilinder')]}"/>
+                                    <field name="package_height"
+                                           attrs="{'invisible': [('package_type', '=', 'cilinder')]}"/>
                                 </group>
                                 <group>
                                     <field name="package_length"/>
-                                    <field name="package_diameter"/>
+                                    <field name="package_diameter"
+                                           attrs="{'invisible': [('package_type', '!=', 'cilinder')]}"/>
                                 </group>
                             </group>
                         </page>
