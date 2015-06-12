@@ -28,7 +28,7 @@ from openerp.tools.translate import _
 from pysigep_web.pysigepweb.webservice_atende_cliente import \
     WebserviceAtendeCliente
 from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor
-from company import PRODUCAO, HOMOLOGACAO
+from company import PRODUCAO, HOMOLOGACAO, LETTER, BOX, CILINDER
 
 
 class SigepWebConfigSettings(orm.TransientModel):
@@ -82,6 +82,10 @@ class SigepWebConfigSettings(orm.TransientModel):
                                        'sigepweb_plp_xml_path',
                                        string='PLP XML Path',
                                        type='char'),
+
+        'package_type': fields.selection((LETTER, BOX, CILINDER),
+                                         string='Package type',
+                                         required=True),
         'package_width': fields.integer('Package width',
                                         help='Min value: 11 cm\n'
                                              'Max value: 105 cm'),
@@ -164,6 +168,7 @@ class SigepWebConfigSettings(orm.TransientModel):
             'contract_ids': [(4, x) for x in a],
             'environment': company.sigepweb_environment,
             'plp_xml_path': company.sigepweb_plp_xml_path,
+            'package_type': company.sigepweb_package_type,
             'package_width': company.sigepweb_package_width,
             'package_height': company.sigepweb_package_height,
             'package_length': company.sigepweb_package_length,

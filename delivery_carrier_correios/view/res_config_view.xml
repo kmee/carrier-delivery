@@ -45,7 +45,6 @@
                     <group string="SigepWeb Configurations">
                         <group>
                             <field name="environment"/>
-                            <field name="plp_xml_path"/>
                         </group>
                         <group>
                             <button string="Update SigepWeb Services"
@@ -60,7 +59,11 @@
                             <field name="contract_ids" nolabel="1"/>
                         </page>
                         <page string="Others configuration">
+                            <group string="PLP consifguration">
+                                <field name="plp_xml_path"/>
+                            </group>
                             <group string="Default Pack Dimension">
+                                <field name="package_type"/>
                                 <field name="package_width"/>
                                 <field name="package_height"/>
                                 <field name="package_length"/>

@@ -30,6 +30,10 @@ from pysigep_web.pysigepweb.webservice_atende_cliente import \
 PRODUCAO = (WebserviceAtendeCliente.AMBIENTE_PRODUCAO, u'Produçao')
 HOMOLOGACAO = (WebserviceAtendeCliente.AMBIENTE_HOMOLOGACAO, u'Homologação')
 
+LETTER = ('letter', 'Letter')
+BOX = ('box', 'Box')
+CILINDER = ('cilinder', 'Cilinder')
+
 
 class ResCompany(orm.Model):
     _inherit = 'res.company'
@@ -52,14 +56,20 @@ class ResCompany(orm.Model):
                                                  'company_id',
                                                  string='Shipping Response'),
         'sigepweb_plp_xml_path': fields.char('PLP XML Path'),
+
+        'sigepweb_package_type': fields.selection((LETTER, BOX, CILINDER),
+                                                  string='Package type'),
         'sigepweb_package_width': fields.integer('Package width'),
         'sigepweb_package_height': fields.integer('Package height'),
         'sigepweb_package_length': fields.integer('Package length'),
+        'sigepweb_package_diameter': fields.integer('Package diameter'),
     }
 
     _defaults = {
         'sigepweb_environment': WebserviceAtendeCliente.AMBIENTE_HOMOLOGACAO,
-        'sigepweb_package_width': 20,
-        'sigepweb_package_height': 20,
-        'sigepweb_package_length': 20,
+        'sigepweb_package_type': BOX[0],
+        'sigepweb_package_width': 11,
+        'sigepweb_package_height': 2,
+        'sigepweb_package_length': 16,
+        'sigepweb_package_diameter': 20,
     }
