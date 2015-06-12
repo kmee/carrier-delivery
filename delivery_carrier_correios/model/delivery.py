@@ -29,7 +29,7 @@ from pysigep_web.pysigepweb.webservice_calcula_preco_prazo import \
     WebserviceCalculaPrecoPrazo
 from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor
 from pysigep_web.pysigepweb.servico_postagem import ServicoPostagem
-from pysigep_web.pysigepweb.dimensao import Dimensao, Caixa
+from pysigep_web.pysigepweb.dimensao import Dimensao
 from pysigep_web.pysigepweb.resposta_busca_cliente import Cliente
 
 
