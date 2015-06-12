@@ -331,8 +331,7 @@ class ShippingResponse(orm.Model):
                                      'sigepweb_carrier_id',
                                      string='Carrier',
                                      type='many2one',
-                                     relation='res.partner',
-                                     readonly=True),
+                                     relation='res.partner'),
 
         'carrier_responsible': fields.many2one('res.partner',
                                                string='Carrier Responsible',
