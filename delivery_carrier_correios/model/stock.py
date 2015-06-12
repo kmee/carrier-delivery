@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-#    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
-#    @author: Rodolfo Bertozo <rodolfo.bertozo@kmee.com.br
+# Copyright (C) 2015 KMEE (http://www.kmee.com.br)
+# @author: Rodolfo Bertozo <rodolfo.bertozo@kmee.com.br
 #    @author: Michell Stuttgart <michell.stuttgart@kmee.com.br>
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -32,6 +32,7 @@ from pysigep_web.pysigepweb.resposta_busca_cliente import Cliente
 from pysigep_web.pysigepweb.servico_postagem import ServicoPostagem
 from pysigep_web.pysigepweb.endereco import Endereco
 from pysigep_web.pysigepweb.chancela import Chancela
+from company import LETTER, BOX, CILINDER
 
 
 class StockPickingOut(orm.Model):
@@ -191,8 +192,8 @@ class StockPickingOut(orm.Model):
             raise osv.except_osv(_('Error!'), _(
                 u'O CEP do destinatário fornecido não contém 8 números!'))
         else:
-            qr_string += zip_dest   # CEP destinatario
-        qr_string += '00000'        #complemente CEP destinatario
+            qr_string += zip_dest  # CEP destinatario
+        qr_string += '00000'  #complemente CEP destinatario
 
         zip_remet = ''.join(reg.findall(company_obj.zip))
         if len(zip_remet) != 8:
@@ -213,7 +214,8 @@ class StockPickingOut(orm.Model):
         qr_string += stock_obj.carrier_id.sigepweb_post_card_id.number  # cartão de postagem
         qr_string += stock_obj.carrier_id.sigepweb_post_service_id.code  # Código de serviços
         qr_string += '00'  # TODO: Verificar o que é as informaçoes de agrupamento
-        qr_string += stock_obj.partner_id.number.zfill(5)  # Número do logradouro
+        qr_string += stock_obj.partner_id.number.zfill(
+            5)  # Número do logradouro
         qr_string += stock_obj.partner_id.street2 or ' ' * 20  # Complemento do logradouro
         qr_string += '00000'  # valor declarado
 
@@ -295,7 +297,6 @@ class StockPicking(orm.Model):
 
 
 class StockTracking(orm.Model):
-
     _inherit = "stock.tracking"
 
     _columns = {
@@ -306,5 +307,38 @@ class StockTracking(orm.Model):
                                         string=u'BarCode Label'),
         'barcode_id': fields.many2one('tr.barcode', string=u'Reference Code'),
         'qr_code_id': fields.many2one('tr.barcode', string=u'QR Code'),
+        'package_type': fields.selection((LETTER, BOX, CILINDER),
+                                         string='Package type',
+                                         required=True),
+        'package_width': fields.integer('Package width',
+                                        help='Min value: 11 cm\n'
+                                             'Max value: 105 cm'),
+        'package_height': fields.integer('Package height',
+                                         help='Min value: 2 cm\n'
+                                              'Max value: 105 cm'),
+        'package_length': fields.integer('Package length',
+                                         help='Min value: 16 cm\n'
+                                              'Max value: 105 cm'),
+        'package_diameter': fields.integer('Package diameter',
+                                           help='Min value: 5 cm\n'
+                                                'Max value: 105 cm'),
+    }
+
+    _defaults = {
+        'package_type': lambda self, cr, uid, c: self.pool.get(
+            'res.users').browse(cr, uid, uid,
+                                c).company_id.sigepweb_package_type,
+        'package_width': lambda self, cr, uid, c: self.pool.get(
+            'res.users').browse(cr, uid, uid,
+                                c).company_id.sigepweb_package_width,
+        'package_height': lambda self, cr, uid, c: self.pool.get(
+            'res.users').browse(cr, uid, uid,
+                                c).company_id.sigepweb_package_height,
+        'package_length': lambda self, cr, uid, c: self.pool.get(
+            'res.users').browse(cr, uid, uid,
+                                c).company_id.sigepweb_package_length,
+        'package_diameter': lambda self, cr, uid, c: self.pool.get(
+            'res.users').browse(cr, uid, uid,
+                                c).company_id.sigepweb_package_diameter,
     }
 
