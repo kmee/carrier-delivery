@@ -2,7 +2,7 @@
 # #############################################################################
 #
 # Brazillian Carrier Correios Sigep WEB
-#    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
+# Copyright (C) 2015 KMEE (http://www.kmee.com.br)
 #    @author Luis Felipe Mileo <mileo@kmee.com.br>
 #
 #    Sponsored by Europestar www.europestar.com.br
@@ -337,7 +337,8 @@ class ShippingResponse(orm.Model):
                                                string='Carrier Responsible',
                                                readonly=True,
                                                states={
-                                               'draft': [('readonly', False)]}),
+                                                   'draft': [
+                                                       ('readonly', False)]}),
 
         'date': fields.date('Date', require=True, readonly=True,
                             states={'draft': [('readonly', False)]}),
@@ -393,8 +394,11 @@ class ShippingResponse(orm.Model):
                                    ('cancel', 'Cancel'),
                                   ], required=True, string=u'Situation'),
     }
+
     _defaults = {
         'user_id': lambda obj, cr, uid, context: uid,
+        'company_id': lambda self, cr, uid, context: self.pool.get(
+            'res.users').browse(cr, uid, uid, context=context).company_id.id,
         'state': 'draft',
         'name': '/',
     }
