@@ -35,6 +35,15 @@ from pysigep_web.pysigepweb.chancela import Chancela
 from company import LETTER, BOX, CILINDER
 
 
+class AccountInvoice(orm.Model):
+
+    _inherit = 'account.invoice'
+
+    _columns = {
+        'stock_picking_id': fields.many2one('stock.picking.out'),
+    }
+
+
 class StockPickingOut(orm.Model):
     _inherit = 'stock.picking.out'
 
@@ -45,9 +54,16 @@ class StockPickingOut(orm.Model):
         'image_chancela': fields.binary('Chancela Correios',
                                         filters='*.png, *.jpg',
                                         readonly=True),
-        'invoice_id': fields.many2one('account.invoice',
-                                      string='Invoice',
-                                      readonly=True),
+        # 'invoice_ids': fields.related('sale_id',
+        #                               'invoice_ids',
+        #                               type='many2many',
+        #                               relation='account.invoice',
+        #                               string='Invoice',
+        #                               readonly=False),
+        'invoice_ids': fields.one2many('account.invoice',
+                                       'stock_picking_id',
+                                       string='Invoice',
+                                       readonly=False),
     }
 
     _defaults = {
@@ -60,7 +76,7 @@ class StockPickingOut(orm.Model):
             default = {}
 
         vals = {
-            'invoice_id': False,
+            'invoice_ids': False,
             'shipping_response_id': False,
             'image_chancela': False,
         }
@@ -100,7 +116,8 @@ class StockPickingOut(orm.Model):
                     tracking_packs = []
                     for line in stock.move_lines:
 
-                        if line.tracking_id.id not in tracking_packs:
+                        if line.tracking_id and line.tracking_id.id not in \
+                                tracking_packs:
                             tracking_packs.append(line.tracking_id.id)
 
                     if not tracking_packs:
@@ -134,6 +151,12 @@ class StockPickingOut(orm.Model):
                     # self.write(cr, uid, ids, {'image_chancela': image_chancela})
                     self.action_generate_carrier_label(cr, uid, ids)
 
+                    if stock.sale_id and stock.sale_id.invoice_ids:
+
+                        inv_ids = [(4, inv.id) for inv in stock.sale_id.invoice_ids]
+                        self.write(cr, uid, ids, {
+                            'invoice_ids': inv_ids})
+
                 except ErroConexaoComServidor as e:
                     raise osv.except_osv(_('Error!'), e.message)
 
@@ -144,15 +167,9 @@ class StockPickingOut(orm.Model):
             'type': 'ir.actions.report.xml',
             'report_name': 'shipping.label.webkit'
         }
-        # qr_code_id = self.create_qr_code(cr, uid, ids, context)
-        # barcode_id = self.create_barcode(cr, uid, ids, context)
+
         image_chancela = self.create_chancela(cr, uid, ids, context)
         self.write(cr, uid, ids, {'image_chancela': image_chancela})
-
-        # id_barcode_default = \
-        #     self.browse(cr, uid, ids, context)[0].x_barcode_id.id
-        # self.pool.get('tr.barcode').write(cr, uid, id_barcode_default,
-        #                                   {'hr_form': True, 'width': 350})
 
         return result
 
@@ -279,9 +296,10 @@ class StockPicking(orm.Model):
         'image_chancela': fields.binary('Chancela Correios',
                                         filters='*.png, *.jpg',
                                         readonly=True),
-        'invoice_id': fields.many2one('account.invoice',
-                                      string='Invoice',
-                                      readonly=True),
+        'invoice_ids': fields.one2many('account.invoice',
+                                       'stock_picking_id',
+                                       string='Invoice',
+                                       readonly=False),
 
     }
 
