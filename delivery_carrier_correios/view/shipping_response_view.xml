@@ -45,7 +45,8 @@
                         </div>
                         <group>
                             <group>
-                                <field name="company_id" on_change="onchange_company_id(company_id)"/>
+                                <field name="company_id"
+                                       on_change="onchange_company_id(company_id)"/>
                                 <field name="user_id"/>
                                 <field name="carrier_responsible"/>
                             </group>
@@ -60,12 +61,12 @@
                         <notebook>
                             <page string="Entregas">
                                 <!--<field name="tracking_pack_line"-->
-                                       <!--widget="many2many"-->
-                                       <!--domain="[('move_ids.picking_id.company_id.id', '=', company_id),('move_ids.picking_id.carrier_id.sigepweb_post_card_id.id','=', post_card_id),('|',('move_ids.picking_id.carrier_id.code','!=','41068'),(('move_ids.picking_id.carrier_id.code','=','41068'),('move_ids.picking_id.invoice_state','=','invoiced'))),('serial','!=','')]"/>-->
+                                <!--widget="many2many"-->
+                                <!--domain="[('move_ids.picking_id.company_id.id', '=', company_id),('move_ids.picking_id.carrier_id.sigepweb_post_card_id.id','=', post_card_id),('|',('move_ids.picking_id.carrier_id.code','!=','41068'),(('move_ids.picking_id.carrier_id.code','=','41068'),('move_ids.picking_id.invoice_state','=','invoiced'))),('serial','!=','')]"/>-->
                                 <!--('shipping_response_id','=',False)-->
                                 <field name="tracking_pack_line"
                                        widget="many2many"
-                                       domain="['&amp;',('move_ids.picking_id.company_id.id', '=', company_id),'|',('move_ids.picking_id.carrier_id.code','!=','41068'),'&amp;',('move_ids.picking_id.carrier_id.code','like','41068'),('move_ids.picking_id.invoice_state','=','invoiced')]"/>
+                                       domain="['&amp;',('move_ids.picking_id.company_id.id', '=', company_id),'&amp;',('move_ids.picking_id.carrier_id.partner_id.id','=', carrier_id),'&amp;',('move_ids.picking_id.carrier_id.sigepweb_post_card_id.id','=', post_card_id),'|',('move_ids.picking_id.carrier_id.code','!=','41068'),'&amp;',('move_ids.picking_id.carrier_id.code','=','41068'),('move_ids.picking_id.invoice_state','=','invoiced')]"/>
 
                             </page>
                             <page string="Details">
