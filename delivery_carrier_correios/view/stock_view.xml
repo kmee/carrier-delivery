@@ -28,7 +28,7 @@
             </field>
         </record>
 
-        <record id="view_sigepweb_stock_tarcking_out_form"
+        <record id="view_sigepweb_stock_tracking_out_form"
                 model="ir.ui.view">
             <field name="model">stock.tracking</field>
             <field name="inherit_id" ref="stock.view_tracking_form"/>
