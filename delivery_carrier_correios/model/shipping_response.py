@@ -34,7 +34,7 @@ from pysigep_web.pysigepweb.webservice_atende_cliente import \
 from pysigep_web.pysigepweb.tag_nacional import TagNacionalPAC41068
 from pysigep_web.pysigepweb.tag_plp import TagPLP
 from pysigep_web.pysigepweb.tag_remetente import TagRemetente
-from pysigep_web.pysigepweb.tag_dimensao_objeto import *
+from pysigep_web.pysigepweb.tag_dimensao_objeto import TagDimensaoObjeto
 from pysigep_web.pysigepweb.tag_objeto_postal import *
 from pysigep_web.pysigepweb.tag_correios_log import TagCorreiosLog
 from pysigep_web.pysigepweb.diretoria import Diretoria
@@ -43,7 +43,6 @@ from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor, \
     ErroValidacaoXML
 from pysigep_web.pysigepweb.etiqueta import Etiqueta
 from pysigep_web.pysigepweb.resposta_busca_cliente import Cliente
-from company import LETTER, BOX, CILINDER
 
 
 class ShippingResponse(orm.Model):
@@ -191,7 +190,8 @@ class ShippingResponse(orm.Model):
                     nfe_serie = picking.invoice_id.document_serie_id.code
 
                     if nfe_number == '':
-                        msg = "A ordem de entrega deve estar faturada antes " \
+                        msg = "As ordens de entrega que utilizam servico " \
+                              "PAC 41068 deve estar faturada antes " \
                               "de entrar na PLP!"
                         raise osv.except_osv(_('Error!'), msg)
 
