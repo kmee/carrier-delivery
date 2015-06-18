@@ -50,7 +50,7 @@ class StockPickingOut(orm.Model):
     _columns = {
         'idv': fields.selection([('51', 'Encomenda'),
                                  ('81', 'Malotes')],
-                                string=u'IDV'),
+                                string=u'Identificador de Dados Variaveis'),
         'image_chancela': fields.binary('Chancela Correios',
                                         filters='*.png, *.jpg',
                                         readonly=True),

@@ -10,9 +10,13 @@
                 <field name="stock_journal_id" position="after">
                     <field name="origin"/>
                 </field>
+                <field name="number_of_packages" position="after">
+                    <field name="idv"/>
+                </field>
                 <xpath expr="//field[@name='move_type']" position="after">
                     <field name="invoice_ids" widget="many2one"/>
-                    <field name="idv"/>
+                </xpath>
+                <xpath expr="//field[@name='carrier_code']" position="after">
                     <field name="image_chancela" widget="image"/>
                 </xpath>
             </field>
