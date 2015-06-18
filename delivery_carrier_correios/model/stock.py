@@ -54,12 +54,6 @@ class StockPickingOut(orm.Model):
         'image_chancela': fields.binary('Chancela Correios',
                                         filters='*.png, *.jpg',
                                         readonly=True),
-        # 'invoice_ids': fields.related('sale_id',
-        #                               'invoice_ids',
-        #                               type='many2many',
-        #                               relation='account.invoice',
-        #                               string='Invoice',
-        #                               readonly=False),
         'invoice_ids': fields.one2many('account.invoice',
                                        'stock_picking_id',
                                        string='Invoice',
@@ -85,10 +79,11 @@ class StockPickingOut(orm.Model):
         return super(StockPickingOut, self).copy(
             cr, uid, id, default=default, context=context)
 
-    def action_process(self, cr, uid, ids, *args):
-        res = super(StockPickingOut, self).action_process(cr, uid, ids, *args)
+    def action_process(self, cr, uid, ids, context=None):
+        res = super(StockPickingOut, self).action_process(cr, uid, ids,
+                                                          context=context)
 
-        for stock in self.browse(cr, uid, ids):
+        for stock in self.browse(cr, uid, ids, context=context):
 
             if stock.carrier_id.type == 'sigepweb':
 
@@ -308,7 +303,9 @@ class StockPicking(orm.Model):
     }
 
     def _invoice_hook(self, cursor, user, picking, invoice_id):
-        self.write(cursor, user, [picking.id], {'invoice_id': invoice_id})
+
+        self.write(cursor, user, [picking.id], {'invoice_ids': [(4,
+                                                                 invoice_id)]})
 
         return super(StockPicking, self)._invoice_hook(
             cursor, user, picking, invoice_id)
