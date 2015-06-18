@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-#    Brazillian Carrier Correios Sigep WEB
 #    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
-#    @author Luis Felipe Mileo <mileo@kmee.com.br>
 #    @author: Michell Stuttgart <michell.stuttgart@kmee.com.br>
-#
-#    Sponsored by Europestar www.europestar.com.br
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -22,17 +18,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-from . import shipping_response
-from . import contract
-from . import directorship
-from . import post_card
-from . import post_service
-from . import delivery
-from . import stock
-from . import account_invoice
-from . import company
-from . import res_config
+from openerp.osv import orm, fields, osv
+from openerp.tools.translate import _
 
 
+class AccountInvoice(orm.Model):
 
+    _inherit = 'account.invoice'
+
+    _columns = {
+        'stock_picking_id': fields.many2one('stock.picking.out'),
+    }

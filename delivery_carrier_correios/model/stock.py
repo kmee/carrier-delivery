@@ -35,15 +35,6 @@ from pysigep_web.pysigepweb.chancela import Chancela
 from company import LETTER, BOX, CILINDER
 
 
-class AccountInvoice(orm.Model):
-
-    _inherit = 'account.invoice'
-
-    _columns = {
-        'stock_picking_id': fields.many2one('stock.picking.out'),
-    }
-
-
 class StockPickingOut(orm.Model):
     _inherit = 'stock.picking.out'
 
