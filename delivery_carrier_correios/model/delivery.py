@@ -34,11 +34,10 @@ from pysigep_web.pysigepweb.resposta_busca_cliente import Cliente
 
 
 class DeliveryCarrier(orm.Model):
-    """ Add service group """
+
     _inherit = 'delivery.carrier'
 
     def _get_carrier_type_selection(self, cr, uid, context=None):
-        """ Add postlogistics carrier type """
         res = super(DeliveryCarrier, self)._get_carrier_type_selection(
             cr, uid, context=context)
         res.append(('sigepweb', 'Correios SigepWeb'))
@@ -147,18 +146,19 @@ class DeliveryGrid(orm.Model):
             peso_volumetrico = math.ceil(volume_cm / 6000)
 
         peso_considerado = max(weight, peso_volumetrico)
-        aresta = int(math.ceil(volume_cm ** (1 / 3.0)))
+
+        user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
 
         fields = {
             "cod": int(grid.service_type),
             "GOCEP": order.partner_shipping_id.zip,
             "HERECEP": order.shop_id.company_id.partner_id.zip,
             "peso": peso_considerado,
-            "formato": "1",
-            "comprimento": aresta,
-            "altura": aresta,
-            "largura": aresta,
-            "diametro": "0",
+            "formato": user.company_id.sigepweb_package_type,
+            "comprimento": user.company_id.sigepweb_package_length,
+            "altura": user.company_id.sigepweb_package_height,
+            "largura": user.company_id.sigepweb_package_width,
+            "diametro": user.company_id.sigepweb_package_diameter,
             "nome": order.company_id.name,
             "login": order.company_id.sigepweb_username,
             "senha": order.company_id.sigepweb_password,
@@ -175,9 +175,11 @@ class DeliveryGrid(orm.Model):
 
             service_post = {fields['cod']: ServicoPostagem(fields['cod'])}
 
-            dimensao = Dimensao(Caixa(fields['altura'],
-                                      fields['largura'],
-                                      fields['comprimento']))
+            dimensao = Dimensao(fields['formato'],
+                                altura=fields['altura'],
+                                largura=fields['largura'],
+                                comprimento=fields['comprimento'],
+                                diametro=fields['diametro'])
 
             cliente = Cliente(fields['nome'], fields['login'],
                               fields['senha'], fields['cnpj'])
