@@ -204,9 +204,9 @@ class DeliveryGrid(orm.Model):
                     'EntregaSabado': retorno[0].entrega_sabado
                 }
 
-                # if data['MsgErro'] is not None:
-                #     res = ('ERROR', data['MsgErro'])
-                #     print data['MsgErro']
+                if data['MsgErro'] is not None:
+                    # res = ('ERROR', data['MsgErro'])
+                    print data['MsgErro']
                 # else:
                 #     res = (float(data['Valor']), data['PrazoEntrega'] or 0.00)
 
