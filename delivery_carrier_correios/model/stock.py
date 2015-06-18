@@ -45,10 +45,9 @@ class StockPickingOut(orm.Model):
         'image_chancela': fields.binary('Chancela Correios',
                                         filters='*.png, *.jpg',
                                         readonly=True),
-        'invoice_ids': fields.one2many('account.invoice',
-                                       'stock_picking_id',
+        'invoice_ids': fields.many2one('account.invoice',
                                        string='Invoice',
-                                       readonly=False),
+                                       readonly=True),
     }
 
     _defaults = {
@@ -61,6 +60,7 @@ class StockPickingOut(orm.Model):
             default = {}
 
         vals = {
+            'sale_id': False,
             'invoice_ids': False,
             'shipping_response_id': False,
             'image_chancela': False,
