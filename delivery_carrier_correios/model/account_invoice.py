@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-#    Brazillian Carrier Correios Sigep WEB
 #    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
 #    @author: Michell Stuttgart <michell.stuttgart@kmee.com.br>
-#
-#    Sponsored by Europestar www.europestar.com.br
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -21,27 +18,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from openerp.osv import orm, fields, osv
+from openerp.tools.translate import _
 
-from tag_base import TagBase
-from dimensao import *
 
+class AccountInvoice(orm.Model):
 
-class TagDimensaoObjeto(Dimensao, TagBase):
+    _inherit = 'account.invoice'
 
-    def __init__(self, codigo, altura=2, largura=11, comprimento=16, diametro=5):
-        super(TagDimensaoObjeto, self).__init__(codigo, altura, largura,
-                                                comprimento, diametro)
-
-    def get_xml(self):
-
-        xml = u'<dimensao_objeto>\n'
-        xml += u'<tipo_objeto>%s</tipo_objeto>\n' % self.codigo
-        xml += u'<dimensao_altura>%d</dimensao_altura>\n' % self.altura
-        xml += u'<dimensao_largura>%d</dimensao_largura>\n' % self.largura
-        xml += u'<dimensao_comprimento>%d</dimensao_comprimento>\n' % \
-               self.comprimento
-        xml += u'<dimensao_diametro>%d</dimensao_diametro>\n' % self.diametro
-        xml += u'</dimensao_objeto>\n'
-
-        self._validar_xml(xml)
-        return xml
+    _columns = {
+        'stock_picking_id': fields.many2one('stock.picking.out'),
+    }

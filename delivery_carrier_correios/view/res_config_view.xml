@@ -33,7 +33,7 @@
                     <group string="Web Service Authentification">
                         <group>
                             <field name="username"/>
-                            <field name="password"/>
+                            <field name="password" password="True"/>
                         </group>
                         <group>
                             <field name="contract_number"/>
@@ -42,10 +42,9 @@
                         </group>
                     </group>
 
-                    <group string="Default configs">
+                    <group string="SigepWeb Configurations">
                         <group>
                             <field name="environment"/>
-                            <field name="plp_xml_path"/>
                         </group>
                         <group>
                             <button string="Update SigepWeb Services"
@@ -56,8 +55,29 @@
                     </group>
 
                     <notebook>
-                        <page string="Contratos">
+                        <page string="Contracts">
                             <field name="contract_ids" nolabel="1"/>
+                        </page>
+                        <page string="Others configuration">
+                            <group string="PLP consifguration">
+                                <field name="plp_xml_path"/>
+                            </group>
+                            <group string="Default Package type">
+                                <field name="package_type"/>
+                            </group>
+                            <group string="Default Pack Dimension">
+                                <group>
+                                    <field name="package_width"
+                                           attrs="{'invisible': [('package_type', '=', '003')]}"/>
+                                    <field name="package_height"
+                                           attrs="{'invisible': [('package_type', '=', '003')]}"/>
+                                </group>
+                                <group>
+                                    <field name="package_length"/>
+                                    <field name="package_diameter"
+                                           attrs="{'invisible': [('package_type', '!=', '003')]}"/>
+                                </group>
+                            </group>
                         </page>
                     </notebook>
 
@@ -73,13 +93,13 @@
             <field name="target">inline</field>
         </record>
 
-        <menuitem id="menu_sigepweb" name="SygepWeb"
+        <menuitem id="menu_sigepweb" name="SigepWeb"
                   parent="base_delivery_carrier_label.menu_carriers_config"
-                  sequence="20"/>
+                  sequence="20" action="action_sigepweb_config"/>
 
-        <menuitem id="menu_sigepweb_config" name="SygepWeb"
-                  parent="menu_sigepweb"
-                  sequence="5" action="action_sigepweb_config"/>
+        <!--<menuitem id="menu_sigepweb_config" name="SygepWeb"-->
+        <!--parent="menu_sigepweb"-->
+        <!--sequence="5" action="action_sigepweb_config"/>-->
 
     </data>
 </openerp>

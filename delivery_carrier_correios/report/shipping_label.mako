@@ -16,6 +16,12 @@
     %>
 
         %for label in packs:
+
+        <%
+            peso = 0
+            for line in label.move_ids:
+                peso += line.weight
+        %>
         <table style="width: 300px;">
             <tbody>
                 <tr>
@@ -31,8 +37,8 @@
                                     %endif
                                 </td>
                                 <td>
-                                    %if stock.qr_code_id:
-                                        <img style="height: 114px; width: 114px" src='data:image/png;base64,${stock.qr_code_id.image}'/>
+                                    %if label.qr_code_id:
+                                        <img style="height: 114px; width: 114px" src='data:image/png;base64,${label.qr_code_id.image}'/>
                                     %else:
                                         &nbsp;
                                     %endif
@@ -44,7 +50,7 @@
                             <tr style="text-align: left">
                                 <td>NF:</td>
                                 <td>Pedido: </td>
-                                <td>Peso(g): ${stock.weight}</td>
+                                <td>Peso(g): ${peso * 1000}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -104,9 +110,8 @@
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            %if stock.x_barcode_id.image:
-                                                                <img
-                                                                        src='data:image/png;base64,${stock.barcode_id.image}'/>
+                                                            %if label.barcode_id.image:
+                                                                <img src='data:image/png;base64,${label.barcode_id.image}'/>
                                                             %else:
                                                                 ' '
                                                             %endif

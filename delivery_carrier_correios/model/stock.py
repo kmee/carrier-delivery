@@ -2,8 +2,8 @@
 # #############################################################################
 #
 # Copyright (C) 2015 KMEE (http://www.kmee.com.br)
-#    @author: Rodolfo Bertozo <rodolfo.bertozo@kmee.com.br
-#
+# @author: Rodolfo Bertozo <rodolfo.bertozo@kmee.com.br
+#    @author: Michell Stuttgart <michell.stuttgart@kmee.com.br>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -32,30 +32,22 @@ from pysigep_web.pysigepweb.resposta_busca_cliente import Cliente
 from pysigep_web.pysigepweb.servico_postagem import ServicoPostagem
 from pysigep_web.pysigepweb.endereco import Endereco
 from pysigep_web.pysigepweb.chancela import Chancela
+from company import LETTER, BOX, CILINDER
 
 
 class StockPickingOut(orm.Model):
     _inherit = 'stock.picking.out'
 
     _columns = {
-        'x_barcode_id': fields.many2one('tr.barcode',
-                                        string=u'BarCode'),
-        'shipping_response_id': fields.many2one('shipping.response',
-                                                string=u'Shipping Group',
-                                                readonly=True),
-        'barcode_id': fields.many2one('tr.barcode', string=u'QR Code'),
-        'qr_code_id': fields.many2one('tr.barcode', string=u'QR Code'),
         'idv': fields.selection([('51', 'Encomenda'),
                                  ('81', 'Malotes')],
-                                string=u'IDV'),
+                                string=u'Identificador de Dados Variaveis'),
         'image_chancela': fields.binary('Chancela Correios',
                                         filters='*.png, *.jpg',
                                         readonly=True),
-        'invoice_id': fields.many2one('account.invoice',
-                                      string='Invoice',
-                                      readonly=True),
-        'carrier_tracking_ref': fields.text('Ref Rastreamento de Carga',
-                                            readonly=True),
+        'invoice_ids': fields.many2one('account.invoice',
+                                       string='Invoice',
+                                       readonly=True),
     }
 
     _defaults = {
@@ -68,8 +60,8 @@ class StockPickingOut(orm.Model):
             default = {}
 
         vals = {
-            'carrier_tracking_ref': '',
-            'invoice_id': False,
+            'sale_id': False,
+            'invoice_ids': False,
             'shipping_response_id': False,
             'image_chancela': False,
         }
@@ -78,10 +70,11 @@ class StockPickingOut(orm.Model):
         return super(StockPickingOut, self).copy(
             cr, uid, id, default=default, context=context)
 
-    def action_process(self, cr, uid, ids, *args):
-        res = super(StockPickingOut, self).action_process(cr, uid, ids, *args)
+    def action_process(self, cr, uid, ids, context=None):
+        res = super(StockPickingOut, self).action_process(cr, uid, ids,
+                                                          context=context)
 
-        for stock in self.browse(cr, uid, ids):
+        for stock in self.browse(cr, uid, ids, context=context):
 
             if stock.carrier_id.type == 'sigepweb':
 
@@ -109,7 +102,8 @@ class StockPickingOut(orm.Model):
                     tracking_packs = []
                     for line in stock.move_lines:
 
-                        if line.tracking_id.id not in tracking_packs:
+                        if line.tracking_id and line.tracking_id.id not in \
+                                tracking_packs:
                             tracking_packs.append(line.tracking_id.id)
 
                     if not tracking_packs:
@@ -124,12 +118,30 @@ class StockPickingOut(orm.Model):
                                                          cliente,
                                                          online=False)
 
-                    for index, etq in enumerate(etiquetas):
-                        vals = {'serial': etq.com_digito_verificador()}
-                        obj_pack = self.pool.get('stock.tracking')
-                        obj_pack.write(cr, uid, [tracking_packs[index]], vals)
+                    obj_pack = self.pool.get('stock.tracking')
 
+                    for index, etq in enumerate(etiquetas):
+                        obj = obj_pack.browse(cr, uid, tracking_packs[index])
+                        qr_code_id = self.create_qr_code(cr, uid, ids, etq)
+                        barcode_id = self.create_barcode(cr, uid, ids, obj.name)
+
+                        vals = {
+                            'serial': etq.com_digito_verificador(),
+                            'barcode_id': barcode_id,
+                            'qr_code_id': qr_code_id
+                        }
+
+                        obj_pack.write(cr, uid, [obj.id], vals)
+
+                    # image_chancela = self.create_chancela(cr, uid, ids)
+                    # self.write(cr, uid, ids, {'image_chancela': image_chancela})
                     self.action_generate_carrier_label(cr, uid, ids)
+
+                    if stock.sale_id and stock.sale_id.invoice_ids:
+
+                        inv_ids = [(4, inv.id) for inv in stock.sale_id.invoice_ids]
+                        self.write(cr, uid, ids, {
+                            'invoice_ids': inv_ids})
 
                 except ErroConexaoComServidor as e:
                     raise osv.except_osv(_('Error!'), e.message)
@@ -142,24 +154,12 @@ class StockPickingOut(orm.Model):
             'report_name': 'shipping.label.webkit'
         }
 
-        for stock in self.browse(cr, uid, ids):
-
-            if stock.carrier_id.type == 'sigepweb':
-                qr_code_id = self.create_qr_code(cr, uid, ids, context)
-                barcode_id = self.create_barcode(cr, uid, ids, context)
-                image_chancela = self.create_chancela(cr, uid, ids, context)
-                self.write(cr, uid, ids, {'barcode_id': barcode_id,
-                                          'qr_code_id': qr_code_id,
-                                          'image_chancela': image_chancela})
-
-                id_barcode_default = \
-                    self.browse(cr, uid, ids, context)[0].x_barcode_id.id
-                self.pool.get('tr.barcode').write(cr, uid, id_barcode_default,
-                                                  {'hr_form': True, 'width': 350})
+        image_chancela = self.create_chancela(cr, uid, ids, context)
+        self.write(cr, uid, ids, {'image_chancela': image_chancela})
 
         return result
 
-    def create_chancela(self, cr, uid, ids, context):
+    def create_chancela(self, cr, uid, ids, context=None):
 
         obj_stock = self.browse(cr, uid, ids[0], context)
 
@@ -183,7 +183,7 @@ class StockPickingOut(orm.Model):
 
         return img
 
-    def get_qr_string(self, cr, uid, id, context):
+    def get_qr_string(self, cr, uid, id, etiqueta, context=None):
         qr_string = ''
         stock_obj = self.browse(cr, uid, id[0], context)
         company_obj = self.pool.get('res.company').browse(
@@ -209,17 +209,16 @@ class StockPickingOut(orm.Model):
         digito_validador_cep = str(Endereco.digito_validador_cep(zip_dest))
         qr_string += digito_validador_cep  # validador
         qr_string += stock_obj.idv  # idv
-        if stock_obj.carrier_tracking_ref:
-            qr_string += stock_obj.carrier_tracking_ref  # Código da etiqueta
-        else:
-            qr_string += '0' * 13
+
+        qr_string += etiqueta.com_digito_verificador()  # Código da etiqueta
 
         # TODO: Implementar serviços adicionais, enquanto isso completar a string com 12 zeros
         qr_string += '250000000000'  #Serviçoes adicionais
         qr_string += stock_obj.carrier_id.sigepweb_post_card_id.number  # cartão de postagem
         qr_string += stock_obj.carrier_id.sigepweb_post_service_id.code  # Código de serviços
         qr_string += '00'  # TODO: Verificar o que é as informaçoes de agrupamento
-        qr_string += stock_obj.partner_id.number.zfill(5)  # Número do logradouro
+        qr_string += stock_obj.partner_id.number.zfill(
+            5)  # Número do logradouro
         qr_string += stock_obj.partner_id.street2 or ' ' * 20  # Complemento do logradouro
         qr_string += '00000'  # valor declarado
 
@@ -241,10 +240,10 @@ class StockPickingOut(orm.Model):
 
         return qr_string
 
-    def create_qr_code(self, cr, uid, id, context):
+    def create_qr_code(self, cr, uid, id, etiqueta, context=None):
 
         barcode_vals = {
-            'code': self.get_qr_string(cr, uid, id, context),
+            'code': self.get_qr_string(cr, uid, id, etiqueta, context=context),
             'res_id': id[0],
             'barcode_type': 'qrcode',
             'hr_form': True,
@@ -258,10 +257,10 @@ class StockPickingOut(orm.Model):
 
         return barcode_id
 
-    def create_barcode(self, cr, uid, id, context):
+    def create_barcode(self, cr, uid, id, reference, context=None):
 
         barcode_vals = {
-            'code': self.browse(cr, uid, id, context)[0].name,
+            'code': reference,
             'res_id': id[0],
             'barcode_type': 'Code128',
             'width': 125,
@@ -278,33 +277,32 @@ class StockPicking(orm.Model):
     _inherit = 'stock.picking'
 
     _columns = {
-        'x_barcode_id': fields.many2one('tr.barcode', string=u'BarCode'),
-        'shipping_response_id': fields.many2one('shipping.response',
-                                                string='Shipping Group',
-                                                readonly=True),
-        'barcode_id': fields.many2one('tr.barcode', string=u'QR Code'),
-        'qr_code_id': fields.many2one('tr.barcode', string=u'Código de Barras'),
         'idv': fields.selection([('51', 'Encomenda'), ('81', 'Malotes')],
                                 string=u'IDV'),
         'image_chancela': fields.binary('Chancela Correios',
                                         filters='*.png, *.jpg',
                                         readonly=True),
-        'invoice_id': fields.many2one('account.invoice',
-                                      string='Invoice',
-                                      readonly=True),
-        'carrier_tracking_ref': fields.text(string='Ref Rastreamento de Carga',
-                                            readonly=True),
+        'invoice_ids': fields.one2many('account.invoice',
+                                       'stock_picking_id',
+                                       string='Invoice',
+                                       readonly=False),
+
+    }
+
+    _defaults = {
+        'idv': '81',
     }
 
     def _invoice_hook(self, cursor, user, picking, invoice_id):
-        self.write(cursor, user, [picking.id], {'invoice_id': invoice_id})
+
+        self.write(cursor, user, [picking.id], {'invoice_ids': [(4,
+                                                                 invoice_id)]})
 
         return super(StockPicking, self)._invoice_hook(
             cursor, user, picking, invoice_id)
 
 
 class StockTracking(orm.Model):
-
     _inherit = "stock.tracking"
 
     _columns = {
@@ -312,6 +310,41 @@ class StockTracking(orm.Model):
                                                 string='Shipping Group',
                                                 readonly=True),
         'x_barcode_id': fields.many2one('tr.barcode',
-                                        string=u'BarCode'),
+                                        string=u'BarCode Label'),
+        'barcode_id': fields.many2one('tr.barcode', string=u'Reference Code'),
+        'qr_code_id': fields.many2one('tr.barcode', string=u'QR Code'),
+        'package_type': fields.selection((LETTER, BOX, CILINDER),
+                                         string='Package type',
+                                         required=True),
+        'package_width': fields.integer('Package width',
+                                        help='Min value: 11 cm\n'
+                                             'Max value: 105 cm'),
+        'package_height': fields.integer('Package height',
+                                         help='Min value: 2 cm\n'
+                                              'Max value: 105 cm'),
+        'package_length': fields.integer('Package length',
+                                         help='Min value: 16 cm\n'
+                                              'Max value: 105 cm'),
+        'package_diameter': fields.integer('Package diameter',
+                                           help='Min value: 5 cm\n'
+                                                'Max value: 105 cm'),
+    }
+
+    _defaults = {
+        'package_type': lambda self, cr, uid, c: self.pool.get(
+            'res.users').browse(cr, uid, uid,
+                                c).company_id.sigepweb_package_type,
+        'package_width': lambda self, cr, uid, c: self.pool.get(
+            'res.users').browse(cr, uid, uid,
+                                c).company_id.sigepweb_package_width,
+        'package_height': lambda self, cr, uid, c: self.pool.get(
+            'res.users').browse(cr, uid, uid,
+                                c).company_id.sigepweb_package_height,
+        'package_length': lambda self, cr, uid, c: self.pool.get(
+            'res.users').browse(cr, uid, uid,
+                                c).company_id.sigepweb_package_length,
+        'package_diameter': lambda self, cr, uid, c: self.pool.get(
+            'res.users').browse(cr, uid, uid,
+                                c).company_id.sigepweb_package_diameter,
     }
 

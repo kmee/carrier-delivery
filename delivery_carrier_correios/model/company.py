@@ -26,9 +26,15 @@
 from openerp.osv import orm, fields
 from pysigep_web.pysigepweb.webservice_atende_cliente import \
     WebserviceAtendeCliente
+from pysigep_web.pysigepweb.dimensao import Dimensao
 
 PRODUCAO = (WebserviceAtendeCliente.AMBIENTE_PRODUCAO, u'Produçao')
 HOMOLOGACAO = (WebserviceAtendeCliente.AMBIENTE_HOMOLOGACAO, u'Homologação')
+
+# Codigo para tipos de pacotes do correio
+LETTER = (Dimensao.TIPO_ENVELOPE, 'Letter')
+BOX = (Dimensao.TIPO_CAIXA, 'Box')
+CILINDER = (Dimensao.TIPO_CILINDRO, 'Cilinder')
 
 
 class ResCompany(orm.Model):
@@ -46,14 +52,26 @@ class ResCompany(orm.Model):
                                                  string='Contract',
                                                  readonly=True),
         'sigepweb_environment': fields.selection((HOMOLOGACAO, PRODUCAO),
-                                                 string='Ambiente',
+                                                 string='Environment',
                                                  required=True),
         'shipping_response_ids': fields.one2many('shipping.response',
                                                  'company_id',
                                                  string='Shipping Response'),
         'sigepweb_plp_xml_path': fields.char('PLP XML Path'),
+
+        'sigepweb_package_type': fields.selection((LETTER, BOX, CILINDER),
+                                                  string='Package type'),
+        'sigepweb_package_width': fields.integer('Package width'),
+        'sigepweb_package_height': fields.integer('Package height'),
+        'sigepweb_package_length': fields.integer('Package length'),
+        'sigepweb_package_diameter': fields.integer('Package diameter'),
     }
 
     _defaults = {
         'sigepweb_environment': WebserviceAtendeCliente.AMBIENTE_HOMOLOGACAO,
+        'sigepweb_package_type': BOX[0],
+        'sigepweb_package_width': 11,
+        'sigepweb_package_height': 2,
+        'sigepweb_package_length': 16,
+        'sigepweb_package_diameter': 5,
     }

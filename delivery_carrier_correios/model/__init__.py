@@ -30,7 +30,9 @@ from . import post_card
 from . import post_service
 from . import delivery
 from . import stock
+from . import account_invoice
 from . import company
 from . import res_config
+
 
 

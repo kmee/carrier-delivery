@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-#    Brazillian Carrier Correios Sigep WEB
-#    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
+# Brazillian Carrier Correios Sigep WEB
+# Copyright (C) 2015 KMEE (http://www.kmee.com.br)
 #    @author Luis Felipe Mileo <mileo@kmee.com.br>
 #
 #    Sponsored by Europestar www.europestar.com.br
@@ -34,12 +34,13 @@ from pysigep_web.pysigepweb.webservice_atende_cliente import \
 from pysigep_web.pysigepweb.tag_nacional import TagNacionalPAC41068
 from pysigep_web.pysigepweb.tag_plp import TagPLP
 from pysigep_web.pysigepweb.tag_remetente import TagRemetente
-from pysigep_web.pysigepweb.tag_dimensao_objeto import *
+from pysigep_web.pysigepweb.tag_dimensao_objeto import TagDimensaoObjeto
 from pysigep_web.pysigepweb.tag_objeto_postal import *
 from pysigep_web.pysigepweb.tag_correios_log import TagCorreiosLog
 from pysigep_web.pysigepweb.diretoria import Diretoria
 from pysigep_web.pysigepweb.endereco import Endereco
-from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor, ErroValidacaoXML
+from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor, \
+    ErroValidacaoXML
 from pysigep_web.pysigepweb.etiqueta import Etiqueta
 from pysigep_web.pysigepweb.resposta_busca_cliente import Cliente
 
@@ -53,7 +54,7 @@ class ShippingResponse(orm.Model):
             default = {}
 
         vals = {
-            'picking_line': False,
+            'tracking_pack_line': False,
             'carrier_tracking_ref': '',
             'name': '/',
         }
@@ -66,7 +67,7 @@ class ShippingResponse(orm.Model):
         res = {}
         for obj in ids:
             obj_ship = self.browse(cr, uid, obj, context=context)
-            res[obj] = len(obj_ship.picking_line)
+            res[obj] = len(obj_ship.tracking_pack_line)
 
         return res
 
@@ -75,9 +76,9 @@ class ShippingResponse(orm.Model):
         for obj in ids:
             res[obj] = 0.00
 
-            obj_ship = self.browse(cr, uid, obj, context=context)
-            for picking in obj_ship.picking_line:
-                res[obj] += picking.weight * int(picking.quantity_of_volumes)
+            # obj_ship = self.browse(cr, uid, obj, context=context)
+            # for picking in obj_ship.picking_line:
+            #     res[obj] += picking.weight * int(picking.quantity_of_volumes)
 
         return res
 
@@ -86,9 +87,9 @@ class ShippingResponse(orm.Model):
         for obj in ids:
             res[obj] = 0.00
 
-            obj_ship = self.browse(cr, uid, obj, context=context)
-            for picking in obj_ship.picking_line:
-                res[obj] += picking.weight_net * int(picking.quantity_of_volumes)
+            # obj_ship = self.browse(cr, uid, obj, context=context)
+            # for picking in obj_ship.picking_line:
+            #     res[obj] += picking.weight_net * int(picking.quantity_of_volumes)
 
         return res
 
@@ -189,7 +190,8 @@ class ShippingResponse(orm.Model):
                     nfe_serie = picking.invoice_id.document_serie_id.code
 
                     if nfe_number == '':
-                        msg = "A ordem de entrega deve estar faturada antes " \
+                        msg = "As ordens de entrega que utilizam servico " \
+                              "PAC 41068 deve estar faturada antes " \
                               "de entrar na PLP!"
                         raise osv.except_osv(_('Error!'), msg)
 
@@ -221,11 +223,15 @@ class ShippingResponse(orm.Model):
                 # Calculamos o peso considerado. O OpenERP fornece peso em
                 # kilogramas
                 peso_considerado = max(weight, peso_volumetrico) * 1000
-                aresta = int(math.ceil(volume_cm ** (1 / 3.0)))
+                # aresta = int(math.ceil(volume_cm ** (1 / 3.0)))
 
                 # Criamos um objeto dimensao
-                obj_dimensao_objeto = TagDimensaoObjeto(Caixa(aresta, aresta,
-                                                              aresta))
+                obj_dimensao_objeto = TagDimensaoObjeto(
+                    tracking_pack.package_type,
+                    tracking_pack.package_height,
+                    tracking_pack.package_width,
+                    tracking_pack.package_length,
+                    tracking_pack.package_diameter)
 
                 # Criamos um servico postagem que representa o servico a ser
                 # utilizado
@@ -267,7 +273,7 @@ class ShippingResponse(orm.Model):
 
                 # Definimos o path para salvar o xml da PLP
                 path = company_id.sigepweb_plp_xml_path + \
-                    company_id.sigepweb_environment + '/'
+                       company_id.sigepweb_environment + '/'
 
                 if not os.path.exists(path):
                     #Criando diretorio homlogacao ou producao
@@ -289,7 +295,8 @@ class ShippingResponse(orm.Model):
 
         return False
 
-    def onchange_company_id(self, cr, uid, ids, sigepweb_company_id, context=None):
+    def onchange_company_id(self, cr, uid, ids, sigepweb_company_id,
+                            context=None):
 
         res = {'value': {}}
 
@@ -324,13 +331,14 @@ class ShippingResponse(orm.Model):
                                      'sigepweb_carrier_id',
                                      string='Carrier',
                                      type='many2one',
-                                     relation='res.partner',
-                                     readonly=True),
+                                     relation='res.partner'),
 
         'carrier_responsible': fields.many2one('res.partner',
                                                string='Carrier Responsible',
                                                readonly=True,
-                                               states={'draft': [('readonly', False)]}),
+                                               states={
+                                                   'draft': [
+                                                       ('readonly', False)]}),
 
         'date': fields.date('Date', require=True, readonly=True,
                             states={'draft': [('readonly', False)]}),
@@ -345,7 +353,7 @@ class ShippingResponse(orm.Model):
                                        states={'draft': [('readonly', False)]},
                                        domain="[('company_id', '=',"
                                               "company_id)]",
-                                       ),
+        ),
 
         'post_card_id': fields.many2one('sigepweb.post.card',
                                         string='Post Cards',
@@ -355,16 +363,6 @@ class ShippingResponse(orm.Model):
                                                            False)]},
                                         domain="[('contract_id', '=', "
                                                "contract_id)]"),
-
-        'picking_line': fields.one2many('stock.picking.out',
-                                        'shipping_response_id',
-                                        string='Pickings',
-                                        readonly=True,
-                                        states={'draft': [('readonly', False)]},
-                                        domain=[
-                                            ('type', '=', 'out'),
-                                            ('state', '=', 'done'),
-                                        ]),
 
         'tracking_pack_line': fields.one2many('stock.tracking',
                                               'shipping_response_id',
@@ -394,10 +392,13 @@ class ShippingResponse(orm.Model):
                                    ('confirmed', 'Confirmed'),
                                    ('done', 'Done'),
                                    ('cancel', 'Cancel'),
-                                   ], required=True, string=u'Situation'),
+                                  ], required=True, string=u'Situation'),
     }
+
     _defaults = {
         'user_id': lambda obj, cr, uid, context: uid,
+        'company_id': lambda self, cr, uid, context: self.pool.get(
+            'res.users').browse(cr, uid, uid, context=context).company_id.id,
         'state': 'draft',
         'name': '/',
     }

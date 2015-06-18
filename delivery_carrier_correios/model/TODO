@@ -7,10 +7,12 @@
 # funcionando da mesma maneira que o "Atualizar"
 
 #TODO: Anexar xml da PLP da view da PLP
-#TODO: Inserir campos de dimensao do objeto em cada Ordem de Entrega (PLP e
-# etiqueta)?
-#TODO: Melhor modo de exibir erros nas dimensões ao calcular frete?
-
+#TODO: Adicionar permissao ao modulo
+#TODO: Buscar valor do frete apenas quando clicar em 'calcular'
+#TODO: Remover campo de imagem da Ordem de Entrega. A chancela com nome da
+# empresa deve ser gerada em tempo de execucao ao imprimir o relatorio>
+ Obs.: Usar como referencia o codigo em:
+ oca/sale_reporting/sale_order_webkit_report/sale_order
 #TODO: Adicionar opcao de selecionar os servicos adicionais na Ordem de Entrega
 
 #TODO: Verificar se PLP não pode mais ser usada depois de gerada

@@ -45,7 +45,8 @@
                         </div>
                         <group>
                             <group>
-                                <field name="company_id" on_change="onchange_company_id(company_id)"/>
+                                <field name="company_id"
+                                       on_change="onchange_company_id(company_id)"/>
                                 <field name="user_id"/>
                                 <field name="carrier_responsible"/>
                             </group>
@@ -59,22 +60,13 @@
                         </group>
                         <notebook>
                             <page string="Entregas">
-                                <!--<field name="picking_line" widget="many2many"-->
-                                       <!--domain="[('company_id.id', '=', company_id),('carrier_id.sigepweb_post_card_id.id','=', post_card_id),('shipping_response_id','=',False),('invoice_id.state','=','sefaz_export')]">-->
-                                    <!--<tree>-->
-
-                                        <!--<field name="name"/>-->
-                                        <!--<field name="partner_id"/>-->
-                                        <!--<field name="date"/>-->
-                                        <!--<field name="carrier_id"/>-->
-                                        <!--<field name="state"/>-->
-                                        <!--<field name="shipping_response_id"/>-->
-
-                                    <!--</tree>-->
-                                <!--</field>-->
                                 <field name="tracking_pack_line"
                                        widget="many2many"
-                                       domain="[('move_ids.picking_id.company_id.id', '=', company_id),('move_ids.picking_id.carrier_id.sigepweb_post_card_id.id','=', post_card_id),('shipping_response_id','=',False),('move_ids.picking_id.invoice_id.state','=','sefaz_export'),('serial','!=','')]"/>
+                                       domain="['&amp;',('move_ids.picking_id.company_id.id', '=', company_id),'&amp;',('shipping_response_id','=',False),'&amp;',
+                                       ('move_ids.picking_id.carrier_id.partner_id.id','=', carrier_id),'&amp;',
+                                       ('move_ids.picking_id.carrier_id.sigepweb_post_card_id.id','=', post_card_id),
+                                       '|',('move_ids.picking_id.carrier_id.code','!=','41068'),'&amp;',('move_ids.picking_id.carrier_id.code','=','41068'),('move_ids.picking_id.invoice_ids.state','in',('sefaz_export','open','paid'))]"/>
+
                             </page>
                             <page string="Details">
                                 <group>

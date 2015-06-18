@@ -7,22 +7,55 @@
             <field name="inherit_id" ref="stock.view_picking_out_form"/>
             <field name="arch" type="xml">
                 <field name="origin" position="replace"/>
-                <field name="carrier_tracking_ref" position="replace"/>
-                <!--<field name="weight" position="replace"/>-->
-                <!--<field name="weight_net" position="replace"/>-->
-
                 <field name="stock_journal_id" position="after">
                     <field name="origin"/>
                 </field>
-                <field name="quantity_of_volumes" position="after">
-                    <!--<field name="weight"/>-->
-                    <!--<field name="weight_net"/>-->
-                    <field name="carrier_tracking_ref"/>
-                    <field name="shipping_response_id"/>
-                </field>
-                <xpath expr="//field[@name='move_type']" position="after">
+                <field name="number_of_packages" position="after">
                     <field name="idv"/>
-					<field name="image_chancela" widget="image"/>
+                </field>
+
+                <xpath expr="//field[@name='move_type']" position="after">
+                    <field name="invoice_ids"/>
+                </xpath>
+                <xpath expr="//field[@name='carrier_code']" position="after">
+                    <field name="image_chancela" widget="image"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!--<record id="view_sigepweb_stock_picking_form" model="ir.ui.view">-->
+            <!--<field name="model">stock.picking</field>-->
+            <!--<field name="inherit_id" ref="stock.view_picking_form"/>-->
+            <!--<field name="arch" type="xml">-->
+
+                <!--<field name="sale_id" position="attributes">-->
+                    <!--<attribute name="on_change">onchange_sale_id(sale_id)</attribute>-->
+                <!--</field>-->
+
+            <!--</field>-->
+        <!--</record>-->
+
+        <record id="view_sigepweb_stock_tracking_out_form"
+                model="ir.ui.view">
+            <field name="model">stock.tracking</field>
+            <field name="inherit_id" ref="stock.view_tracking_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='active']" position="after">
+
+                    <group string="Pack Dimension">
+                        <group>
+                            <field name="package_type"/>
+                            <field name="package_width"
+                                   attrs="{'invisible': [('package_type', '=', '003')]}"/>
+                            <field name="package_height"
+                                   attrs="{'invisible': [('package_type', '=', '003')]}"/>
+                            <field name="package_length"/>
+                            <field name="package_diameter"
+                                   attrs="{'invisible': [('package_type', '!=', '003')]}"/>
+                        </group>
+
+                    </group>
                 </xpath>
             </field>
         </record>
