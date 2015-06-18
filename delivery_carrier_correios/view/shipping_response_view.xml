@@ -60,13 +60,9 @@
                         </group>
                         <notebook>
                             <page string="Entregas">
-                                <!--<field name="tracking_pack_line"-->
-                                <!--widget="many2many"-->
-                                <!--domain="[('move_ids.picking_id.company_id.id', '=', company_id),('move_ids.picking_id.carrier_id.sigepweb_post_card_id.id','=', post_card_id),('|',('move_ids.picking_id.carrier_id.code','!=','41068'),(('move_ids.picking_id.carrier_id.code','=','41068'),('move_ids.picking_id.invoice_state','=','invoiced'))),('serial','!=','')]"/>-->
-                                <!--('shipping_response_id','=',False)-->
                                 <field name="tracking_pack_line"
                                        widget="many2many"
-                                       domain="['&amp;',('move_ids.picking_id.company_id.id', '=', company_id),'&amp;',
+                                       domain="['&amp;',('move_ids.picking_id.company_id.id', '=', company_id),'&amp;',('shipping_response_id','=',False),'&amp;',
                                        ('move_ids.picking_id.carrier_id.partner_id.id','=', carrier_id),'&amp;',
                                        ('move_ids.picking_id.carrier_id.sigepweb_post_card_id.id','=', post_card_id),
                                        '|',('move_ids.picking_id.carrier_id.code','!=','41068'),'&amp;',('move_ids.picking_id.carrier_id.code','=','41068'),('move_ids.picking_id.invoice_ids.state','in',('sefaz_export','open','paid'))]"/>
