@@ -248,6 +248,7 @@
 
 </head>
     <body>
+    %for plp in objects:
     <table border="0" cellpadding="1" cellspacing="1" style="width: 100%;">
         <tbody>
         <tr>
@@ -499,5 +500,6 @@
         </tr>
         </tbody>
     </table>
+        %endfor
     </body>
 </html>
