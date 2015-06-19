@@ -186,8 +186,9 @@ class ShippingResponse(orm.Model):
                 # e o numero da fatura
                 if picking.carrier_id.sigepweb_post_service_id.code == '41068':
 
-                    nfe_number = picking.invoice_id.internal_number
-                    nfe_serie = picking.invoice_id.document_serie_id.code
+                    print picking.invoice_ids
+                    nfe_number = picking.invoice_ids[0].internal_number
+                    nfe_serie = picking.invoice_ids[0].document_serie_id.code
 
                     if nfe_number == '':
                         msg = "As ordens de entrega que utilizam servico " \
@@ -352,8 +353,7 @@ class ShippingResponse(orm.Model):
                                        readonly=True,
                                        states={'draft': [('readonly', False)]},
                                        domain="[('company_id', '=',"
-                                              "company_id)]",
-        ),
+                                              "company_id)]"),
 
         'post_card_id': fields.many2one('sigepweb.post.card',
                                         string='Post Cards',
@@ -368,7 +368,7 @@ class ShippingResponse(orm.Model):
                                               'shipping_response_id',
                                               string='Tracking Packs',
                                               readonly=True,
-                                              required=True,
+                                              # required=True,
                                               states={
                                                   'draft': [('readonly', False)]
                                               }),
