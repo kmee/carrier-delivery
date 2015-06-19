@@ -147,6 +147,7 @@ class DeliveryGrid(orm.Model):
 
         peso_considerado = max(weight, peso_volumetrico)
 
+        num = len(order.order_line)
         user = self.pool.get('res.users').browse(cr, uid, uid, context=context)
 
         fields = {
@@ -155,10 +156,10 @@ class DeliveryGrid(orm.Model):
             "HERECEP": order.shop_id.company_id.partner_id.zip,
             "peso": peso_considerado,
             "formato": user.company_id.sigepweb_package_type,
-            "comprimento": user.company_id.sigepweb_package_length,
-            "altura": user.company_id.sigepweb_package_height,
-            "largura": user.company_id.sigepweb_package_width,
-            "diametro": user.company_id.sigepweb_package_diameter,
+            "comprimento": user.company_id.sigepweb_package_length * num,
+            "altura": user.company_id.sigepweb_package_height * num,
+            "largura": user.company_id.sigepweb_package_width * num,
+            "diametro": user.company_id.sigepweb_package_diameter * num,
             "nome": order.company_id.name,
             "login": order.company_id.sigepweb_username,
             "senha": order.company_id.sigepweb_password,

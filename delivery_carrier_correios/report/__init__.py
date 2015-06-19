@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-#    Brazillian Carrier Correios Sigep WEB
 #    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
-#    @author Luis Felipe Mileo <mileo@kmee.com.br>
 #    @author: Michell Stuttgart <michell.stuttgart@kmee.com.br>
-#
-#    Sponsored by Europestar www.europestar.com.br
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -22,6 +18,4 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-from . import model
-from . import report
+from . import plp_report
