@@ -249,6 +249,27 @@
 </head>
     <body>
     %for plp in objects:
+    <%
+        packs = plp.tracking_pack_line
+        services = {}
+
+        for p in packs:
+            picking = p.move_ids[0].picking_id
+            serv = picking.carrier_id.sigepweb_post_service_id
+
+            if serv.id not in services:
+                services[serv.id] = {}
+                services[serv.id]['name'] = serv.name
+                services[serv.id]['code'] = serv.code
+                services[serv.id]['quant'] = 0
+
+            services[serv.id]['quant'] += 1
+
+    %>
+##
+##    <% count = 1 %>
+##    % while count < 3:
+
     <table border="0" cellpadding="1" cellspacing="1" style="width: 100%;">
         <tbody>
         <tr>
@@ -286,21 +307,21 @@
                                         correios</strong></td>
                                 </tr>
                                 <tr>
-                                    <td style="width: 45%;"><strong>Contrado:&nbsp;</strong>9912208555
+                                    <td style="width: 45%;"><strong>Contrado: &nbsp;
+                                    </strong>${plp.contract_id.number}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="width: 45%;"><strong>Cliente: &nbsp;
+                                    </strong>${plp.company_id.name}</td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 45%;"><strong>Telefone de contato: </strong>${plp.company_id.phone}
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td style="width: 45%;"><strong>Cliente:&nbsp;</strong>ETC
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 45%;"><strong>Telefone de
-                                        contato: </strong>6112344321
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 45%;"><strong>Email de
-                                        contato: </strong>teste@kmee.com.br
+                                    <td style="width: 45%;"><strong>Email de contato: </strong>${plp.company_id.email}
                                     </td>
                                 </tr>
                                 </tbody>
@@ -311,7 +332,7 @@
                                    style="width: 100%;">
                                 <tbody>
                                 <tr>
-                                    <td><strong>N&deg; PLP: 33619</strong></td>
+                                    <td><strong>N&deg; PLP: ${plp.carrier_tracking_ref}</strong></td>
                                 </tr>
                                 <tr>
                                     <td><span
@@ -344,21 +365,25 @@
                                     <td style="width: 33%;"><strong>Servi&ccedil;o:</strong>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>40096</td>
-                                    <td>1</td>
-                                    <td>SEDEX (CONTRATO)</td>
-                                </tr>
+                                <% total = 0 %>
+                                % for key, value in services.items():
+                                    <tr>
+                                        <td>${value['code']}</td>
+                                        <td>${value['quant']}</td>
+                                        <td>${value['name']}</td>
+                                    </tr>
+                                    <% total += value['quant'] %>
+                                % endfor
                                 <tr>
                                     <td><strong>Total:</strong></td>
-                                    <td>1</td>
+                                    <td>${total}</td>
                                     <td>&nbsp;</td>
                                 </tr>
                                 </tbody>
                             </table>
                         </td>
                         <td style="width: 25%;">
-                            <p><strong>Data da entrega:___/___/___</strong></p>
+                            <p><strong>Data da entrega:${plp.date}</strong></p>
                             <p>&nbsp;</p>
                             <p style="text-decoration: overline;">
                                 Assinatura/Matr&iacute;cula dos Correios</p>
@@ -369,12 +394,11 @@
                 </table>
             </td>
         </tr>
-        </tbody>
+
     </table>
-
+    </tbody>
+    </table>
     <hr size="1" style="border:1px dashed;">
-    <p>&nbsp;</p>
-
     <table border="0" cellpadding="1" cellspacing="1" style="width: 100%;">
         <tbody>
         <tr>
@@ -412,21 +436,21 @@
                                         correios</strong></td>
                                 </tr>
                                 <tr>
-                                    <td style="width: 45%;"><strong>Contrado:&nbsp;</strong>9912208555
+                                    <td style="width: 45%;"><strong>Contrado: &nbsp;
+                                    </strong>${plp.contract_id.number}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="width: 45%;"><strong>Cliente: &nbsp;
+                                    </strong>${plp.company_id.name}</td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 45%;"><strong>Telefone de contato: </strong>${plp.company_id.phone}
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td style="width: 45%;"><strong>Cliente:&nbsp;</strong>ETC
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 45%;"><strong>Telefone de
-                                        contato: </strong>6112344321
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 45%;"><strong>Email de
-                                        contato: </strong>teste@kmee.com.br
+                                    <td style="width: 45%;"><strong>Email de contato: </strong>${plp.company_id.email}
                                     </td>
                                 </tr>
                                 </tbody>
@@ -437,7 +461,7 @@
                                    style="width: 100%;">
                                 <tbody>
                                 <tr>
-                                    <td><strong>N&deg; PLP: 33619</strong></td>
+                                    <td><strong>N&deg; PLP: ${plp.carrier_tracking_ref}</strong></td>
                                 </tr>
                                 <tr>
                                     <td><span
@@ -470,36 +494,42 @@
                                     <td style="width: 33%;"><strong>Servi&ccedil;o:</strong>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>40096</td>
-                                    <td>1</td>
-                                    <td>SEDEX (CONTRATO)</td>
-                                </tr>
+                                <% total = 0 %>
+                                % for key, value in services.items():
+                                    <tr>
+                                        <td>${value['code']}</td>
+                                        <td>${value['quant']}</td>
+                                        <td>${value['name']}</td>
+                                    </tr>
+                                    <% total += value['quant'] %>
+                                % endfor
                                 <tr>
                                     <td><strong>Total:</strong></td>
-                                    <td>1</td>
+                                    <td>${total}</td>
                                     <td>&nbsp;</td>
                                 </tr>
                                 </tbody>
                             </table>
                         </td>
                         <td style="width: 25%;">
-                            <p><strong>Data da entrega:___/___/___</strong></p>
-
+                            <p><strong>Data da entrega: ${plp.date}</strong></p>
                             <p>&nbsp;</p>
-
                             <p style="text-decoration: overline;">
                                 Assinatura/Matr&iacute;cula dos Correios</p>
-
-                            <p>2&ordf; via - Clientes</p>
+                            <p>2&ordf; via - Correios</p>
                         </td>
                     </tr>
                     </tbody>
                 </table>
             </td>
         </tr>
-        </tbody>
     </table>
-        %endfor
+    </tbody>
+    </table>
+    %if objects.index(plp) < len(objects) - 1:
+        <p style="page-break-after:always"/>
+        <br/>
+    %endif
+    %endfor
     </body>
 </html>
