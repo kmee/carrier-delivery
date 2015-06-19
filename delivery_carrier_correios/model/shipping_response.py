@@ -56,6 +56,7 @@ class ShippingResponse(orm.Model):
         vals = {
             'tracking_pack_line': False,
             'carrier_tracking_ref': '',
+            'barcode_id': False,
             'name': '/',
         }
 
@@ -267,9 +268,14 @@ class ShippingResponse(orm.Model):
                                                    post_card_id.number,
                                                    cliente)
 
+                # Creando codigo de barras
+                barcode_id = self.create_barcode(cr, uid, ids, ship,
+                                             context=context)
+
                 vals = {
                     'name': 'PLP/' + str(plp.id_plp_cliente),
                     'carrier_tracking_ref': plp.id_plp_cliente,
+                    'barcode_id': barcode_id,
                 }
 
                 # Definimos o path para salvar o xml da PLP
@@ -295,6 +301,22 @@ class ShippingResponse(orm.Model):
                 raise osv.except_osv(_('Error!'), e.message)
 
         return False
+
+    def create_barcode(self, cr, uid, ids, ship, context=None):
+
+        barcode_vals = {
+            'code': ship.carrier_tracking_ref,
+            'res_id': ship.id,
+            'barcode_type': 'Code128',
+            'width': 125,
+            'height': 40,
+        }
+
+        barcode_obj = self.pool.get('tr.barcode')
+        barcode_id = barcode_obj.create(cr, uid, barcode_vals, context=context)
+        barcode_obj.generate_image(cr, uid, [barcode_id], context=context)
+
+        return barcode_id
 
     def onchange_company_id(self, cr, uid, ids, sigepweb_company_id,
                             context=None):
@@ -372,6 +394,8 @@ class ShippingResponse(orm.Model):
                                               states={
                                                   'draft': [('readonly', False)]
                                               }),
+
+        'barcode_id': fields.many2one('tr.barcode', 'Tracking Ref Code'),
 
         'volume': fields.function(_compute_volume,
                                   type='float',
