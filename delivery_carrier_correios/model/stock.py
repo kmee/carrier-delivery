@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-# Copyright (C) 2015 KMEE (http://www.kmee.com.br)
-# @author: Rodolfo Bertozo <rodolfo.bertozo@kmee.com.br
+#    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
+#    @author: Rodolfo Bertozo <rodolfo.bertozo@kmee.com.br
 #    @author: Michell Stuttgart <michell.stuttgart@kmee.com.br>
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from bsddb.dbtables import _columns_key
+
 from openerp.osv import orm, fields, osv
 from openerp.tools.translate import _
 
