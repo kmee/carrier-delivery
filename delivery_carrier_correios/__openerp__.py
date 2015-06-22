@@ -49,7 +49,7 @@
         'view/stock_view.xml',
         'report/stock_report.xml',
         'workflow/plp_workflow.xml',
-        'report/plp_report.xml',
+        'report/shipping_response_report.xml',
     ],
     'tests': [],
     'installable': True,
