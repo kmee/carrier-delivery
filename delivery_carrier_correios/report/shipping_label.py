@@ -18,9 +18,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
+from openerp.osv import osv
+from openerp.tools.translate import _
 from openerp.report import report_sxw
 from openerp import pooler
+
+from ..model.pysigep_web.pysigepweb.chancela import Chancela
 
 
 class ShippingLabelReport(report_sxw.rml_parse):
@@ -29,11 +32,35 @@ class ShippingLabelReport(report_sxw.rml_parse):
         super(ShippingLabelReport, self).__init__(cr, uid, name, context=context)
         self.localcontext.update({'get_chancela': self._get_chancela})
 
-    def _get_chancela(self):
-        pass
+    def _get_chancela(self, uid, ids, context=None):
 
-report_sxw.report_sxw('report.shipping.label.report.webkit',
+        cr = self.cr
+        pool = pooler.get_pool(self.cr.dbname)
+        obj_stock = pool.get('stock.picking.out').browse(cr, uid, ids, context=context)
+
+        # obj_stock = self.browse(cr, uid, ids, context)
+
+        carrier = obj_stock.carrier_id
+
+        chancela = Chancela(carrier.sigepweb_post_service_id.image_chancela, '')
+
+        company = obj_stock.company_id
+        contract = carrier.sigepweb_contract_id
+
+        chancela.nome_cliente = company.name
+        chancela.num_contrato = contract.number
+        chancela.ano_assinatura = contract.year
+        chancela.dr_origem = company.state_id.code
+        chancela.dr_postagem = obj_stock.partner_id.state_id.code
+
+        try:
+            img = chancela.get_image_base64
+        except IOError as excp:
+            raise osv.except_osv(_('Error!'), _(excp.message))
+
+        return img
+
+report_sxw.report_sxw('report.shipping.label.webkit',
                       'stock.picking.out',
-                      'addons/delivery_carrier_correios/report'
-                      '/shippin_label_report.mako',
+                      'addons/delivery_carrier_correios/report/shipping_label.mako',
                       parser=ShippingLabelReport)
