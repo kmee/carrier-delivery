@@ -59,8 +59,7 @@
                 <tr>
                     <th>
                         %if label.x_barcode_id:
-                            <img src='data:image/png;base64,
-                            ${label.x_barcode_id.image}'/>
+                            <img src='data:image/png;base64,${label.x_barcode_id.image}'/>
                         %else:
                             ' '
                         %endif
