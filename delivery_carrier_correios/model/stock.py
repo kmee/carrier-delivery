@@ -31,7 +31,6 @@ from pysigep_web.pysigepweb.pysigep_exception import ErroConexaoComServidor
 from pysigep_web.pysigepweb.resposta_busca_cliente import Cliente
 from pysigep_web.pysigepweb.servico_postagem import ServicoPostagem
 from pysigep_web.pysigepweb.endereco import Endereco
-from pysigep_web.pysigepweb.chancela import Chancela
 from company import LETTER, BOX, CILINDER
 
 
@@ -42,9 +41,6 @@ class StockPickingOut(orm.Model):
         'idv': fields.selection([('51', 'Encomenda'),
                                  ('81', 'Malotes')],
                                 string=u'Identificador de Dados Variaveis'),
-        'image_chancela': fields.binary('Chancela Correios',
-                                        filters='*.png, *.jpg',
-                                        readonly=True),
         'invoice_ids': fields.many2one('account.invoice',
                                        string='Invoice',
                                        readonly=True),
@@ -63,7 +59,6 @@ class StockPickingOut(orm.Model):
             'sale_id': False,
             'invoice_ids': False,
             'shipping_response_id': False,
-            'image_chancela': False,
         }
 
         default.update(vals)
@@ -133,8 +128,6 @@ class StockPickingOut(orm.Model):
 
                         obj_pack.write(cr, uid, [obj.id], vals)
 
-                    # image_chancela = self.create_chancela(cr, uid, ids)
-                    # self.write(cr, uid, ids, {'image_chancela': image_chancela})
                     self.action_generate_carrier_label(cr, uid, ids)
 
                     if stock.sale_id and stock.sale_id.invoice_ids:
@@ -154,34 +147,7 @@ class StockPickingOut(orm.Model):
             'report_name': 'shipping.label.webkit'
         }
 
-        image_chancela = self.create_chancela(cr, uid, ids, context)
-        self.write(cr, uid, ids, {'image_chancela': image_chancela})
-
         return result
-
-    def create_chancela(self, cr, uid, ids, context=None):
-
-        obj_stock = self.browse(cr, uid, ids[0], context)
-
-        carrier = obj_stock.carrier_id
-
-        chancela = Chancela(carrier.sigepweb_post_service_id.image_chancela, '')
-
-        company = obj_stock.company_id
-        contract = carrier.sigepweb_contract_id
-
-        chancela.nome_cliente = company.name
-        chancela.num_contrato = contract.number
-        chancela.ano_assinatura = contract.year
-        chancela.dr_origem = company.state_id.code
-        chancela.dr_postagem = obj_stock.partner_id.state_id.code
-
-        try:
-            img = chancela.get_image_base64
-        except IOError as excp:
-            raise osv.except_osv(_('Error!'), _(excp.message))
-
-        return img
 
     def get_qr_string(self, cr, uid, id, etiqueta, context=None):
         qr_string = ''
@@ -279,9 +245,6 @@ class StockPicking(orm.Model):
     _columns = {
         'idv': fields.selection([('51', 'Encomenda'), ('81', 'Malotes')],
                                 string=u'IDV'),
-        'image_chancela': fields.binary('Chancela Correios',
-                                        filters='*.png, *.jpg',
-                                        readonly=True),
         'invoice_ids': fields.one2many('account.invoice',
                                        'stock_picking_id',
                                        string='Invoice',
