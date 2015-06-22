@@ -52,7 +52,7 @@
                             </tr>
                             <tr style="text-align: left">
                                 <td>NF:</td>
-                                <td>Pedido: </td>
+                                <td>Pedido: ${stock.name}</td>
                                 <td>Peso(g): ${peso * 1000}</td>
                             </tr>
                         </tbody>
