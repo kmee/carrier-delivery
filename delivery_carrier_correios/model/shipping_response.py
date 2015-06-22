@@ -225,7 +225,6 @@ class ShippingResponse(orm.Model):
                 # Calculamos o peso considerado. O OpenERP fornece peso em
                 # kilogramas
                 peso_considerado = max(weight, peso_volumetrico) * 1000
-                # aresta = int(math.ceil(volume_cm ** (1 / 3.0)))
 
                 # Criamos um objeto dimensao
                 obj_dimensao_objeto = TagDimensaoObjeto(
@@ -270,7 +269,7 @@ class ShippingResponse(orm.Model):
 
                 # Creando codigo de barras
                 barcode_id = self.create_barcode(cr, uid, ids, ship,
-                                             context=context)
+                                                 context=context)
 
                 vals = {
                     'name': 'PLP/' + str(plp.id_plp_cliente),

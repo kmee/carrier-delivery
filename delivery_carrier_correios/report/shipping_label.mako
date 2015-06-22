@@ -15,6 +15,8 @@
                 packs.append(line.tracking_id)
     %>
 
+    <% chancela = get_chancela(user.id, stock.id) %>
+
         %for label in packs:
 
         <%
@@ -22,6 +24,7 @@
             for line in label.move_ids:
                 peso += line.weight
         %>
+
         <table style="width: 300px;">
             <tbody>
                 <tr>
@@ -30,8 +33,8 @@
                         <tbody>
                             <tr>
                                 <td>
-                                    %if stock.image_chancela:
-                                        <img style="height: 114px; width: 114px" src='data:image/png;base64,${stock.image_chancela}'/>
+                                    %if chancela:
+                                    <img style="height: 114px; width: 114px" src='data:image/png;base64,${chancela}'/>
                                     %else:
                                         &nbsp;
                                     %endif
@@ -49,7 +52,7 @@
                             </tr>
                             <tr style="text-align: left">
                                 <td>NF:</td>
-                                <td>Pedido: </td>
+                                <td>Pedido: ${stock.name}</td>
                                 <td>Peso(g): ${peso * 1000}</td>
                             </tr>
                         </tbody>
@@ -59,8 +62,7 @@
                 <tr>
                     <th>
                         %if label.x_barcode_id:
-                            <img src='data:image/png;base64,
-                            ${label.x_barcode_id.image}'/>
+                            <img src='data:image/png;base64,${label.x_barcode_id.image}'/>
                         %else:
                             ' '
                         %endif

@@ -27,7 +27,6 @@ class PLPReport(report_sxw.rml_parse):
 
     def __init__(self, cr, uid, name, context):
         super(PLPReport, self).__init__(cr, uid, name, context=context)
-
         self.localcontext.update({'get_post_services': self._get_post_services})
 
     def _get_post_services(self, uid, ids, context=None):
@@ -52,25 +51,6 @@ class PLPReport(report_sxw.rml_parse):
             services[serv.id]['quant'] += 1
 
         return services
-        #
-        # barcode_vals = {
-        #     'code': plp.carrier_tracking_ref,
-        #     'res_id': plp.id,
-        #     'barcode_type': 'Code128',
-        #     'width': 125,
-        # }
-        #
-        # barcode_obj = self.pool.get('tr.barcode')
-        # barcode_id = barcode_obj.create(cr, uid, barcode_vals, context=context)
-        # barcode_obj.generate_image(cr, uid, [barcode_id], context=context)
-        #
-        # barcode_obj = self.pool.get('tr.barcode').browse(cr, uid, barcode_id)
-        # return barcode_obj.image
-
-
-    def _show_discount(self):
-
-        return 'Hadouken'
 
 report_sxw.report_sxw('report.plp.report.webkit',
                       'shipping.response',

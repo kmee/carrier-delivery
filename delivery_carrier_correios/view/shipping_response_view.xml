@@ -38,7 +38,7 @@
                     <sheet string="Romaneio">
                         <div class="oe_title">
                             <h1>
-                                <label string="Shipment Plan"/>
+                                <!--<label string="Shipment Plan"/>-->
                                 <field name="name" class="oe_inline"
                                        attrs="{'invisible': [('state', '=', 'draft')]}"/>
                             </h1>
