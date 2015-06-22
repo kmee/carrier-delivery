@@ -18,5 +18,22 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import plp_report
-from . import shipping_label
+
+from openerp.report import report_sxw
+from openerp import pooler
+
+
+class ShippingLabelReport(report_sxw.rml_parse):
+
+    def __init__(self, cr, uid, name, context):
+        super(ShippingLabelReport, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({'get_chancela': self._get_chancela})
+
+    def _get_chancela(self):
+        pass
+
+report_sxw.report_sxw('report.shipping.label.report.webkit',
+                      'stock.picking.out',
+                      'addons/delivery_carrier_correios/report'
+                      '/shippin_label_report.mako',
+                      parser=ShippingLabelReport)

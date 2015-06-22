@@ -2,7 +2,7 @@
 <openerp>
 	<data>
 		<report id="stock.shipping_etiqueta"
-				name="shipping.label.webkit"
+				name="report.shipping.label.report.webkits"
 				auto="False"
 				model="stock.picking.out"
 				file="delivery_carrier_correios/report/shipping_label.mako"
