@@ -23,7 +23,7 @@ from openerp.tools.translate import _
 from openerp.report import report_sxw
 from openerp import pooler
 
-from ..model.pysigep_web.pysigepweb.chancela import Chancela
+from openerp.addons.delivery_carrier_correios.model.pysigep_web.pysigepweb.chancela import Chancela
 
 
 class ShippingLabelReport(report_sxw.rml_parse):
@@ -37,8 +37,6 @@ class ShippingLabelReport(report_sxw.rml_parse):
         cr = self.cr
         pool = pooler.get_pool(self.cr.dbname)
         obj_stock = pool.get('stock.picking.out').browse(cr, uid, ids, context=context)
-
-        # obj_stock = self.browse(cr, uid, ids, context)
 
         carrier = obj_stock.carrier_id
 
