@@ -1,5 +1,3 @@
-#DOING: Adicionar campos no relatorio do vouncher da PLP
-
 #TODO: O botão atualizar do Pedido de Venda pode ser usado para atualizar o
 # frete
 #TODO: Remover o botão "adicionar ao orçamento". O "Atualizar" já serviria
@@ -9,10 +7,7 @@
 #TODO: Anexar xml da PLP da view da PLP
 #TODO: Adicionar permissao ao modulo
 #TODO: Buscar valor do frete apenas quando clicar em 'calcular'
-#TODO: Remover campo de imagem da Ordem de Entrega. A chancela com nome da
-# empresa deve ser gerada em tempo de execucao ao imprimir o relatorio>
- Obs.: Usar como referencia o codigo em:
- oca/sale_reporting/sale_order_webkit_report/sale_order
+
 #TODO: Adicionar opcao de selecionar os servicos adicionais na Ordem de Entrega
 
 #TODO: Verificar se PLP não pode mais ser usada depois de gerada
