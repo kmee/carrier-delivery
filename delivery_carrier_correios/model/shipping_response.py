@@ -187,7 +187,6 @@ class ShippingResponse(orm.Model):
                 # e o numero da fatura
                 if picking.carrier_id.sigepweb_post_service_id.code == '41068':
 
-                    print picking.invoice_ids
                     nfe_number = picking.invoice_ids[0].internal_number
                     nfe_serie = picking.invoice_ids[0].document_serie_id.code
 

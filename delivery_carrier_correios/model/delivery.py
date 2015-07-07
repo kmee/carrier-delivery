@@ -23,6 +23,7 @@
 #
 ##############################################################################
 from openerp.osv import orm, fields, osv
+from openerp.tools.translate import _
 
 import math
 from pysigep_web.pysigepweb.webservice_calcula_preco_prazo import \
@@ -206,15 +207,12 @@ class DeliveryGrid(orm.Model):
                 }
 
                 if data['MsgErro'] is not None:
-                    # res = ('ERROR', data['MsgErro'])
-                    print data['MsgErro']
-                # else:
-                #     res = (float(data['Valor']), data['PrazoEntrega'] or 0.00)
+                    print data['MsgErro'].encode('utf8')
 
                 res = (float(data['Valor']), data['PrazoEntrega'] or 0.00)
 
                 return res
 
         except ErroConexaoComServidor as e:
-            raise osv.except_osv(('Erro no calculo do frete!'),
+            raise osv.except_osv(_('Error in connection!'),
                                  'Nao foi possivel conectar.\n' + e.message)
