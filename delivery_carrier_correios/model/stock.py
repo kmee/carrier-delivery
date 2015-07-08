@@ -128,7 +128,7 @@ class StockPickingOut(orm.Model):
 
                         obj_pack.write(cr, uid, [obj.id], vals)
 
-                    self.action_generate_carrier_label(cr, uid, ids)
+                    # self.action_generate_carrier_label(cr, uid, ids)
 
                     if stock.sale_id and stock.sale_id.invoice_ids:
 
@@ -142,12 +142,12 @@ class StockPickingOut(orm.Model):
         return res
 
     def action_generate_carrier_label(self, cr, uid, ids, context=None):
-        result = {
-            'type': 'ir.actions.report.xml',
-            'report_name': 'shipping.label.webkit'
-        }
-
-        return result
+        print
+        # result = {
+        #     'type': 'ir.actions.report.xml',
+        #     'report_name': 'shipping.label.webkit'
+        # }
+        # return result
 
     def get_qr_string(self, cr, uid, id, etiqueta, context=None):
         qr_string = ''
