@@ -17,6 +17,10 @@
                 <xpath expr="//field[@name='move_type']" position="after">
                     <field name="invoice_ids"/>
                 </xpath>
+
+                <xpath expr="//button[@name='action_generate_carrier_label']"
+                       position="replace"/>
+
             </field>
         </record>
 

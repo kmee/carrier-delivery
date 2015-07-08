@@ -40,6 +40,14 @@ class ShippingLabelReport(report_sxw.rml_parse):
 
         carrier = obj_stock.carrier_id
 
+        if obj_stock.state != 'done' or not carrier or carrier.type != \
+                'sigepweb':
+            # msg = 'Ordem de Entrega deve estar como \"Entregue\" para que a ' \
+            #       'etiqueta seja impressa. O tipo da transportadora tambem ' \
+            #       'deve estar como \"Correios SigepWep\".'
+            # raise osv.except_osv(_('Error!'), _(msg))
+            return None
+
         chancela = Chancela(carrier.sigepweb_post_service_id.image_chancela, '')
 
         company = obj_stock.company_id
