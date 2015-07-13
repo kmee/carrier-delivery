@@ -8,6 +8,9 @@
 #TODO: Adicionar permissao ao modulo
 #TODO: Buscar valor do frete apenas quando clicar em 'calcular'
 
+#TODO: Evitar que usuarios utilizem mesmo pacote em ordem de entregas diferentes
+
+
 #TODO: Adicionar opcao de selecionar os servicos adicionais na Ordem de Entrega
 
 #TODO: Verificar se PLP não pode mais ser usada depois de gerada
