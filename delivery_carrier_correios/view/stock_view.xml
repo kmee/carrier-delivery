@@ -9,18 +9,22 @@
                 <field name="origin" position="replace"/>
                 <field name="stock_journal_id" position="after">
                     <field name="origin"/>
-                </field>
-                <field name="number_of_packages" position="after">
                     <field name="idv"/>
                 </field>
-
+             
                 <xpath expr="//field[@name='move_type']" position="after">
                     <field name="invoice_ids"/>
                 </xpath>
+        
+            </field>
+        </record>
 
-                <xpath expr="//button[@name='action_generate_carrier_label']"
-                       position="replace"/>
-
+        <record id="view_sigepweb_stock_picking_out_delivery_form" model="ir.ui.view">
+            <field name="model">stock.picking.out</field>
+            <field name="inherit_id" ref="base_delivery_carrier_label.view_picking_out_form"/>
+            <field name="arch" type="xml">
+                <button name="action_generate_carrier_label" position="replace"/>
+         
             </field>
         </record>
 

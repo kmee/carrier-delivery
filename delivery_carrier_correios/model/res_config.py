@@ -45,8 +45,7 @@ class SigepWebConfigSettings(orm.TransientModel):
                                        'sigepweb_contract_ids',
                                        string='Contracts',
                                        type='one2many',
-                                       relation='sigepweb.contract',
-                                       readonly=True),
+                                       relation='sigepweb.contract'),
 
         'username': fields.related(
             'sigepweb_company_id', 'sigepweb_username',

@@ -31,12 +31,13 @@
     'depends': [
         # 'tr_barcode_on_picking',
         'tr_barcode_on_tracking',
-        'base_delivery_carrier_label',
+        'delivery_carrier_label_postlogistics',
+        # 'base_delivery_carrier_label',
         'base_headers_webkit',
         'kmee_delivery_webservice_correios',
     ],
     'description': """
-    Carrier Delivery Correios Sigepweb WebService
+     Carrier Delivery Correios Sigepweb WebService
     """,
     'website': 'http://www.kmee.com.br/',
     'data': [
