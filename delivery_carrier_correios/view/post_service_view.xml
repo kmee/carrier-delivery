@@ -52,10 +52,10 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-        <!--<menuitem id="menu_sigepweb_post_service_config"-->
-                  <!--name="SygepWeb Serviço Postagem"-->
-                  <!--parent="menu_sigepweb"-->
-                  <!--sequence="20" action="action_sigepweb_post_service_config"/>-->
+        <menuitem id="menu_sigepweb_post_service_config"
+                  name="Post Service"
+                  parent="menu_sigepweb"
+                  sequence="20" action="action_sigepweb_post_service_config"/>
 
     </data>
 </openerp>

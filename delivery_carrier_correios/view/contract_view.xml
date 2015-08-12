@@ -48,10 +48,10 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-        <!--<menuitem id="menu_sigepweb_contract_config"-->
-                  <!--name="SygepWeb Contrato"-->
-                  <!--parent="menu_sigepweb"-->
-                  <!--sequence="16" action="action_sigepweb_contract_config"/>-->
+        <menuitem id="menu_sigepweb_contract_config"
+                  name="SygepWeb Contract"
+                  parent="menu_sigepweb"
+                  sequence="16" action="action_sigepweb_contract_config"/>
 
     </data>
 </openerp>
