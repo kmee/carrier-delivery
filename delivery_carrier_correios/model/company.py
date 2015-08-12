@@ -50,7 +50,7 @@ class ResCompany(orm.Model):
         'sigepweb_contract_ids': fields.one2many('sigepweb.contract',
                                                  'company_id',
                                                  string='Contract',
-                                                 readonly=True),
+                                                 readonly=True, ondelete="cascade"),
         'sigepweb_environment': fields.selection((HOMOLOGACAO, PRODUCAO),
                                                  string='Environment',
                                                  required=True),

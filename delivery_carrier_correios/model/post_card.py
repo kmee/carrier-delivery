@@ -31,14 +31,14 @@ class PostCard(orm.Model):
     _name = 'sigepweb.post.card'
 
     _columns = {
-        'number': fields.char(u'Número'),
-        'admin_code': fields.char(u'Código Administrativo'),
+        'number': fields.char('Number'),
+        'admin_code': fields.char('Admin Code'),
 
         'post_service_ids': fields.many2many('sigepweb.post.service',
                                              'sigepweb_post_card_service_rel',
                                              'post_card_id', 'post_service_id',
-                                             u'Serviços de Postagem'),
-        'contract_id': fields.many2one('sigepweb.contract', u'Contrato'),
+                                             'Post Service'),
+        'contract_id': fields.many2one('sigepweb.contract', 'Contract', ondelete="cascade"),
         'delivery_ids': fields.one2many('delivery.carrier',
                                         'sigepweb_post_card_id',
                                         'Carrier Delivery'),
