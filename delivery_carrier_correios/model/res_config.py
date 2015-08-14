@@ -248,11 +248,13 @@ class SigepWebConfigSettings(orm.TransientModel):
             }
 
             if not post_service_id:
-                post_service_id = (0, 0, vals)
+                post_service_id = pool.create(cr, uid, vals)
             else:
-                post_service_id = (1, post_service_id[0], vals)
+                post_service_id = post_service_id[0]
 
             res.append(post_service_id)
+
+        res = [(6, 0, res)]
 
         return res
 
@@ -330,5 +332,3 @@ class SigepWebConfigSettings(orm.TransientModel):
 
         return res
 
-#TODO: verificar porque quando o campo contract_ids é removido ele nao linka com
-#  os records existented

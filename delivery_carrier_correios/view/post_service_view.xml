@@ -6,7 +6,7 @@
             <field name="name">sigepweb.post.service.tree.view</field>
             <field name="model">sigepweb.post.service</field>
             <field name="arch" type="xml">
-                <tree string="Serviço Postagem" version="7.0">
+                <tree string="Post Service" version="7.0">
                     <field name="name"/>
                     <field name="code"/>
                     <field name="details"/>
@@ -19,7 +19,7 @@
             <field name="name">sigepweb.post.service.form.view</field>
             <field name="model">sigepweb.post.service</field>
             <field name="arch" type="xml">
-                <form string="Serviço Postagem" version="7.0">
+                <form string="Post Service" version="7.0">
                     <sheet>
                         <group>
                             <group>
@@ -32,10 +32,10 @@
                             </group>
                         </group>
                         <notebook>
-                            <page string="Cartões de Postagem">
+                            <page string="Post Card">
                                 <field name="post_card_id"/>
                             </page>
-                            <page string="Descrição">
+                            <page string="Description">
                                 <field name="details"/>
                             </page>
                         </notebook>

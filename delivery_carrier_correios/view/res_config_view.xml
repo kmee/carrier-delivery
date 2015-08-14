@@ -97,8 +97,8 @@
                   parent="base_delivery_carrier_label.menu_carriers_config"
                   sequence="20"/>
 
-        <menuitem id="menu_sigepweb_config" name="SygepWeb"
-        parent="menu_sigepweb" sequence="5" action="action_sigepweb_config"/>
+        <menuitem id="menu_sigepweb_config" name="Configuration"
+                  parent="menu_sigepweb" sequence="5" action="action_sigepweb_config"/>
 
     </data>
 </openerp>

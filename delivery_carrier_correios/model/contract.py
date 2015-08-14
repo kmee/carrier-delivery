@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # #############################################################################
 #
-# Brazillian Carrier Correios Sigep WEB
+#    Brazillian Carrier Correios Sigep WEB
 #    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
 #    @author Luis Felipe Mileo <mileo@kmee.com.br>
 #    @author: Michell Stuttgart <michell.stuttgart@kmee.com.br>
@@ -30,17 +30,17 @@ class Contract(orm.Model):
     _name = 'sigepweb.contract'
 
     _columns = {
-        'number': fields.char(u'Número'),
-        'year': fields.char('Ano de assinatura'),
+        'number': fields.char('Number'),
+        'year': fields.char('Year'),
         'post_card_ids': fields.one2many('sigepweb.post.card',
                                          'contract_id',
-                                         u'Cartão de Postagem'),
+                                         string='Post Card'),
         'directorship_id': fields.many2one('sigepweb.directorship',
-                                           'Diretoria'),
+                                           string='Directorship'),
         'delivery_id': fields.one2many('delivery.carrier',
                                        'sigepweb_contract_id',
-                                       'Carrier Delivery'),
-        'company_id': fields.many2one('res.company', u'Empresa'),
+                                       string='Carrier Delivery'),
+        'company_id': fields.many2one('res.company', 'Company'),
         'shipping_response_ids': fields.one2many('shipping.response',
                                                  'contract_id',
                                                  string='Shipping Response'),
