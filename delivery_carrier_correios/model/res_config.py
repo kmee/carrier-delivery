@@ -319,7 +319,7 @@ class SigepWebConfigSettings(orm.TransientModel):
                 self.pool.get('res.company').browse(cr, uid, company_id)
 
             vals = {
-                'name': obj_company_id.legal_name + ' ' + contract.id_contrato,
+                'name': '[%s] %s' % (contract.id_contrato, obj_company_id.legal_name),
                 'year': contract.data_inicio.year,
                 'number': contract.id_contrato,
                 'post_card_ids': post_card_ids,

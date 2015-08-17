@@ -30,23 +30,25 @@ class Contract(orm.Model):
     _name = 'sigepweb.contract'
 
     _columns = {
-        'name': fields.char('Contract'),
-        'number': fields.char('Number'),
-        'year': fields.char('Year'),
+        'name': fields.char('Contract', readonly=True),
+        'number': fields.char('Number', readonly=True),
+        'year': fields.char('Year', readonly=True),
         'post_card_ids': fields.one2many('sigepweb.post.card',
                                          'contract_id',
                                          string='Post Card'),
         'directorship_id': fields.many2one('sigepweb.directorship',
-                                           string='Directorship'),
+                                           string='Directorship',
+                                           readonly=True),
         'delivery_id': fields.one2many('delivery.carrier',
                                        'sigepweb_contract_id',
                                        string='Carrier Delivery'),
-        'company_id': fields.many2one('res.company', 'Company'),
+        'company_id': fields.many2one('res.company',
+                                      'Company',
+                                      readonly=True),
         'shipping_response_ids': fields.one2many('shipping.response',
                                                  'contract_id',
                                                  string='Shipping Response'),
     }
 
-    # _rec_name = 'number'
 
 
