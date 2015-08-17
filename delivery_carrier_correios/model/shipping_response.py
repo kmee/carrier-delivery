@@ -276,18 +276,20 @@ class ShippingResponse(orm.Model):
                     'barcode_id': barcode_id,
                 }
 
-                # Definimos o path para salvar o xml da PLP
-                path = company_id.sigepweb_plp_xml_path + \
-                       company_id.sigepweb_environment + '/'
+                if company_id.sigepweb_plp_xml_path
 
-                if not os.path.exists(path):
-                    #Criando diretorio homlogacao ou producao
-                    os.mkdir(path)
+                    # Definimos o path para salvar o xml da PLP
+                    path = company_id.sigepweb_plp_xml_path + \
+                           company_id.sigepweb_environment + '/'
 
-                path += 'PLP' + str(plp.id_plp_cliente)
+                    if not os.path.exists(path):
+                        #Criando diretorio homlogacao ou producao
+                        os.mkdir(path)
 
-                # Salvando xml da PLP em disco
-                plp.salvar_xml(path)
+                    path += 'PLP' + str(plp.id_plp_cliente)
+
+                    # Salvando xml da PLP em disco
+                    plp.salvar_xml(path)
 
                 return self.write(cr, uid, ship.id, vals, context=context)
 
