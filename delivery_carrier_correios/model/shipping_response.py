@@ -140,7 +140,7 @@ class ShippingResponse(orm.Model):
             cliente = Cliente(company_id.name,
                               company_id.sigepweb_username,
                               company_id.sigepweb_password,
-                              company_id.cnpj_cpf)
+                              company_id.sigepweb_client_cnpj)
 
             # Criamos a tag remetente do xml
             obj_remetente = TagRemetente(cliente.nome,

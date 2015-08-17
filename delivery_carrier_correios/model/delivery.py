@@ -164,7 +164,7 @@ class DeliveryGrid(orm.Model):
             "nome": order.company_id.name,
             "login": order.company_id.sigepweb_username,
             "senha": order.company_id.sigepweb_password,
-            "cnpj": order.company_id.cnpj_cpf,
+            "cnpj": order.company_id.sigepweb_client_cnpj,
             "cod_admin": grid.carrier_id.sigepweb_post_card_id.admin_code,
         }
 

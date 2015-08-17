@@ -41,6 +41,7 @@ class ResCompany(orm.Model):
     _inherit = 'res.company'
 
     _columns = {
+        'sigepweb_client_cnpj': fields.char('Client CNPJ'),
         'sigepweb_username': fields.char('Username'),
         'sigepweb_password': fields.char('Password'),
         'sigepweb_carrier_id': fields.many2one('res.partner',
@@ -50,7 +51,8 @@ class ResCompany(orm.Model):
         'sigepweb_contract_ids': fields.one2many('sigepweb.contract',
                                                  'company_id',
                                                  string='Contract',
-                                                 readonly=True, ondelete="cascade"),
+                                                 readonly=True,
+                                                 ondelete="cascade"),
         'sigepweb_environment': fields.selection((HOMOLOGACAO, PRODUCAO),
                                                  string='Environment',
                                                  required=True),

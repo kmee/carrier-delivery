@@ -220,7 +220,8 @@ class SigepWebConfigSettings(orm.TransientModel):
                     context=context)
 
                 vals = {
-                    'sigepweb_contract_ids': contracts
+                    'sigepweb_contract_ids': contracts,
+                    'sigepweb_client_cnpj': client.cnpj,
                 }
 
                 pool = self.pool.get('res.company')
