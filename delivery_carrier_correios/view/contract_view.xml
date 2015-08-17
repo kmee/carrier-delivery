@@ -6,11 +6,11 @@
             <field name="name">sigepweb.contract.tree.view</field>
             <field name="model">sigepweb.contract</field>
             <field name="arch" type="xml">
-                <tree string="Contratos" version="7.0">
+                <tree string="Contracts" version="7.0">
                     <field name="number"/>
                     <field name="post_card_ids"/>
                     <field name="directorship_id"/>
-                    <field name="company_id"/>
+                    <field name="company_ids"/>
                 </tree>
             </field>
         </record>
@@ -19,12 +19,11 @@
             <field name="name">sigepweb.contract.form.view</field>
             <field name="model">sigepweb.contract</field>
             <field name="arch" type="xml">
-                <form string="Contratos" version="7.0">
+                <form string="Contracts" version="7.0">
                     <sheet>
                         <group>
                             <group>
                                 <field name="number"/>
-                                <field name="company_id"/>
                             </group>
                             <group>
                                 <field name="directorship_id"/>
@@ -32,8 +31,11 @@
                             </group>
                         </group>
                         <notebook>
-                            <page string="Cartões de Postagem">
+                            <page string="Post Card">
                                 <field name="post_card_ids" nolabel="1"/>
+                            </page>
+                            <page string="Company">
+                                <field name="company_ids" nolabel="1"/>
                             </page>
                         </notebook>
                     </sheet>

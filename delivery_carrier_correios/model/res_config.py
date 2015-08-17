@@ -44,7 +44,7 @@ class SigepWebConfigSettings(orm.TransientModel):
         'contract_ids': fields.related('sigepweb_company_id',
                                        'sigepweb_contract_ids',
                                        string='Contracts',
-                                       type='one2many',
+                                       type='many2many',
                                        relation='sigepweb.contract'),
 
         'username': fields.related(
@@ -276,12 +276,23 @@ class SigepWebConfigSettings(orm.TransientModel):
                 'post_service_ids': post_service_ids,
             }
 
-            if not post_card_id:
-                post_card_id = (0, 0, vals)
-            else:
-                post_card_id = (1, post_card_id[0], vals)
+            # if not post_service_id:
+            #     post_service_id = pool.create(cr, uid, vals)
+            # else:
+            #     post_service_id = post_service_id[0]
+            #
+            # res.append(post_service_id)
 
-            res.append(post_card_id)
+            if not post_card_id:
+                # post_card_id = (0, 0, vals)
+                post_card_id = pool.create(cr, uid, vals)
+            else:
+                # post_card_id = post_card_id[0]
+                post_card_id = post_card_id[0]
+
+            res.append((1, post_card_id, vals))
+
+        # res = [(6, 0, res)]
 
         return res
 
@@ -319,16 +330,18 @@ class SigepWebConfigSettings(orm.TransientModel):
                 'number': contract.id_contrato,
                 'post_card_ids': post_card_ids,
                 'directorship_id': directorship_id,
-                'company_id': company_id,
+                'company_ids': [(4, company_id)],
             }
 
             if not contract_id:
-                contract_id = (0, 0, vals)
+                contract_id = pool.create(cr, uid, vals)
             else:
                 # pegamos o primeiro id porque o contract e sempre unico
-                contract_id = (1, contract_id[0], vals)
+                contract_id = contract_id[0]
 
             res.append(contract_id)
+
+        res = [(6, 0, res)]
 
         return res
 

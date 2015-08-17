@@ -27,6 +27,7 @@ from openerp.osv import orm, fields
 
 
 class Contract(orm.Model):
+
     _name = 'sigepweb.contract'
 
     _columns = {
@@ -40,7 +41,11 @@ class Contract(orm.Model):
         'delivery_id': fields.one2many('delivery.carrier',
                                        'sigepweb_contract_id',
                                        string='Carrier Delivery'),
-        'company_id': fields.many2one('res.company', 'Company'),
+        'company_ids': fields.many2many('res.company',
+                                        'res_company_contract_rel',
+                                        'contract_id',
+                                        'company_id',
+                                        string='Company'),
         'shipping_response_ids': fields.one2many('shipping.response',
                                                  'contract_id',
                                                  string='Shipping Response'),

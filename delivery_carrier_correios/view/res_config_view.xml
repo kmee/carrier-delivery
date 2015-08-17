@@ -24,7 +24,7 @@
                                        string="Select Company"/>
                                 <field name="sigepweb_company_id"
                                        widget="selection"
-                                       on_change="onchange_company_id(sigepweb_company_id, context)"
+                                       on_change="onchange_company_id(sigepweb_company_id)"
                                        class="oe_inline"/>
                             </div>
                         </div>
@@ -56,10 +56,10 @@
 
                     <notebook>
                         <page string="Contracts">
-                            <field name="contract_ids" nolabel="1"/>
+                            <field name="contract_ids" nolabel="1" widget="one2many_list"/>
                         </page>
                         <page string="Others configuration">
-                            <group string="PLP consifguration">
+                            <group string="PLP configuration">
                                 <field name="plp_xml_path"/>
                             </group>
                             <group string="Default Package type">
