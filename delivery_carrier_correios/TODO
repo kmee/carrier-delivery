@@ -1,7 +1,7 @@
 #TODO: O botão atualizar do Pedido de Venda pode ser usado para atualizar o
 # frete
 #TODO: Remover o botão "adicionar ao orçamento". O "Atualizar" já serviria
-# pra isso. Só no momento de salvar que o recalculo poderia ser automatico
+# pra isso. Só no momento de salvar que o recálculo poderia ser automatico
 # funcionando da mesma maneira que o "Atualizar"
 
 #TODO: Anexar xml da PLP da view da PLP
@@ -10,11 +10,7 @@
 
 #TODO: Evitar que usuarios utilizem mesmo pacote em ordem de entregas diferentes
 
-
 #TODO: Adicionar opcao de selecionar os servicos adicionais na Ordem de Entrega
-
-#TODO: Verificar se PLP não pode mais ser usada depois de gerada
-#TODO: Pesquisar o que é id_plp_master
 
 #TODO: Unidade usada para peso: kilos
 #TODO: Unidade usada para volume: m3
