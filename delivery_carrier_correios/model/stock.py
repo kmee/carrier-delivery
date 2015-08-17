@@ -79,9 +79,6 @@ class StockPickingOut(orm.Model):
                     sv = WebserviceAtendeCliente(
                         company_id.sigepweb_environment)
 
-                    # if company_id.sigepweb_username == 'sigep':
-                    #     company_id.cnpj_cpf = '34.028.316/0001-03'
-
                     cliente = Cliente(company_id.name,
                                       company_id.sigepweb_username,
                                       company_id.sigepweb_password,
@@ -128,8 +125,6 @@ class StockPickingOut(orm.Model):
 
                         obj_pack.write(cr, uid, [obj.id], vals)
 
-                    # self.action_generate_carrier_label(cr, uid, ids)
-
                     if stock.sale_id and stock.sale_id.invoice_ids:
 
                         inv_ids = [(4, inv.id) for inv in stock.sale_id.invoice_ids]
@@ -140,14 +135,6 @@ class StockPickingOut(orm.Model):
                     raise osv.except_osv(_('Error!'), e.message)
 
         return res
-
-    def action_generate_carrier_label(self, cr, uid, ids, context=None):
-        print
-        # result = {
-        #     'type': 'ir.actions.report.xml',
-        #     'report_name': 'shipping.label.webkit'
-        # }
-        # return result
 
     def get_qr_string(self, cr, uid, id, etiqueta, context=None):
         qr_string = ''
