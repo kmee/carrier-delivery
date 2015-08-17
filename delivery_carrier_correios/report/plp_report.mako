@@ -539,7 +539,6 @@ td.main_col1 {
                             </td>
                             <td style="width: 25%;">
                                 <p><strong>Data da entrega:</strong>
-                                    <strong>Data da entrega:</strong>
                                     %if plp.date:
                                         ${plp.date}
                                     %else:

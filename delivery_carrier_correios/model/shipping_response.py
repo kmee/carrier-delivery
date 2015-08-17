@@ -276,7 +276,7 @@ class ShippingResponse(orm.Model):
                     'barcode_id': barcode_id,
                 }
 
-                if company_id.sigepweb_plp_xml_path
+                if company_id.sigepweb_plp_xml_path:
 
                     # Definimos o path para salvar o xml da PLP
                     path = company_id.sigepweb_plp_xml_path + \
