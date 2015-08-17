@@ -30,6 +30,7 @@ class Contract(orm.Model):
     _name = 'sigepweb.contract'
 
     _columns = {
+        'name': fields.char('Contract'),
         'number': fields.char('Number'),
         'year': fields.char('Year'),
         'post_card_ids': fields.one2many('sigepweb.post.card',
@@ -46,6 +47,6 @@ class Contract(orm.Model):
                                                  string='Shipping Response'),
     }
 
-    _rec_name = 'number'
+    # _rec_name = 'number'
 
 

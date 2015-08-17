@@ -51,4 +51,3 @@ class PostCard(orm.Model):
     _rec_name = 'number'
 
 
-

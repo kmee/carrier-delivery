@@ -7,6 +7,7 @@
             <field name="model">sigepweb.contract</field>
             <field name="arch" type="xml">
                 <tree string="Contracts" version="7.0">
+                    <field name="name"/>
                     <field name="number"/>
                     <field name="post_card_ids"/>
                     <field name="directorship_id"/>

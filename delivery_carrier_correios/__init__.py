@@ -23,5 +23,7 @@
 #
 ##############################################################################
 
+# Caso aparece erro ao importar o modulo 'report' durante a instalacao do modulo
+# basta reiniciar o Odoo e tentar instalar o modulo novamente
 from . import report
 from . import model

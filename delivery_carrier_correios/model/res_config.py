@@ -212,15 +212,15 @@ class SigepWebConfigSettings(orm.TransientModel):
             try:
                 sv = WebserviceAtendeCliente(config.environment)
 
-                cliente = sv.busca_cliente(contract_number, post_card_number,
-                                           username, password)
+                client = sv.busca_cliente(contract_number, post_card_number,
+                                          username, password)
 
-                contratos = self._update_contract(
-                    cr, uid, cliente.contratos, config.sigepweb_company_id.id,
+                contracts = self._update_contract(
+                    cr, uid, client.contratos, config.sigepweb_company_id.id,
                     context=context)
 
                 vals = {
-                    'sigepweb_contract_ids': contratos
+                    'sigepweb_contract_ids': contracts
                 }
 
                 pool = self.pool.get('res.company')
@@ -309,12 +309,17 @@ class SigepWebConfigSettings(orm.TransientModel):
 
             pool = self.pool.get('sigepweb.contract')
             contract_id = pool.search(
-                cr, uid, [('number', '=', contract.id_contrato)])
+                cr, uid, [('number', '=', contract.id_contrato),
+                          ('company_id', '=', company_id)])
 
             post_card_ids = self._update_post_card(
                 cr, uid, contract.cartoes_postagem)
 
+            obj_company_id = \
+                self.pool.get('res.company').browse(cr, uid, company_id)
+
             vals = {
+                'name': obj_company_id.legal_name + ' ' + contract.id_contrato,
                 'year': contract.data_inicio.year,
                 'number': contract.id_contrato,
                 'post_card_ids': post_card_ids,

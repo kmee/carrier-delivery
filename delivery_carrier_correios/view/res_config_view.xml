@@ -17,30 +17,30 @@
                                 class="oe_link"/>
                     </header>
 
-                    <!--<group groups="base.group_multi_company">-->
-                        <!--<div>-->
-                            <!--<div>-->
-                                <!--<label for="sigepweb_company_id"-->
-                                       <!--string="Select Company"/>-->
-                                <!--<field name="sigepweb_company_id"-->
-                                       <!--widget="selection"-->
-                                       <!--on_change="onchange_company_id(sigepweb_company_id, context)"-->
-                                       <!--class="oe_inline"/>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                    <!--</group>-->
-
-                    <group>
+                    <group groups="base.group_multi_company">
                         <div>
                             <div>
+                                <label for="sigepweb_company_id"
+                                       string="Select Company"/>
                                 <field name="sigepweb_company_id"
                                        widget="selection"
-                                       invisible="1"
                                        on_change="onchange_company_id(sigepweb_company_id, context)"
                                        class="oe_inline"/>
                             </div>
                         </div>
                     </group>
+
+                    <!--<group>-->
+                        <!--<div>-->
+                            <!--<div>-->
+                                <!--<field name="sigepweb_company_id"-->
+                                       <!--widget="selection"-->
+                                       <!--invisible="1"-->
+                                       <!--on_change="onchange_company_id(sigepweb_company_id, context)"-->
+                                       <!--class="oe_inline"/>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</group>-->
 
                     <group string="Web Service Authentification">
                         <group>
