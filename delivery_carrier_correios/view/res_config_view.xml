@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_sigepweb_config_settings" model="ir.ui.view">
+            <field name="name">sigepweb settings</field>
+            <field name="model">sigepweb.config.settings</field>
+            <field name="arch" type="xml">
+                <form string="Configure SygepWeb" version="7.0"
+                      class="oe_form_configuration">
+
+                    <header>
+                        <button string="Apply" type="object" name="execute"
+                                class="oe_highlight"/>
+                        or
+                        <button string="Cancel" type="object" name="cancel"
+                                class="oe_link"/>
+                    </header>
+
+                    <group groups="base.group_multi_company">
+                        <div>
+                            <div>
+                                <label for="sigepweb_company_id"
+                                       string="Select Company"/>
+                                <field name="sigepweb_company_id"
+                                       widget="selection"
+                                       on_change="onchange_company_id(sigepweb_company_id, context)"
+                                       class="oe_inline"/>
+                            </div>
+                        </div>
+                    </group>
+
+                    <!--<group>-->
+                        <!--<div>-->
+                            <!--<div>-->
+                                <!--<field name="sigepweb_company_id"-->
+                                       <!--widget="selection"-->
+                                       <!--invisible="1"-->
+                                       <!--on_change="onchange_company_id(sigepweb_company_id, context)"-->
+                                       <!--class="oe_inline"/>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</group>-->
+
+                    <group string="Web Service Authentification">
+                        <group>
+                            <field name="username"/>
+                            <field name="password" password="True"/>
+                        </group>
+                        <group>
+                            <field name="contract_number"/>
+                            <field name="post_card_number"/>
+                            <field name="carrier_id"/>
+                        </group>
+                    </group>
+
+                    <group string="SigepWeb Configurations">
+                        <group>
+                            <field name="environment"/>
+                        </group>
+                        <group>
+                            <button string="Update SigepWeb Services"
+                                    type="object"
+                                    name="update_sigepweb_webservice_options"
+                                    class="oe_highlight"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Contracts">
+                            <field name="contract_ids" nolabel="1"/>
+                        </page>
+                        <page string="Others configuration">
+                            <group string="PLP configuration">
+                                <field name="plp_xml_path"/>
+                            </group>
+                            <group string="Default Package type">
+                                <field name="package_type"/>
+                            </group>
+                            <group string="Default Pack Dimension">
+                                <group>
+                                    <field name="package_width"
+                                           attrs="{'invisible': [('package_type', '=', '003')]}"/>
+                                    <field name="package_height"
+                                           attrs="{'invisible': [('package_type', '=', '003')]}"/>
+                                </group>
+                                <group>
+                                    <field name="package_length"/>
+                                    <field name="package_diameter"
+                                           attrs="{'invisible': [('package_type', '!=', '003')]}"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+
+                </form>
+            </field>
+        </record>
+
+        <record id="action_sigepweb_config" model="ir.actions.act_window">
+            <field name="name">Configure SygepWeb</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sigepweb.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+        </record>
+
+        <menuitem id="menu_sigepweb" name="SigepWeb"
+                  parent="base_delivery_carrier_label.menu_carriers_config"
+                  sequence="20"/>
+
+        <menuitem id="menu_sigepweb_config" name="Configuration"
+                  parent="menu_sigepweb" sequence="5" action="action_sigepweb_config"/>
+
+    </data>
+</openerp>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record model="ir.ui.view" id="view_shipment_response_form">
+            <field name="name">shipping.response.form</field>
+            <field name="model">shipping.response</field>
+            <field name="arch" type="xml">
+
+                <form string="Romaneio" version="7.0">
+                    <header>
+                        <button name="action_shipment_confirm"
+                                string="Confirm"
+                                states="draft"
+                                class="oe_highlight"
+                                type="object"/>
+
+                        <button name="action_shipment_done"
+                                string="Fecha PLP"
+                                states="confirmed"
+                                class="oe_highlight"
+                                type="object"/>
+
+                        <button name="action_shipment_cancel"
+                                type="object"
+                                string="Cancel"
+                                states="draft,confirmed"/>
+
+                        <button name="action_shipment_draft"
+                                states="cancel"
+                                string="Set to Draft"
+                                type="object"/>
+
+                        <field name="state" select="1" readonly="1"
+                               widget="statusbar"
+                               statusbar_visible="draft,confirmed,done"/>
+                    </header>
+                    <sheet string="Romaneio">
+                        <div class="oe_title">
+                            <h1>
+                                <!--<label string="Shipment Plan"/>-->
+                                <field name="name" class="oe_inline"
+                                       attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="company_id"
+                                       on_change="onchange_company_id(company_id)"/>
+                                <field name="user_id"/>
+                                <field name="carrier_responsible"/>
+                            </group>
+                            <group>
+                                <field name="carrier_id"
+                                       domain="[('company_id.id', '=', company_id)]"/>
+                                <field name="contract_id"/>
+                                <field name="post_card_id"/>
+                                <field name="date"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Entregas">
+                                <field name="tracking_pack_line"
+                                       widget="many2many"
+                                       domain="['&amp;',('move_ids.picking_id.company_id.id', '=', company_id),'&amp;',('shipping_response_id','=',False),'&amp;',
+                                       ('move_ids.picking_id.carrier_id.partner_id.id','=', carrier_id),'&amp;',
+                                       ('move_ids.picking_id.carrier_id.sigepweb_post_card_id.id','=', post_card_id),
+                                       '|',('move_ids.picking_id.carrier_id.code','!=','41068'),'&amp;',('move_ids.picking_id.carrier_id.code','=','41068'),('move_ids.picking_id.invoice_ids.state','in',('sefaz_export','open','paid'))]"/>
+
+                            </page>
+                            <page string="Details">
+                                <group>
+                                    <group>
+                                        <field name="carrier_tracking_ref"/>
+                                    </group>
+                                    <group>
+                                        <field name="volume"/>
+                                        <field name="weight"/>
+                                        <field name="weight_net"/>
+                                    </group>
+                                </group>
+                                <div class="oe_clear">
+                                    <label for="note"/>
+                                </div>
+                                <field name="note" colspan="4" class="oe_inline"
+                                       placeholder="Additional notes..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_shipping_response_tree">
+            <field name="name">shipping.response.tree</field>
+            <field name="model">shipping.response</field>
+            <field name="arch" type="xml">
+                <tree colors="grey:state == 'done';" string="Shipment Plans">
+                    <field name="name"/>
+                    <field name="carrier_id"/>
+                    <field name="carrier_tracking_ref"/>
+                    <field name="weight"/>
+                    <field name="volume"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="shipping_response_action" model="ir.actions.act_window">
+            <field name="name">Shipping Response</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">shipping.response</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_shipping_response_tree"/>
+            <field name="help">Key in Server name and User ID which you get from
+                USPS website.
+            </field>
+        </record>
+
+        <!-- Gate Pass Menu -->
+        <menuitem name="Entregas" parent="stock.menu_stock_root"
+                  id="menu_gate_pass_main" sequence="1"/>
+
+        <menuitem action="shipping_response_action" name="Romaneio"
+                  parent="menu_gate_pass_main" id="menu_gate_pass"
+                  sequence="1"/>
+
+        <menuitem action="stock.action_picking_tree"
+                  id="stock.menu_action_picking_tree"
+                  parent="menu_gate_pass_main" sequence="5"/>
+
+    </data>
+</openerp>

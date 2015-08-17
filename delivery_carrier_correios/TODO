@@ -1,0 +1,17 @@
+#TODO: O botão atualizar do Pedido de Venda pode ser usado para atualizar o
+# frete
+#TODO: Remover o botão "adicionar ao orçamento". O "Atualizar" já serviria
+# pra isso. Só no momento de salvar que o recálculo poderia ser automatico
+# funcionando da mesma maneira que o "Atualizar"
+
+#TODO: Anexar xml da PLP da view da PLP
+#TODO: Adicionar permissao ao modulo
+#TODO: Buscar valor do frete apenas quando clicar em 'calcular'
+
+#TODO: Evitar que usuarios utilizem mesmo pacote em ordem de entregas diferentes
+
+#TODO: Adicionar opcao de selecionar os servicos adicionais na Ordem de Entrega
+
+#TODO: Unidade usada para peso: kilos
+#TODO: Unidade usada para volume: m3
+#TODO: Unidade usada para comprimento: m

@@ -1,0 +1,27 @@
+Após instalar o módulo. Siga para Configurações->Carriers->SigepWeb
+
+A interface de configuração do SIGEPWeb irá aparecer. Insira os seguintes dados:
+
+LOGIN = 'sigep'
+SENHA = 'n5f9t8'
+CONTRATO = '9912208555'
+CARTAO_POSTAGEM = '0057018901'
+
+Em transportadora, selecione o res_partner correspondente aos correios.
+O CNPJ dos correios é: '34028316000103'
+
+Ainda em Configurações->Armazem, deixe a opção 'Rastrear números de série em unidades logísticas (pallets)'
+marcada. Isso irá permitir separar as linhas da Ordem de Entrega em pacotes.
+
+No menu Armazem->Métodos de entrega, crie um método de entrega para cada tipo
+de serviço (SEDEX, PAC, SEDEX 10, etc).
+No campo 'Type', selecione a opção 'sigepweb'
+Logo abaixo selecione um contrato, um cartao de postagem e finalmente, o serviço
+que aquele método de entregar representará (SEDEX, PAC, SEDEX 10, etc)
+
+Em Barcode->Barcode config->Embalagens
+
+Em 'field' selecione a opção 'Addtional Reference'
+Em 'Type' selecione '128'
+Deixe marcado a opção 'Human readable'
+
